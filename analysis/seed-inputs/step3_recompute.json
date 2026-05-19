@@ -1,0 +1,75 @@
+{
+ "global": {
+  "before": {
+   "info": 27527446,
+   "medium": 59755205,
+   "low": 17883633,
+   "high": 27994899,
+   "unknown": 9251208,
+   "critical": 5303131
+  },
+  "after": {
+   "critical": 6488762,
+   "high": 31274653,
+   "medium": 61782913,
+   "low": 18062470,
+   "info": 27527957,
+   "unknown": 2578767
+  },
+  "total_before": 147715522,
+  "total_after": 147715522
+ },
+ "osv": {
+  "before": {
+   "high": 9410291,
+   "medium": 11149929,
+   "low": 1789482,
+   "unknown": 8832920,
+   "critical": 2172564,
+   "info": 21155
+  },
+  "after": {
+   "critical": 3319571,
+   "high": 12728669,
+   "medium": 13177637,
+   "low": 1968319,
+   "info": 21666,
+   "unknown": 2160479
+  },
+  "total_before": 33376341,
+  "total_after": 33376341,
+  "unknown_before": 17665840,
+  "unknown_after_residual": 2160479,
+  "findings_reclassified": 6672441,
+  "reclassified_distribution": {
+   "low": 178837,
+   "high": 3318378,
+   "medium": 2027708,
+   "critical": 1147007,
+   "info": 511
+  }
+ },
+ "dockle": {
+  "before": {
+   "medium": 42599,
+   "low": 140502,
+   "high": 38624
+  },
+  "after": {
+   "critical": 38624,
+   "medium": 42599,
+   "low": 140502
+  },
+  "high_to_critical": 38624
+ },
+ "clair_removed": {
+  "severity_distribution": {},
+  "total_findings_removed": 0
+ },
+ "osv_id_resolution": {
+  "distinct_unknown_ids": 12792,
+  "distinct_ids_resolved": 9231,
+  "distinct_ids_unresolved": 3561
+ },
+ "_dedup_note": "after blocks recomputed per repository (50453 reports)"
+}
