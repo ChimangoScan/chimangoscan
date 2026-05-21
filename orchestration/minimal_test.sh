@@ -30,6 +30,8 @@ SCANNERS="$ROOT/stages/scanners"
 ARTIFACTS="$ROOT/artifacts"
 RANKED="$ARTIFACTS/exposure_ranked.jsonl"
 TOPN="$ARTIFACTS/exposure_ranked.top.jsonl"
+# shellcheck source=orchestration/_runner.sh
+source "$ROOT/orchestration/_runner.sh"
 
 PREFIXES="a,b,c"
 CRAWL_DURATION="5m"
@@ -52,35 +54,36 @@ mkdir -p "$ARTIFACTS"
 [ -e "$DITECTOR/main.go" ] || fail "submodules not initialised -- run: git submodule update --init --recursive"
 [ -e "$DITECTOR/accounts.json" ] || fail "stages/DITector/accounts.json missing (Docker Hub accounts needed for the crawl)"
 
+# Build the runner image once; every stage runs inside it so the host needs
+# only Docker. MongoDB and Neo4j are reached over the host network.
+ensure_runner
+
 # ---------------------------------------------------------------------------
 # 1. Stage I -- short crawl restricted to a few namespace prefixes
 # ---------------------------------------------------------------------------
 log "Stage I -- crawling Docker Hub prefixes [$PREFIXES] for $CRAWL_DURATION"
-( cd "$DITECTOR" && timeout "$CRAWL_DURATION" go run main.go crawl \
-    --workers 8 \
-    --seed "$PREFIXES" \
-    --accounts accounts.json \
-    --config config.yaml ) || true   # the timeout ending the crawl is expected
+RUNNER_WORKDIR="$DITECTOR" in_runner sh -c \
+  "timeout $CRAWL_DURATION go run main.go crawl --workers 8 --seed $PREFIXES --accounts accounts.json --config config.yaml" \
+  || true   # the timeout ending the crawl is expected
 
 # ---------------------------------------------------------------------------
 # 2. Stage II -- build the IDEA graph for everything discovered (threshold 0)
 # ---------------------------------------------------------------------------
 log "Stage II -- building the IDEA dependency graph"
-( cd "$DITECTOR" && go run main.go build \
+RUNNER_WORKDIR="$DITECTOR" in_runner go run main.go build \
     --format mongo \
     --threshold 0 \
     --tags 3 \
     --accounts accounts.json \
     --data_dir "$ARTIFACTS/build" \
-    --config config.yaml )
+    --config config.yaml
 
 # ---------------------------------------------------------------------------
 # 3. Ranker -- sort repositories by pull count + supply-chain exposure
 # ---------------------------------------------------------------------------
 log "Ranker -- computing exposure ranking"
-( cd "$DITECTOR" && OUT_PATH="$RANKED" \
-    WORKDIR="$ARTIFACTS/exposure_work" \
-    python3 scripts/compute_exposure_ranking.py )
+RUNNER_WORKDIR="$DITECTOR" in_runner sh -c \
+  "OUT_PATH=$RANKED WORKDIR=$ARTIFACTS/exposure_work python3 scripts/compute_exposure_ranking.py"
 
 [ -s "$RANKED" ] || fail "ranker produced no exposure_ranked.jsonl"
 
@@ -97,15 +100,23 @@ log "selected top $N repositories by exposure"
 SCAN_CONFIG="$ARTIFACTS/scanners-minimal.yaml"
 "$ROOT/orchestration/make_scanners_config.sh" "$TOPN" "$TOP" > "$SCAN_CONFIG"
 
+# Stage III runs the scanner orchestrator inside the runner; it starts the six
+# scanner containers through the mounted host Docker socket (siblings on the
+# host daemon). TMPDIR is pinned under the mounted artifacts directory so any
+# image tar the orchestrator exports is on a host path the sibling containers
+# can mount.
+mkdir -p "$ARTIFACTS/tmp"
+SCAN_ENV="TMPDIR=$ARTIFACTS/tmp"
+
 log "Stage III -- seeding the scan queue with the top $TOP targets"
-( cd "$SCANNERS" && uv run scanners -c "$SCAN_CONFIG" seed )
+RUNNER_WORKDIR="$SCANNERS" in_runner sh -c "$SCAN_ENV uv run scanners -c $SCAN_CONFIG seed"
 
 log "Stage III -- running the six-scanner sweep over the top $TOP"
-( cd "$SCANNERS" && uv run scanners -c "$SCAN_CONFIG" run --workers 4 )
+RUNNER_WORKDIR="$SCANNERS" in_runner sh -c "$SCAN_ENV uv run scanners -c $SCAN_CONFIG run --workers 4"
 
 log "Stage III -- consolidating the corpus report"
-( cd "$SCANNERS" && uv run scanners -c "$SCAN_CONFIG" report -o "$ARTIFACTS/report.html" \
-    && uv run scanners -c "$SCAN_CONFIG" analyze )
+RUNNER_WORKDIR="$SCANNERS" in_runner sh -c "$SCAN_ENV uv run scanners -c $SCAN_CONFIG report -o $ARTIFACTS/report.html"
+RUNNER_WORKDIR="$SCANNERS" in_runner sh -c "$SCAN_ENV uv run scanners -c $SCAN_CONFIG analyze"
 
 # ---------------------------------------------------------------------------
 # 5. Assertions -- the claim holds only if the corpus artefacts exist

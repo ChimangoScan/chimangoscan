@@ -16,6 +16,8 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SCRIPTS="$ROOT/analysis/scripts"
 SEED="$ROOT/analysis/seed-inputs"
 OUT="$ROOT/artifacts/analysis"
+# shellcheck source=orchestration/_runner.sh
+source "$ROOT/orchestration/_runner.sh"
 
 DB=""
 STAGE="all"
@@ -32,6 +34,7 @@ done
 
 [ -n "$DB" ] || { echo "usage: run_analysis.sh --db PATH [--stage S] [--sample N]" >&2; exit 2; }
 [ -s "$DB" ] || { echo "database not found: $DB" >&2; exit 1; }
+DB="$(realpath "$DB")"
 
 mkdir -p "$OUT"
 
@@ -40,8 +43,15 @@ mkdir -p "$OUT"
 # per-scanner template). Seed them into the output directory before the run.
 cp -n "$SEED/"*.json "$OUT/" 2>/dev/null || true
 
+# Everything runs inside the runner image, so the host only needs Docker. The
+# database usually lives outside the repository, so expose its directory to the
+# container at the same path (the repository itself is already mounted).
+ensure_runner
+DB_DIR="$(dirname "$DB")"
+RUNNER_EXTRA_MOUNT="-v $DB_DIR:$DB_DIR"
+
 echo "=== regenerating analysis from $DB (stage=$STAGE) ==="
-python3 "$SCRIPTS/regenerate_all.py" \
+in_runner python3 "$SCRIPTS/regenerate_all.py" \
   --db "$DB" \
   --out "$OUT" \
   --stage "$STAGE" \

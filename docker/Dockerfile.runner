@@ -1,0 +1,34 @@
+# ChimangoScan runner image.
+#
+# Every pipeline stage runs inside this image, so the ONLY thing a reviewer
+# installs on the host is Docker itself:
+#   - Go 1.22            Stage I (crawl) and Stage II (build)        [stages/DITector]
+#   - Python 3 + uv      exposure ranker, Stage III orchestration, analysis
+#   - matplotlib, numpy  analysis figures                            [analysis/]
+#   - Docker CLI         Stage III starts the six scanner containers through the
+#                        host Docker socket bind-mounted into this container
+#
+# The repository is bind-mounted at the SAME absolute path it has on the host
+# (see orchestration/_runner.sh), so the paths written into generated configs
+# are valid both inside this container and for the sibling scanner containers
+# the host daemon launches (docker-out-of-docker).
+#
+# Built on python:3.12-bookworm (ships Python, git and a C toolchain); the Go
+# toolchain and the Docker CLI are copied from their official images, so no
+# extra OS packages are installed.
+FROM docker:27-cli AS dockercli
+FROM golang:1.22-bookworm AS gotool
+
+FROM python:3.12-bookworm
+COPY --from=dockercli /usr/local/bin/docker /usr/local/bin/docker
+COPY --from=gotool /usr/local/go /usr/local/go
+ENV PATH="/usr/local/go/bin:${PATH}" \
+    GOPATH=/go \
+    GOFLAGS=-buildvcs=false \
+    CGO_ENABLED=0 \
+    MPLBACKEND=Agg \
+    MPLCONFIGDIR=/tmp/mpl
+# uv drives the scanners submodule; pymongo/neo4j feed the exposure ranker;
+# matplotlib/numpy render the analysis figures. All from PyPI wheels — no apt.
+RUN pip install --no-cache-dir uv pymongo "neo4j>=5" matplotlib numpy
+WORKDIR /work
