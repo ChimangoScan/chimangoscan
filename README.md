@@ -47,6 +47,7 @@ fornece os *scripts de orquestração* que executam os estágios em sequência e
 ```
 chimangoscan/
 ├── README.md                     este arquivo (roteiro do artefato)
+├── DATASET.md                    schema e acesso ao dataset (reports, crawl, layer graph)
 ├── LICENSE                       MIT
 ├── stages/
 │   ├── DITector/                 submódulo — Estágios I+II + ranker de exposure
@@ -57,7 +58,12 @@ chimangoscan/
 │   ├── run_analysis.sh           regenera análises/figuras/tabelas do artigo
 │   └── make_scanners_config.sh   gera a config do Estágio III a partir do ranking
 └── analysis/
-    ├── scripts/                  scripts de análise do artigo (regenerate_all.py et al.)
+    ├── scripts/                  scripts de análise do artigo: ranker de exposure
+    │                             (compute_exposure_ranking.py), regeneração de
+    │                             figuras/tabelas (regenerate_all.py et al.),
+    │                             validação amostral de secrets (secret_sample.py,
+    │                             validate_secrets.py) e propagação por CVE
+    │                             (extract_cve_digests.py, propagation_compute.py)
     └── seed-inputs/              insumos não recomputados da base (caches, CDF de crawl)
 ```
 
