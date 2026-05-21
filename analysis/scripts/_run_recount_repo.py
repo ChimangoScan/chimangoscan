@@ -32,10 +32,10 @@ import sqlite3, json, sys, time, math, re, shutil, os, itertools
 from collections import Counter, defaultdict
 from datetime import datetime, timezone
 
-DB = "/mnt/win_ssd/ditector-good.db"
-OUT = "/mnt/win_ssd/chimangoscan-paper"
+DB = '/mnt/win_ssd/ditector-good.db'  # overridden by regenerate_all.py
+OUT = '/mnt/win_ssd/chimangoscan-paper'  # overridden by regenerate_all.py
 CACHE = os.path.join(OUT, "osv_severity_cache.json")
-TAGS = "/mnt/cache/tags_full.jsonl"
+TAGS = '/mnt/cache/tags_full.jsonl'  # overridden by regenerate_all.py
 NOW_TEMPORAL = datetime(2026, 5, 18, tzinfo=timezone.utc)
 UNKNOWN = {"unknown", "", "none", "null", "n/a", "na"}
 SEV_RANK = {"unknown": 0, "info": 1, "low": 2, "medium": 3, "high": 4, "critical": 5}

@@ -12,7 +12,7 @@ from matplotlib.ticker import FuncFormatter
 import numpy as np
 import figstyle
 
-OUT = "/mnt/win_ssd/chimangoscan-paper"
+OUT = '/mnt/win_ssd/chimangoscan-paper'  # overridden by regenerate_all.py
 PA = json.load(open(os.path.join(OUT, "paper_analysis.json")))
 figstyle.apply()
 
@@ -60,11 +60,9 @@ ax[1].bar([str(y) for y in anos], [cy[y] for y in anos], color="#3a6ea5",
 ax[1].set_ylabel("Distinct CVEs detected")
 ax[1].set_xlabel("CVE publication year")
 ax[1].set_title("(b)")
-_ticks = list(range(0, len(anos), 4))
-if len(anos) - 1 not in _ticks:        # always show the first and last year
-    _ticks.append(len(anos) - 1)
-ax[1].set_xticks(_ticks)
-ax[1].set_xticklabels([str(anos[i]) for i in _ticks], rotation=45, ha="right")
+ax[1].set_xticks(range(0, len(anos), 4))
+ax[1].set_xticklabels([str(anos[i]) for i in range(0, len(anos), 4)],
+                      rotation=45, ha="right")
 ax[1].yaxis.set_major_formatter(mfmt)
 
 # (c) vulnerabilidades x idade da imagem

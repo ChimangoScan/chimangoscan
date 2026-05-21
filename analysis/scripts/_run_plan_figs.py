@@ -23,7 +23,7 @@ from matplotlib.patches import Circle
 import numpy as np
 import figstyle
 
-OUT = "/mnt/win_ssd/chimangoscan-paper"
+OUT = '/mnt/win_ssd/chimangoscan-paper'  # overridden by regenerate_all.py
 figstyle.apply()
 PL = json.load(open(os.path.join(OUT, "plan_analysis.json")))
 

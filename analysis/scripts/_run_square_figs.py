@@ -12,7 +12,7 @@ Le analyze_db.stats.json, step3_recompute.json, fig_official_vs_community_stats.
 import json, os, math
 from collections import Counter
 
-OUT = "/mnt/win_ssd/chimangoscan-paper"
+OUT = '/mnt/win_ssd/chimangoscan-paper'  # overridden by regenerate_all.py
 SCANNERS = ["syft", "trivy", "grype", "osv", "dockle", "trufflehog"]
 SEVS = ["critical", "high", "medium", "low", "info", "unknown"]
 

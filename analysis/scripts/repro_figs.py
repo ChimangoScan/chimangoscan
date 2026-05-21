@@ -26,7 +26,7 @@ OUT = "/mnt/win_ssd/chimangoscan-paper"
 R = json.load(open(os.path.join(OUT, "repro_analysis.json")))
 figstyle.apply()
 
-fig, ax = plt.subplots(1, 2, figsize=(7.0, 2.55))
+fig, ax = plt.subplots(1, 2, figsize=(7.0, 2.4))
 
 # (a) Liu et al. 2020: high/critical prevalence, official vs community
 liu = R["liu"]
@@ -50,7 +50,11 @@ ax[0].set_ylabel("Images with high/critical vuln. (%)")
 ax[0].set_xlabel("Image type")
 ax[0].set_title("(a) Liu et al.\\ 2020")
 ax[0].set_ylim(0, 109)
-ax[0].legend(loc="upper left", fontsize=6.5)
+# horizontal legend strip above the panel title: the bars and their value
+# labels fill the plot area, so an in-axes legend would overlap them.
+ax[0].legend(loc="lower center", bbox_to_anchor=(0.5, 1.10), ncol=2,
+             fontsize=6.5, columnspacing=1.0, handlelength=1.1,
+             handletextpad=0.4)
 for bars in (b1, b2):
     for b in bars:
         v = b.get_height()

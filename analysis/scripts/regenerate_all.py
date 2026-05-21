@@ -211,8 +211,12 @@ def stage_figures(out):
     figdir = os.path.join(out, "figures")
     os.makedirs(figdir, exist_ok=True)
     # figstyle.py is imported by the figure scripts; make it importable.
-    shutil.copy2(os.path.join(PAPER_DIR, SUPPORT_MODULE),
-                 os.path.join(out, SUPPORT_MODULE))
+    # When out == PAPER_DIR the file is already in place (copying it onto
+    # itself raises SameFileError), so only copy when the paths differ.
+    _src = os.path.join(PAPER_DIR, SUPPORT_MODULE)
+    _dst = os.path.join(out, SUPPORT_MODULE)
+    if os.path.abspath(_src) != os.path.abspath(_dst):
+        shutil.copy2(_src, _dst)
     for fn in ["plan_crawl.json"]:  # figure-only input not made in stage 1
         dst = os.path.join(out, fn)
         if not os.path.exists(dst):
