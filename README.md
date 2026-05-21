@@ -1,266 +1,359 @@
-# ChimangoScan — Artefato de Reprodução
+# ChimangoScan — Reproduction Artifact
 
-*Medição de Segurança em Larga Escala do Ecossistema de Imagens Docker Hub*
+*Large-Scale Security Measurement of the Docker Hub Image Ecosystem*
 
-Este repositório é o **artefato de reprodução** do artigo submetido ao SBSeg.
-Ele orquestra, ponta a ponta, a pipeline de medição: descoberta e priorização
-de imagens do Docker Hub, varredura multi-scanner das imagens priorizadas, e a
-regeneração de todas as análises, figuras e tabelas do artigo.
+This repository is the **reproduction artifact** for the paper *"Vulnerabilities,
+Secrets and Misconfiguration in the Highest-Exposure Docker Hub Images."* It
+orchestrates the full measurement pipeline end to end: discovery and
+prioritization of Docker Hub images, multi-scanner scanning of the prioritized
+images, and regeneration of every data-driven analysis, figure, and table in the
+paper.
 
-A documentação segue o roteiro de submissão de artefatos da SBC / Simpósio
-Brasileiro de Cibersegurança (SBSeg).
+**Paper abstract (summary).** Docker Hub is the default distribution channel for
+containerized software, yet large-scale security measurements of its images are
+infrequent and run on a single scanner. We present a pipeline that enumerates the
+Docker Hub namespace and ranks images by a layer-graph *exposure* score — an
+image's own pull count plus those of every image that inherits its layers. From a
+crawl of **12.7 million** repositories we scanned the **52,895** highest-exposure
+ones (**84.7%** of all 663.8 billion recorded pulls) with **six** independent
+open-source scanners, collecting **170.4 million** findings. The measured posture
+is strongly tool-dependent: of the distinct vulnerabilities the three
+vulnerability scanners find, only 2.7% are reported by all three and 66.8% by a
+single one; TruffleHog flags secrets in 76.9% of images, but hand-labeling shows
+99.7% are non-credentials. We release the pipeline and the full 146 GB dataset.
 
----
-
-## Resumo
-
-A pipeline ChimangoScan mede a postura de segurança do ecossistema Docker Hub em
-três estágios encadeados:
-
-1. **Descoberta** — varredura distribuída do Docker Hub para coletar
-   repositórios e seus *pull counts* (Estágio I, crawler em Go).
-2. **Priorização** — construção do grafo IDEA de herança entre camadas de
-   imagem e cálculo de uma métrica de *exposure* de cadeia de suprimentos
-   (Estágio II + *ranker* de exposure).
-3. **Varredura** — execução de seis *scanners* de segurança de container sobre
-   as imagens priorizadas, consolidando os *findings* em um esquema único
-   (Estágio III).
-
-A descoberta e a priorização vivem no submódulo [`DITector`](stages/DITector); a
-varredura, no submódulo [`scanners`](stages/scanners). O artefato que cruza a
-fronteira entre os dois é o arquivo `exposure_ranked.jsonl`. Este repositório
-fornece os *scripts de orquestração* que executam os estágios em sequência e os
-*scripts de análise* que regeneram os números, figuras e tabelas do artigo.
-
-### Selos pretendidos
-
-| Selo | Sigla | Justificativa |
-|------|-------|---------------|
-| Artefatos Disponíveis | **SeloD** | Código publicamente versionado no GitHub (este repositório e os submódulos). |
-| Artefatos Funcionais | **SeloF** | Os estágios podem ser executados; o teste mínimo (Seção *Teste mínimo*) valida o funcionamento ponta a ponta. |
-| Experimentos Reprodutíveis | **SeloR** | `orchestration/run_analysis.sh` regenera, a partir da base de dados de varredura, todas as análises, figuras e tabelas do artigo. |
+The documentation follows the artifact-submission guidelines of the SBC Brazilian
+Symposium on Cybersecurity (SBSeg) Artifact Evaluation Committee (CTA).
 
 ---
 
-## Estrutura do artefato
+# README structure
+
+This README is organized exactly as the CTA minimum-README requires:
+
+- **Seals considered** — the four seals requested for evaluation.
+- **Basic information** — execution environment, hardware/software requirements.
+- **Dependencies** — languages, tools, versions, and third-party access.
+- **Security concerns** — risks to reviewers and how to contain them.
+- **Installation** — clone, bring up the databases, resolve dependencies.
+- **Minimal test** — a single command that exercises the whole pipeline in
+  miniature (~20–45 min, one machine).
+- **Experiments** — the paper's claims, each in its own subsection with the exact
+  commands, flags, expected time, expected resources, and expected result.
+- **License**.
+
+The repository itself is laid out as follows:
 
 ```
 chimangoscan/
-├── README.md                     este arquivo (roteiro do artefato)
-├── DATASET.md                    schema e acesso ao dataset (reports, crawl, layer graph)
+├── README.md                     this file (artifact roadmap)
+├── DATASET.md                    dataset schema and access (reports, crawl, graph)
 ├── LICENSE                       MIT
 ├── stages/
-│   ├── DITector/                 submódulo — Estágios I+II + ranker de exposure
-│   └── scanners/                 submódulo — Estágio III (varredura multi-scanner)
+│   ├── DITector/                 submodule — Stages I+II + exposure ranker (Go + Python)
+│   └── scanners/                 submodule — Stage III, multi-scanner scan (Python)
 ├── orchestration/
-│   ├── run_pipeline.sh           executa a pipeline completa ponta a ponta
-│   ├── minimal_test.sh           teste mínimo — claim de reprodutibilidade
-│   ├── run_analysis.sh           regenera análises/figuras/tabelas do artigo
-│   └── make_scanners_config.sh   gera a config do Estágio III a partir do ranking
+│   ├── run_pipeline.sh           runs the full pipeline end to end
+│   ├── minimal_test.sh           minimal test — the reproducibility claim
+│   ├── run_analysis.sh           regenerates the paper's analyses/figures/tables
+│   └── make_scanners_config.sh   builds the Stage III config from the ranking
 └── analysis/
-    ├── scripts/                  scripts de análise do artigo: ranker de exposure
-    │                             (compute_exposure_ranking.py), regeneração de
-    │                             figuras/tabelas (regenerate_all.py et al.),
-    │                             validação amostral de secrets (secret_sample.py,
-    │                             validate_secrets.py) e propagação por CVE
-    │                             (extract_cve_digests.py, propagation_compute.py)
-    └── seed-inputs/              insumos não recomputados da base (caches, CDF de crawl)
+    └── scripts/                  paper analysis scripts: exposure ranker
+                                  (compute_exposure_ranking.py), table/figure
+                                  regeneration (regenerate_all.py, recount_repo.py,
+                                  apply_repo_numbers.py), secret-sampling validation
+                                  (secret_sample.py, validate_secrets.py), and
+                                  per-CVE propagation (extract_cve_digests.py,
+                                  propagation_compute.py)
 ```
 
-> **Não incluído neste repositório:** o `main.tex` e o PDF do artigo. O texto
-> do artigo é mantido em um repositório privado separado. Este artefato contém
-> apenas o código e os dados que produzem os resultados do artigo.
+> **Not included here:** the paper `main.tex` and PDF, kept in a separate private
+> repository. This artifact contains only the code and data that produce the
+> paper's results.
 
 ---
 
-## Informações básicas
+# Seals considered
 
-A pipeline tem dois perfis de execução com requisitos distintos.
+The seals requested for evaluation are: **Available (SeloD), Functional (SeloF),
+Sustainable (SeloS), and Reproducible (SeloR)**.
 
-**Teste mínimo** — valida o funcionamento ponta a ponta; roda em uma única
-máquina em algumas dezenas de minutos.
-
-| Recurso | Requisito mínimo |
-|---------|------------------|
-| CPU | 4 núcleos |
-| Memória | 8 GB |
-| Disco | 20 GB livres (imagens Docker + bancos) |
-| Rede | acesso à internet (Docker Hub) |
-| Tempo | ~20–45 min |
-
-**Execução completa** — reproduz a medição em escala do artigo; concebida para
-operação distribuída em múltiplas máquinas ao longo de dias.
-
-| Recurso | Recomendado |
-|---------|-------------|
-| CPU | 16+ núcleos por nó |
-| Memória | 32+ GB por nó (heap do Neo4j configurável) |
-| Disco | centenas de GB (datasets MongoDB/Neo4j + artefatos de varredura) |
-| Tempo | dias (crawl + build + varredura) |
+| Seal | Code | Justification |
+|------|------|---------------|
+| Available    | **SeloD** | Code is publicly versioned on GitHub (this repository and its two submodules); the dataset is published on Zenodo with a DOI. |
+| Functional   | **SeloF** | The pipeline runs; the *Minimal test* below validates end-to-end operation on a single machine. |
+| Sustainable  | **SeloS** | The code is modular and documented: Stages I/II are a distributed Go service, Stage III is a Python scan system with one adapter per scanner and a single `Finding` schema, and every analysis script carries a module docstring. The "Experiments" section maps each paper claim to the exact file and command that produces it. |
+| Reproducible | **SeloR** | `orchestration/run_analysis.sh` regenerates *every* number, figure, and table of the paper from the released scan database in one read-only pass. |
 
 ---
 
-## Dependências
+# Basic information
 
-| Componente | Versão | Usado por |
-|------------|--------|-----------|
-| Go | ≥ 1.21 | Estágios I e II (`stages/DITector`) |
-| Python | ≥ 3.10 | ranker de exposure, Estágio III, scripts de análise |
-| [uv](https://docs.astral.sh/uv/) | recente | gerenciador de dependências do `stages/scanners` |
-| Docker + Docker Compose | recente | MongoDB, Neo4j, *scanners* containerizados |
-| MongoDB | 6+ | repositórios e tags (Estágio I/II) |
-| Neo4j | 5+ | grafo IDEA de camadas (Estágio II) |
-| matplotlib, numpy | recentes | scripts de figuras (`analysis/`) |
+The pipeline has two execution profiles with distinct requirements.
 
-Sistema operacional de referência: **Linux x86-64**. Os *scanners* do Estágio III
-são imagens Docker fixadas por digest — não há instalação de ferramentas no
-sistema hospedeiro.
+**Minimal test** — validates end-to-end operation; runs on a single machine in
+tens of minutes.
 
-Bibliotecas Python para a etapa de análise:
+| Resource | Minimum |
+|----------|---------|
+| CPU | 4 cores |
+| Memory | 8 GB |
+| Disk | 20 GB free (Docker images + databases) |
+| Network | Internet access (Docker Hub) |
+| Time | ~20–45 min |
+
+**Analysis regeneration** — reproduces the paper's tables and figures from the
+released scan database. This is the primary **SeloR** path and does *not* require
+re-crawling or re-scanning.
+
+| Resource | Recommended |
+|----------|-------------|
+| CPU | 4+ cores |
+| Memory | 8+ GB |
+| Disk | ~180 GB for the released `ditector-good.db` (or use `--sample` for a quick partial run) |
+| Time | ~45–50 min full pass; minutes with `--sample` |
+
+**Full measurement** — reproduces the paper's at-scale crawl and scan. Designed
+for distributed operation over days; documented for completeness but **not**
+required for any seal.
+
+| Resource | Recommended |
+|----------|-------------|
+| CPU | 16+ cores per node |
+| Memory | 32+ GB per node (Neo4j heap configurable) |
+| Disk | hundreds of GB (MongoDB/Neo4j datasets + scan artifacts) |
+| Time | days (crawl + build + scan) |
+
+Reference operating system: **Linux x86-64**. All images were scanned for the
+`linux/amd64` architecture.
+
+---
+
+# Dependencies
+
+**The host needs only Docker and Docker Compose.** Every pipeline stage — the Go
+crawler/builder, the Python exposure ranker, the Stage III scanner orchestration,
+and the analysis — runs inside containers, so no language toolchain or library is
+installed on the host.
+
+**Host requirements:**
+
+| Component | Version | Notes |
+|-----------|---------|-------|
+| Docker | recent (tested with 29.x) | the only hard requirement |
+| Docker Compose | v2 (recent) | brings up the MongoDB and Neo4j containers |
+
+**Everything else is containerized — nothing to install:**
+
+| Provided as a container | Image | Role |
+|-------------------------|-------|------|
+| MongoDB | `mongo:latest` (compose) | repositories and tags (Stage I/II) |
+| Neo4j | `neo4j:latest` (compose) | IDEA layer graph (Stage II) |
+| **Runner** | built from `docker/Dockerfile.runner` — Go 1.22, Python 3, uv, matplotlib, numpy, Docker CLI | runs Stages I/II (Go), the exposure ranker, Stage III orchestration, and the analysis |
+| Six scanners | Syft, Trivy, Grype, OSV-Scanner, Dockle, TruffleHog — official images **pinned by digest** | Stage III scanning, launched by the runner through the host Docker socket |
+
+The runner image is built **automatically on first use** by any
+`orchestration/*.sh` script (via `orchestration/_runner.sh`; a few minutes, one
+time). Stages run inside it with the repository bind-mounted at the same absolute
+path and the host Docker socket mounted, so the scanner containers it starts are
+siblings on the host daemon. No Go, Python, uv, or plotting library is ever
+installed on the host.
+
+Third-party access:
+
+- **Docker Hub accounts** (free accounts suffice) are required by the Stage I
+  crawler, supplied in `stages/DITector/accounts.json` (never committed; covered
+  by `.gitignore`).
+- **The released dataset** (146 GB of per-image reports, the 12.7-million-repo
+  crawl metadata, and the layer graph) is published on Zenodo; see `DATASET.md`
+  for the DOI and schema. The analysis experiments below need only the scan
+  database, `ditector-good.db`.
+
+---
+
+# Security concerns
+
+- The Stage I crawler requires Docker Hub accounts in
+  `stages/DITector/accounts.json`. **This file must never be committed** — it is
+  already covered by `.gitignore`.
+- Stage III **downloads and runs third-party container images**. The static
+  scanners analyze the image artifact only; the (disabled-by-default) dynamic
+  scanners would start the target container. Run the scan on an
+  isolated/disposable machine, never on a production host.
+- Stage III runs the scanner orchestrator inside the runner container with the
+  host Docker socket (`/var/run/docker.sock`) bind-mounted, so it can start the
+  scanner containers as siblings on the host daemon. Mounting the Docker socket
+  confers control of the host Docker daemon — another reason to run the pipeline
+  on a disposable machine.
+- No step requires root or privileges beyond access to the Docker daemon.
+
+---
+
+# Installation
 
 ```bash
-python3 -m pip install matplotlib numpy
-```
-
----
-
-## Preocupações com segurança
-
-- O crawler do Estágio I exige contas do Docker Hub (gratuitas bastam),
-  fornecidas em `stages/DITector/accounts.json`. **Esse arquivo nunca deve ser
-  versionado** — já está coberto pelo `.gitignore`.
-- O Estágio III **baixa e executa imagens de container de terceiros**. Os
-  *scanners* dinâmicos sobem o container alvo. Recomenda-se executar a varredura
-  em uma máquina isolada/descartável, nunca em um host de produção.
-- Nenhum dos passos exige privilégios além do acesso ao *daemon* Docker.
-
----
-
-## Instalação
-
-```bash
-# 1. Clonar o repositório com os submódulos (DITector e scanners)
+# 1. Clone the repository with its submodules (DITector and scanners)
 git clone --recurse-submodules https://github.com/ChimangoScan/chimangoscan.git
 cd chimangoscan
 
-# Se já tiver clonado sem --recurse-submodules:
+# If you already cloned without --recurse-submodules:
 git submodule update --init --recursive
 
-# 2. Subir a infraestrutura de bancos (MongoDB + Neo4j)
+# 2. Bring up the database infrastructure (MongoDB + Neo4j)
 cd stages/DITector
 docker compose up -d mongodb neo4j
-cp config_template.yaml config.yaml          # ajuste se necessário
+cp config_template.yaml config.yaml          # adjust if needed
 
-# 3. Fornecer as contas do Docker Hub para o crawler
+# 3. Provide Docker Hub accounts for the crawler
 cat > accounts.json <<'EOF'
-[{"username": "SEU_USUARIO", "password": "SUA_SENHA"}]
+[{"username": "YOUR_USER", "password": "YOUR_PASSWORD"}]
 EOF
 cd ../..
-
-# 4. Resolver as dependências Python do Estágio III
-cd stages/scanners && uv sync && cd ../..
 ```
+
+That's the whole host-side setup — **no Go, Python, uv, or pip install**. The
+runner image (Go + Python + uv + matplotlib/numpy + Docker CLI) is built
+automatically the first time you run any `orchestration/*.sh` script, and every
+stage executes inside it. For the analysis experiments, download
+`ditector-good.db` from the Zenodo record (see `DATASET.md`); no other setup is
+required.
 
 ---
 
-## Teste mínimo
+# Minimal test
 
-O teste mínimo é a **reivindicação (claim)** de reprodutibilidade deste
-artefato:
+The minimal test is the artifact's reproducibility **claim**:
 
-> *A pipeline ChimangoScan executa de ponta a ponta — descoberta no Docker Hub,
-> priorização e varredura multi-scanner — produzindo um relatório consolidado.*
+> *The ChimangoScan pipeline runs end to end — Docker Hub discovery,
+> prioritization, and multi-scanner scanning — producing a consolidated report.*
 
-O script `orchestration/minimal_test.sh` valida essa claim **sem** varrer todo o
-Docker Hub. Ele:
+`orchestration/minimal_test.sh` validates this claim **without** scanning all of
+Docker Hub. It:
 
-1. **rastreia** o Docker Hub por um tempo curto, restrito a alguns prefixos de
-   *namespace* (padrão: `a,b,c`) — Estágio I, em miniatura;
-2. **constrói** o grafo IDEA de camadas para os repositórios descobertos —
-   Estágio II;
-3. roda o **ranker**, que ordena todos os repositórios encontrados por *pull
-   count* e por *exposure* de cadeia de suprimentos;
-4. seleciona o **top 10** repositórios mais expostos e executa os seis
-   *scanners* padrão sobre eles — Estágio III;
-5. **verifica** que o relatório consolidado do corpus (`report.html`,
-   `summary.json`, `analysis.md`) foi produzido.
+1. **crawls** Docker Hub briefly, restricted to a few namespace prefixes
+   (default `a,b,c`) — Stage I, in miniature;
+2. **builds** the IDEA layer graph for the discovered repositories — Stage II;
+3. runs the **ranker**, ordering all discovered repositories by pull count and
+   supply-chain exposure;
+4. selects the **top 10** most-exposed repositories and runs the six default
+   scanners on them — Stage III;
+5. **verifies** that the consolidated corpus report (`report.html`,
+   `summary.json`, `analysis.md`) was produced.
 
 ```bash
 orchestration/minimal_test.sh
-# opções: --prefixes a,b,c   --crawl-duration 5m   --top 10
+# options: --prefixes a,b,c   --crawl-duration 5m   --top 10
 ```
 
-Ao final, em caso de sucesso, o script imprime `MINIMAL TEST PASSED` e o caminho
-dos artefatos gerados em `artifacts/`. Tempo esperado: ~20–45 min, dominado pelo
-*pull* e pela varredura das 10 imagens.
+- **Expected time:** ~20–45 min, dominated by pulling and scanning the 10 images.
+- **Expected resources:** 4 cores, 8 GB RAM, ~20 GB disk.
+- **Expected result:** the script prints `MINIMAL TEST PASSED` and the path to the
+  generated artifacts under `artifacts/`.
 
 ---
 
-## Experimentos
+# Experiments
 
-### Pipeline completa (medição em escala)
+Every table value and every data-driven figure in the paper derives from the
+released SQLite scan database `ditector-good.db`. Re-running the full at-scale
+crawl and scan is **not** feasible in a review window (days, 13 machines), so —
+as the CTA allows — the experiments below reproduce the paper's **main claims**
+from the released artifacts. The only artifact crossing the boundary between the
+discovery/prioritization stages and the scan stage is `exposure_ranked.jsonl` —
+the pipeline's *contract*.
 
-Reproduz a medição do artigo. Em produção, o crawl e a varredura são executados
-de forma distribuída ao longo de dias; o script abaixo executa a sequência em
-uma máquina:
+## Claim 1 — The pipeline runs end to end (SeloF)
 
-```bash
-orchestration/run_pipeline.sh \
-  --seed a \
-  --crawl-duration 24h \
-  --threshold 1000 \
-  --workers 20
-```
+*The three stages run in sequence and produce a consolidated multi-scanner
+report.* This is the Minimal test above.
 
-Estágios executados, em ordem:
+- **Command:** `orchestration/minimal_test.sh --prefixes a,b,c --crawl-duration 5m --top 10`
+- **Config:** Docker Hub accounts in `stages/DITector/accounts.json`; databases up
+  (`docker compose up -d mongodb neo4j`).
+- **Expected time / resources:** ~20–45 min; 4 cores, 8 GB RAM, 20 GB disk.
+- **Expected result:** `MINIMAL TEST PASSED`; `artifacts/report.html`,
+  `summary.json`, and `analysis.md` exist; `summary.json` reports 10 scanned
+  images, each with findings from the six scanners.
 
-1. **Estágio I** — `go run main.go crawl` descobre repositórios no Docker Hub.
-2. **Estágio II** — `go run main.go build` constrói o grafo IDEA no Neo4j.
-3. **Ranker** — `compute_exposure_ranking.py` gera
-   `artifacts/exposure_ranked.jsonl` (uma linha JSON por repositório, ordenada
-   por *exposure* decrescente).
-4. **Estágio III** — `scanners seed` + `scanners run` varrem as imagens
-   priorizadas com os seis *scanners*; `scanners report`/`analyze` consolidam o
-   corpus.
+## Claim 2 — The exposure score prioritizes the scan queue (paper contribution C1)
 
-O único artefato que cruza a fronteira entre os Estágios I/II e o Estágio III é
-`exposure_ranked.jsonl` — o *contrato* da pipeline.
+*The ranker folds an image's own pull count and the pull counts of its entire
+downstream layer subtree into a single scalar `E(I)`, attributing each downstream
+pull to a single owner (the most-pulled base in its lineage), and orders the scan
+queue by it.* At full scale the metric places `alpine:latest` first, with
+`E ≈ 8.3 × 10^10`.
 
-### Regeneração das análises, figuras e tabelas do artigo
+- **File:** `analysis/scripts/compute_exposure_ranking.py` (implements Eq. (1) of
+  the paper: single-owner downstream attribution over the `IS_BASE_OF` forest).
+- **Command (on the released layer graph):**
+  ```bash
+  NEO4J_URI=bolt://127.0.0.1:7687 \
+  MONGO_URI=mongodb://127.0.0.1:27017 \
+  python3 analysis/scripts/compute_exposure_ranking.py
+  ```
+  On the mini-graph produced by the Minimal test, the same script runs in seconds
+  and orders that small corpus.
+- **Flags / env:** `NEO4J_URI`, `MONGO_URI`, `OUT_PATH`, `RANKER_SHARDS`
+  (parallel Neo4j streaming shards).
+- **Expected time / resources:** seconds on the minimal-test graph; tens of
+  minutes on the full released graph (Neo4j loaded, several GB RAM).
+- **Expected result:** `exposure_ranked.jsonl`, one JSON object per repository
+  (`repository_namespace`, `repository_name`, `tag_name`, `pull_count`,
+  `dependency_weight`, `downstream_pull_sum`, `exposure`), sorted by `exposure`
+  descending. On the full graph the head of the file is the general-purpose base
+  images (`alpine`, `ubuntu`, `debian`), whose exposure is dominated by downstream
+  reuse.
 
-Todo número de tabela e toda figura orientada a dados do artigo derivam da base
-SQLite de resultados de varredura. Para regenerá-los:
+## Claim 3 — The headline measurement reproduces from the released database (C2/C3, main SeloR claim)
 
-```bash
-orchestration/run_analysis.sh --db /caminho/para/ditector-good.db
-# stages individuais: --stage analysis | figures | tables
-# validação amostral: --sample 100000
-```
+*From the released scan database, every data-driven table and figure of the paper
+is regenerated in one read-only pass:* 96.3% of images carry a known
+vulnerability; the three vulnerability scanners agree on only 2.7% of distinct
+findings while 66.8% are single-scanner (a 1.55× volume spread); and 99.7% of a
+hand-labeled secret sample are non-credentials.
 
-Isso executa `analysis/scripts/regenerate_all.py`, que em uma passagem
-*read-only* sobre a base recomputa todas as JSONs de análise, regenera as
-figuras (`artifacts/analysis/figures/*.pdf`) e emite `table_values.json` com
-todos os valores das tabelas do artigo. A base é aberta em modo somente-leitura;
-o passo é idempotente e nunca edita o texto do artigo.
+- **File:** `orchestration/run_analysis.sh` → `analysis/scripts/regenerate_all.py`
+  (drives `recount_repo.py` for the analysis JSONs, the figure scripts, and
+  `apply_repo_numbers.py` for `table_values.json`).
+- **Command (full):**
+  ```bash
+  orchestration/run_analysis.sh --db /path/to/ditector-good.db
+  # individual stages: --stage analysis | figures | tables
+  ```
+- **Command (quick sampled validation):**
+  ```bash
+  orchestration/run_analysis.sh --db /path/to/ditector-good.db --sample 100000
+  ```
+- **Flags:** `--db` (database path), `--stage` (run one of analysis/figures/tables/all),
+  `--sample N` (cap the scan to N report rows — sampled validation only, not for
+  production numbers).
+- **Expected time / resources:** ~45–50 min full pass over the 64,595-report
+  database; minutes with `--sample`. Needs the ~180 GB `ditector-good.db` on disk
+  and several GB RAM. The database is opened **read-only**; the step is idempotent
+  and never edits the paper.
+- **Expected result:** the analysis JSONs (e.g., `dedup_analysis.json` reporting
+  **52,895** distinct images, **51,751** distinct content digests, 96.3%
+  vulnerability prevalence), the regenerated `figures/*.pdf`, and
+  `table_values.json` holding every table value — matching the numbers reported in
+  the paper.
+
+> **Full at-scale measurement (optional, not required for any seal).** To
+> reproduce the crawl and scan themselves:
+> ```bash
+> orchestration/run_pipeline.sh --seed a --crawl-duration 24h --threshold 1000 --workers 20
+> ```
+> This runs Stage I (`go run main.go crawl`), Stage II (`go run main.go build`),
+> the ranker (`exposure_ranked.jsonl`), and Stage III (`scanners seed`/`run`/
+> `report`). In production this runs distributed over days.
 
 ---
 
-## Ambiente de avaliação
+# License
 
-O artefato foi desenvolvido e exercitado em workstations Linux x86-64 com Docker.
-O teste mínimo é autocontido e não exige infraestrutura distribuída. A pipeline
-completa foi operada em um conjunto de máquinas Linux coordenadas via os
-mecanismos de *claim* atômico do MongoDB (Estágios I/II) e a fila de trabalho do
-Estágio III.
-
----
-
-## Licença
-
-Distribuído sob a licença MIT — ver [`LICENSE`](LICENSE). Os submódulos
-[`DITector`](https://github.com/ChimangoScan/DITector) e
-[`scanners`](https://github.com/ChimangoScan/scanners) carregam suas próprias
-licenças. O `DITector` é um *fork* de
-[NSSL-SJTU/DITector](https://github.com/NSSL-SJTU/DITector); o método de
-descoberta e do grafo IDEA é inspirado no artigo *Dr. Docker* (WWW '25), com
-implementação original dos autores deste trabalho.
+Distributed under the MIT License — see [`LICENSE`](LICENSE). The submodules
+[`DITector`](https://github.com/ChimangoScan/DITector) and
+[`scanners`](https://github.com/ChimangoScan/scanners) carry their own licenses;
+the released dataset is licensed CC BY 4.0 (see `DATASET.md`). `DITector` is a
+fork of [NSSL-SJTU/DITector](https://github.com/NSSL-SJTU/DITector); the discovery
+and IDEA-graph method is inspired by *Dr. Docker* (WWW '25), with an original
+implementation by the authors of this work.
