@@ -393,6 +393,7 @@ def main():
         n_components = 0
         n_secret = 0
         n_misconfig = 0
+        img_misconfig_codes = set()
         img_sev = set()
         img_pkgs = set()
         img_pkgcrit = set()
@@ -485,7 +486,9 @@ def main():
                     has_pk = True
             elif cat == "image-config":
                 n_misconfig += 1
-                misconfig_title[f.get("title") or "unknown"] += 1
+                # key by Dockle check id (e.g. CIS-DI-0005); counted once per
+                # image in the rollup so misconfig_title is images-per-check
+                img_misconfig_codes.add(f.get("id") or f.get("title") or "unknown")
 
         # ---- per-image rollups ----
         if worst < 0:
@@ -514,6 +517,8 @@ def main():
         if n_misconfig > 0:
             img_with_misconfig += 1
         n_misconfig_total += n_misconfig
+        for _code in img_misconfig_codes:
+            misconfig_title[_code] += 1
 
         # ---- temporal: image age vs n_pkgvuln (deduplicated) ----
         if tagmap:

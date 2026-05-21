@@ -381,10 +381,14 @@ R["SCOFFMAX"] = gp(sec_off[-1] if sec_off else 0)
 R["SCCREDN"] = gp(misc_count("CIS-DI-0010"))
 
 # --- misconfig table ---
+# Dockle check ids as they actually appear in the findings (id field). The
+# misconfig table reports distinct images per check; CIS-DI-0004 does not exist
+# (running as root is CIS-DI-0001), and empty-password is DKL-LI-0001 (CIS-DI-0009
+# is COPY-vs-ADD), so those rows were corrected.
 mc_checks = [("MC0005", "CIS-DI-0005"), ("MC0006", "CIS-DI-0006"),
              ("MC0001", "CIS-DI-0001"), ("MC0008", "CIS-DI-0008"),
-             ("MC0004", "CIS-DI-0004"), ("MC0010", "CIS-DI-0010"),
-             ("MC0009", "CIS-DI-0009")]
+             ("MC0010", "CIS-DI-0010"), ("MCEMPTYPW", "DKL-LI-0001"),
+             ("MCSUDO", "DKL-DI-0001")]
 for pre, code in mc_checks:
     n = misc_count(code)
     R[pre + "N"] = gp(n)
