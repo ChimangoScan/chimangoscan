@@ -1,0 +1,378 @@
+{
+ "n_reports": 52895,
+ "n_with_vuln": 50957,
+ "n_with_critical": 49392,
+ "n_with_high": 50534,
+ "most_severe": {
+  "medium": 332,
+  "critical": 49392,
+  "high": 1184,
+  "none": 1938,
+  "unknown": 47,
+  "low": 2
+ },
+ "sev_global_pkgvuln": {
+  "critical": 7377355,
+  "high": 35740343,
+  "medium": 65727713,
+  "low": 19418002,
+  "info": 9927589,
+  "unknown": 3492958
+ },
+ "cve_distinct_by_year": {
+  "1999": 4,
+  "2000": 1,
+  "2001": 4,
+  "2002": 15,
+  "2003": 15,
+  "2004": 20,
+  "2005": 39,
+  "2006": 41,
+  "2007": 79,
+  "2008": 110,
+  "2009": 196,
+  "2010": 346,
+  "2011": 546,
+  "2012": 561,
+  "2013": 861,
+  "2014": 1120,
+  "2015": 1477,
+  "2016": 2245,
+  "2017": 3162,
+  "2018": 2922,
+  "2019": 2875,
+  "2020": 3207,
+  "2021": 4318,
+  "2022": 6010,
+  "2023": 5055,
+  "2024": 6275,
+  "2025": 5958,
+  "2026": 5162
+ },
+ "n_distinct_cves": 52624,
+ "pkg_top_by_images": [
+  [
+   "zlib",
+   44574
+  ],
+  [
+   "openssl",
+   39209
+  ],
+  [
+   "tar",
+   32031
+  ],
+  [
+   "util-linux",
+   28555
+  ],
+  [
+   "curl",
+   28516
+  ],
+  [
+   "coreutils",
+   27896
+  ],
+  [
+   "ncurses-base",
+   27671
+  ],
+  [
+   "systemd",
+   27343
+  ],
+  [
+   "expat",
+   25886
+  ],
+  [
+   "bash",
+   25857
+  ],
+  [
+   "libc6",
+   25388
+  ],
+  [
+   "ncurses",
+   25149
+  ],
+  [
+   "libc-bin",
+   25058
+  ],
+  [
+   "passwd",
+   25041
+  ],
+  [
+   "login",
+   25022
+  ],
+  [
+   "libudev1",
+   24861
+  ],
+  [
+   "libuuid1",
+   24811
+  ],
+  [
+   "libblkid1",
+   24715
+  ],
+  [
+   "libmount1",
+   24707
+  ],
+  [
+   "bsdutils",
+   24629
+  ],
+  [
+   "mount",
+   24599
+  ],
+  [
+   "ncurses-bin",
+   24586
+  ],
+  [
+   "gpgv",
+   24370
+  ],
+  [
+   "libsystemd0",
+   24318
+  ],
+  [
+   "glibc",
+   24228
+  ],
+  [
+   "libsmartcols1",
+   24004
+  ],
+  [
+   "libgcrypt20",
+   23994
+  ],
+  [
+   "perl-base",
+   23953
+  ],
+  [
+   "zlib1g",
+   23794
+  ],
+  [
+   "dpkg",
+   23344
+  ],
+  [
+   "krb5",
+   22914
+  ],
+  [
+   "perl",
+   22706
+  ],
+  [
+   "libtasn1-6",
+   22603
+  ],
+  [
+   "gnutls28",
+   22549
+  ],
+  [
+   "xz-utils",
+   22381
+  ],
+  [
+   "libstdc++6",
+   22161
+  ],
+  [
+   "libssl1.1",
+   22046
+  ],
+  [
+   "liblzma5",
+   21136
+  ],
+  [
+   "libkrb5-3",
+   21079
+  ],
+  [
+   "libk5crypto3",
+   21079
+  ]
+ ],
+ "pkg_top_by_vulns": [
+  [
+   "linux-libc-dev",
+   13267531
+  ],
+  [
+   "stdlib",
+   9411922
+  ],
+  [
+   "binutils",
+   4589743
+  ],
+  [
+   "imagemagick",
+   3182964
+  ],
+  [
+   "curl",
+   2836304
+  ],
+  [
+   "openssl",
+   2597921
+  ],
+  [
+   "glibc",
+   1890310
+  ],
+  [
+   "kernel-headers",
+   1688591
+  ],
+  [
+   "vim",
+   1565025
+  ],
+  [
+   "python2.7",
+   1266060
+  ],
+  [
+   "systemd",
+   1121059
+  ],
+  [
+   "libc6",
+   1030711
+  ],
+  [
+   "libc-bin",
+   1021343
+  ],
+  [
+   "krb5",
+   1016598
+  ],
+  [
+   "libxml2",
+   972572
+  ],
+  [
+   "imagemagick-6.q16",
+   970287
+  ],
+  [
+   "libssl1.1",
+   949134
+  ],
+  [
+   "libmagickwand-dev",
+   905202
+  ],
+  [
+   "libmagickcore-6-arch-config",
+   892226
+  ],
+  [
+   "libmagickcore-6-headers",
+   892226
+  ],
+  [
+   "libmagickwand-6-headers",
+   892200
+  ],
+  [
+   "libmagickcore-dev",
+   879051
+  ],
+  [
+   "libmagickcore-6.q16-dev",
+   879024
+  ],
+  [
+   "libmagickwand-6.q16-dev",
+   878998
+  ],
+  [
+   "ncurses",
+   820982
+  ],
+  [
+   "util-linux",
+   785349
+  ],
+  [
+   "git",
+   732333
+  ],
+  [
+   "libtiff5",
+   722045
+  ],
+  [
+   "imagemagick-6-common",
+   670051
+  ],
+  [
+   "expat",
+   649552
+  ],
+  [
+   "binutils-common",
+   623533
+  ],
+  [
+   "libbinutils",
+   623533
+  ],
+  [
+   "python",
+   595440
+  ],
+  [
+   "binutils-x86-64-linux-gnu",
+   587020
+  ],
+  [
+   "perl",
+   576152
+  ],
+  [
+   "libcurl3-gnutls",
+   559817
+  ],
+  [
+   "tiff",
+   546238
+  ],
+  [
+   "heimdal",
+   543189
+  ],
+  [
+   "vim-common",
+   540101
+  ],
+  [
+   "libcurl4",
+   537601
+  ]
+ ],
+ "elapsed_s": 2800
+}

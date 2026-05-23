@@ -6,7 +6,7 @@ every TOKEN -> value. Idempotent only on a fresh main.tex with tokens present.
 """
 import json, os, re, sys
 
-OUT = "/mnt/win_ssd/chimangoscan-paper"
+OUT = "."
 TEX = os.path.join(OUT, "main.tex")
 
 

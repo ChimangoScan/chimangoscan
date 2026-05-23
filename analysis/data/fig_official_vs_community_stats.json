@@ -1,0 +1,20 @@
+{
+ "OFFICIAL": {
+  "n_images": 130,
+  "median": 455.0,
+  "mean": 1046.4769230769232,
+  "p90": 3134.500000000001,
+  "secret_frac": 0.8692307692307693,
+  "secret_with": 113,
+  "secret_total": 130
+ },
+ "COMMUNITY": {
+  "n_images": 52765,
+  "median": 886.0,
+  "mean": 2682.6100255851416,
+  "p90": 8319.199999999997,
+  "secret_frac": 0.7685776556429451,
+  "secret_with": 40554,
+  "secret_total": 52765
+ }
+}

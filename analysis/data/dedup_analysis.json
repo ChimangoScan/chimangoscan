@@ -1,0 +1,620 @@
+{
+ "n_table_rows": 64595,
+ "n_distinct_images": 52895,
+ "n_missing_digest": 0,
+ "n_duplicate_rows": 11700,
+ "elapsed_s": 2800,
+ "prevalence": {
+  "with_vuln_pct": 96.33613763115606,
+  "with_critical_pct": 93.37744588335381,
+  "with_high_pct": 95.53644011721335,
+  "with_secret_pct": 76.88250307212402,
+  "with_misconfig_pct": 98.03005955194253,
+  "n_with_vuln": 50957,
+  "n_with_critical": 49392,
+  "n_with_high": 50534,
+  "n_with_secret": 40667,
+  "n_with_misconfig": 51853
+ },
+ "vulns_per_image": {
+  "median": 885.0,
+  "mean": 2678.588902542773,
+  "p90": 8308.0,
+  "p99": 20109.359999999986,
+  "max": 113166
+ },
+ "components_per_image": {
+  "median": 205.0,
+  "mean": 437.6869080253332,
+  "max": 51021
+ },
+ "findings_total": {
+  "pkg_vuln": 141683960,
+  "sbom_component": 23151449,
+  "secret": 4955892,
+  "misconfig": 581743,
+  "all_merged": 170373044
+ },
+ "sev_global_pkgvuln": {
+  "critical": 7377355,
+  "high": 35740343,
+  "medium": 65727713,
+  "low": 19418002,
+  "info": 9927589,
+  "unknown": 3492958
+ },
+ "sev_images": {
+  "critical": 49392,
+  "high": 50534,
+  "medium": 50872,
+  "low": 49951,
+  "info": 33708,
+  "unknown": 37393
+ },
+ "per_scanner_findings": {
+  "syft": 23151449,
+  "trivy": 44957561,
+  "grype": 59061336,
+  "osv": 38046373,
+  "dockle": 235029,
+  "trufflehog": 4921296
+ },
+ "per_scanner_severity": {
+  "syft": {
+   "info": 23151449
+  },
+  "trivy": {
+   "medium": 25275077,
+   "low": 8069525,
+   "high": 9813224,
+   "unknown": 321056,
+   "critical": 1478679
+  },
+  "grype": {
+   "medium": 25802146,
+   "high": 11733733,
+   "low": 9354135,
+   "info": 9896402,
+   "critical": 2163552,
+   "unknown": 111368
+  },
+  "osv": {
+   "high": 14304383,
+   "medium": 14738700,
+   "low": 2169974,
+   "unknown": 3060534,
+   "critical": 3741595,
+   "info": 31187
+  },
+  "dockle": {
+   "medium": 42587,
+   "low": 147031,
+   "critical": 45411
+  },
+  "trufflehog": {
+   "medium": 4919087,
+   "critical": 2209
+  }
+ },
+ "status_by_scanner": {
+  "syft": {
+   "ok-cached": 290,
+   "ok": 51412,
+   "error": 1182,
+   "timeout": 11
+  },
+  "trivy": {
+   "ok-cached": 209,
+   "ok": 42055,
+   "error": 10614,
+   "nonzero-ok": 1,
+   "timeout": 16
+  },
+  "grype": {
+   "ok-cached": 287,
+   "ok": 50707,
+   "error": 1863,
+   "timeout": 37,
+   "nonzero-ok": 1
+  },
+  "osv": {
+   "ok-cached": 258,
+   "ok": 49798,
+   "error": 2789,
+   "timeout": 50
+  },
+  "clair": {
+   "error": 28
+  },
+  "dockle": {
+   "ok-cached": 261,
+   "ok": 51587,
+   "error": 1045,
+   "timeout": 2
+  },
+  "trufflehog": {
+   "ok": 52072,
+   "ok-cached": 181,
+   "error": 640,
+   "timeout": 2
+  }
+ },
+ "distinct_groups_total": 80691695,
+ "venn": {
+  "trivy_only": 16432781,
+  "grype_only": 28252735,
+  "osv_only": 9231371,
+  "trivy_grype": 22162257,
+  "trivy_osv": 1024391,
+  "grype_osv": 1430907,
+  "all3": 2157253
+ },
+ "marginal": {
+  "total_distinct_groups": 80691695,
+  "single_scanner_union": {
+   "trivy": 41776682,
+   "grype": 54003152,
+   "osv": 13843922
+  },
+  "unique_contribution": {
+   "trivy": 16432781,
+   "grype": 28252735,
+   "osv": 9231371
+  },
+  "pair_union": {
+   "trivy+grype": 71460324,
+   "trivy+osv": 52438960,
+   "grype+osv": 64258914
+  },
+  "best1": 54003152,
+  "best2": 71460324,
+  "all3": 80691695,
+  "best1_pct": 66.92529138221721,
+  "best2_pct": 88.5597012183224,
+  "all3_pct": 100.0,
+  "marginal_avg_over_orders": [
+   36541252.0,
+   26178147.333333332,
+   17972295.666666668
+  ],
+  "marginal_avg_pct": [
+   45.28502220705613,
+   32.44218296980046,
+   22.272794823143407
+  ],
+  "setcount_by_mask": {
+   "2": 28252735,
+   "1": 16432781,
+   "5": 1024391,
+   "7": 2157253,
+   "4": 9231371,
+   "3": 22162257,
+   "6": 1430907
+  }
+ },
+ "offcomm": {
+  "OFFICIAL": {
+   "n_images": 130,
+   "median": 455.0,
+   "mean": 1046.4769230769232,
+   "p90": 3134.500000000001,
+   "secret_frac": 0.8692307692307693,
+   "secret_with": 113,
+   "secret_total": 130
+  },
+  "COMMUNITY": {
+   "n_images": 52765,
+   "median": 886.0,
+   "mean": 2682.6100255851416,
+   "p90": 8319.199999999997,
+   "secret_frac": 0.7685776556429451,
+   "secret_with": 40554,
+   "secret_total": 52765
+  }
+ },
+ "rho_pull_vs_vuln": -0.007864939677236511,
+ "rho_exposure_vs_vuln": -0.01605194479323612,
+ "rho_exposure_vs_critical": -0.03598580995849041,
+ "n_distinct_cves": 52624,
+ "cve_year": {
+  "1999": 4,
+  "2000": 1,
+  "2001": 4,
+  "2002": 15,
+  "2003": 15,
+  "2004": 20,
+  "2005": 39,
+  "2006": 41,
+  "2007": 79,
+  "2008": 110,
+  "2009": 196,
+  "2010": 346,
+  "2011": 546,
+  "2012": 561,
+  "2013": 861,
+  "2014": 1120,
+  "2015": 1477,
+  "2016": 2245,
+  "2017": 3162,
+  "2018": 2922,
+  "2019": 2875,
+  "2020": 3207,
+  "2021": 4318,
+  "2022": 6010,
+  "2023": 5055,
+  "2024": 6275,
+  "2025": 5958,
+  "2026": 5162
+ },
+ "most_severe": {
+  "medium": 332,
+  "critical": 49392,
+  "high": 1184,
+  "none": 1938,
+  "unknown": 47,
+  "low": 2
+ },
+ "top_packages": [
+  {
+   "package": "zlib",
+   "images": 44574,
+   "findings": 177503,
+   "distinct_cves": 15,
+   "ecosystem": "apk",
+   "critical_images": 28695
+  },
+  {
+   "package": "openssl",
+   "images": 39209,
+   "findings": 2597921,
+   "distinct_cves": 290,
+   "ecosystem": "deb",
+   "critical_images": 27479
+  },
+  {
+   "package": "tar",
+   "images": 32031,
+   "findings": 499294,
+   "distinct_cves": 27,
+   "ecosystem": "npm",
+   "critical_images": 0
+  },
+  {
+   "package": "util-linux",
+   "images": 28555,
+   "findings": 785349,
+   "distinct_cves": 21,
+   "ecosystem": "ubuntu:20.04",
+   "critical_images": 14
+  },
+  {
+   "package": "curl",
+   "images": 28516,
+   "findings": 2836304,
+   "distinct_cves": 187,
+   "ecosystem": "deb",
+   "critical_images": 18309
+  },
+  {
+   "package": "coreutils",
+   "images": 27896,
+   "findings": 142134,
+   "distinct_cves": 33,
+   "ecosystem": "deb",
+   "critical_images": 0
+  },
+  {
+   "package": "ncurses-base",
+   "images": 27671,
+   "findings": 372917,
+   "distinct_cves": 30,
+   "ecosystem": "deb",
+   "critical_images": 1440
+  },
+  {
+   "package": "systemd",
+   "images": 27343,
+   "findings": 1121059,
+   "distinct_cves": 57,
+   "ecosystem": "ubuntu:16.04",
+   "critical_images": 3476
+  },
+  {
+   "package": "expat",
+   "images": 25886,
+   "findings": 649552,
+   "distinct_cves": 47,
+   "ecosystem": "ubuntu:18.04",
+   "critical_images": 16282
+  },
+  {
+   "package": "bash",
+   "images": 25857,
+   "findings": 85097,
+   "distinct_cves": 15,
+   "ecosystem": "deb",
+   "critical_images": 19
+  },
+  {
+   "package": "libc6",
+   "images": 25388,
+   "findings": 1030711,
+   "distinct_cves": 128,
+   "ecosystem": "deb",
+   "critical_images": 13655
+  },
+  {
+   "package": "ncurses",
+   "images": 25149,
+   "findings": 820982,
+   "distinct_cves": 31,
+   "ecosystem": "ubuntu:16.04",
+   "critical_images": 9592
+  }
+ ],
+ "top_cve_exposure": [
+  {
+   "cve": "CVE-2026-27171",
+   "severity": "high",
+   "package": "zlib",
+   "affected_images": 23726,
+   "pct_corpus": 44.85490121939692,
+   "summed_exposure": 317949220546,
+   "pct_total_exposure": 47.31355562926238
+  },
+  {
+   "cve": "CVE-2026-4046",
+   "severity": "high",
+   "package": "glibc",
+   "affected_images": 18774,
+   "pct_corpus": 35.49295774647887,
+   "summed_exposure": 312699130486,
+   "pct_total_exposure": 46.532297453237035
+  },
+  {
+   "cve": "CVE-2026-5928",
+   "severity": "high",
+   "package": "glibc",
+   "affected_images": 18599,
+   "pct_corpus": 35.16211362132527,
+   "summed_exposure": 310464096899,
+   "pct_total_exposure": 46.19970539413339
+  },
+  {
+   "cve": "CVE-2026-5435",
+   "severity": "critical",
+   "package": "glibc",
+   "affected_images": 18549,
+   "pct_corpus": 35.06758672842424,
+   "summed_exposure": 309812261036,
+   "pct_total_exposure": 46.102706658573545
+  },
+  {
+   "cve": "CVE-2026-5450",
+   "severity": "critical",
+   "package": "glibc",
+   "affected_images": 18086,
+   "pct_corpus": 34.1922677001607,
+   "summed_exposure": 306234478234,
+   "pct_total_exposure": 45.570302064716856
+  },
+  {
+   "cve": "CVE-2026-33814",
+   "severity": "high",
+   "package": "stdlib",
+   "affected_images": 12873,
+   "pct_corpus": 24.336893846299272,
+   "summed_exposure": 299624062074,
+   "pct_total_exposure": 44.586615763546995
+  },
+  {
+   "cve": "CVE-2026-39825",
+   "severity": "medium",
+   "package": "stdlib",
+   "affected_images": 12778,
+   "pct_corpus": 24.157292749787313,
+   "summed_exposure": 290042904303,
+   "pct_total_exposure": 43.160857774857845
+  },
+  {
+   "cve": "CVE-2026-33811",
+   "severity": "high",
+   "package": "stdlib",
+   "affected_images": 12778,
+   "pct_corpus": 24.157292749787313,
+   "summed_exposure": 290042904303,
+   "pct_total_exposure": 43.160857774857845
+  },
+  {
+   "cve": "CVE-2026-42499",
+   "severity": "high",
+   "package": "stdlib",
+   "affected_images": 12778,
+   "pct_corpus": 24.157292749787313,
+   "summed_exposure": 290042904303,
+   "pct_total_exposure": 43.160857774857845
+  },
+  {
+   "cve": "CVE-2026-39823",
+   "severity": "medium",
+   "package": "stdlib",
+   "affected_images": 12778,
+   "pct_corpus": 24.157292749787313,
+   "summed_exposure": 290042904303,
+   "pct_total_exposure": 43.160857774857845
+  }
+ ],
+ "top_cve_propagation": [
+  {
+   "cve": "CVE-2026-28388",
+   "severity": "high",
+   "package": "libcrypto3",
+   "direct_images": 28343,
+   "downstream_images": 888966,
+   "propagation_factor": 31.364569735031576,
+   "downstream_pull_sum": 2065926751
+  },
+  {
+   "cve": "CVE-2026-28390",
+   "severity": "high",
+   "package": "libcrypto3",
+   "direct_images": 27768,
+   "downstream_images": 880830,
+   "propagation_factor": 31.721045808124458,
+   "downstream_pull_sum": 2044315196
+  },
+  {
+   "cve": "CVE-2026-28389",
+   "severity": "critical",
+   "package": "openssl",
+   "direct_images": 27758,
+   "downstream_images": 880830,
+   "propagation_factor": 31.732473521147057,
+   "downstream_pull_sum": 2044315196
+  },
+  {
+   "cve": "CVE-2026-22796",
+   "severity": "critical",
+   "package": "libopenssl-3-fips-provider",
+   "direct_images": 26279,
+   "downstream_images": 869472,
+   "propagation_factor": 33.08619049431105,
+   "downstream_pull_sum": 1884117075
+  },
+  {
+   "cve": "CVE-2025-68160",
+   "severity": "critical",
+   "package": "libopenssl-3-fips-provider",
+   "direct_images": 26279,
+   "downstream_images": 869472,
+   "propagation_factor": 33.08619049431105,
+   "downstream_pull_sum": 1884117075
+  },
+  {
+   "cve": "CVE-2025-69421",
+   "severity": "critical",
+   "package": "libopenssl-3-fips-provider",
+   "direct_images": 26278,
+   "downstream_images": 869471,
+   "propagation_factor": 33.08741152294695,
+   "downstream_pull_sum": 1884112635
+  },
+  {
+   "cve": "CVE-2026-27171",
+   "severity": "high",
+   "package": "zlib",
+   "direct_images": 23013,
+   "downstream_images": 861921,
+   "propagation_factor": 37.45365662886195,
+   "downstream_pull_sum": 35579078485
+  },
+  {
+   "cve": "CVE-2026-28387",
+   "severity": "critical",
+   "package": "openssl",
+   "direct_images": 23819,
+   "downstream_images": 854910,
+   "propagation_factor": 35.891935009866074,
+   "downstream_pull_sum": 1979167560
+  },
+  {
+   "cve": "CVE-2025-9230",
+   "severity": "high",
+   "package": "libcrypto3",
+   "direct_images": 25287,
+   "downstream_images": 766203,
+   "propagation_factor": 30.300272867481315,
+   "downstream_pull_sum": 1829236400
+  },
+  {
+   "cve": "CVE-2022-37434",
+   "severity": "critical",
+   "package": "zlib",
+   "direct_images": 24849,
+   "downstream_images": 652776,
+   "propagation_factor": 26.26970904261741,
+   "downstream_pull_sum": 1762562775
+  }
+ ],
+ "n5": {
+  "by_severity": {
+   "medium": {
+    "total": 39207278,
+    "single_pct": 69.18844506369456,
+    "two_pct": 28.458183197517563,
+    "three_pct": 2.353371738787885
+   },
+   "low": {
+    "total": 11862857,
+    "single_pct": 50.21635176079422,
+    "two_pct": 48.66259451664974,
+    "three_pct": 1.121053722556042
+   },
+   "high": {
+    "total": 17797136,
+    "single_pct": 59.71422031050389,
+    "two_pct": 35.11659965963063,
+    "three_pct": 5.16918002986548
+   },
+   "unknown": {
+    "total": 995154,
+    "single_pct": 88.36260518472518,
+    "two_pct": 11.600516101025569,
+    "three_pct": 0.036878714249251876
+   },
+   "critical": {
+    "total": 3511105,
+    "single_pct": 57.43055248988566,
+    "two_pct": 37.40759675372853,
+    "three_pct": 5.16185075638581
+   },
+   "info": {
+    "total": 7318165,
+    "single_pct": 99.88398731102674,
+    "two_pct": 0.11601268897326038,
+    "three_pct": 0.0
+   }
+  },
+  "by_ecosystem_class": {
+   "os": {
+    "total": 73726924,
+    "single_pct": 65.99780291932429,
+    "two_pct": 31.819305251362447,
+    "three_pct": 2.182891829313264
+   },
+   "lang": {
+    "total": 6012724,
+    "single_pct": 77.37122142975463,
+    "two_pct": 13.522440078739686,
+    "three_pct": 9.10633849150568
+   },
+   "other": {
+    "total": 952047,
+    "single_pct": 63.7173374843889,
+    "two_pct": 36.24747517717088,
+    "three_pct": 0.035187338440224064
+   }
+  }
+ },
+ "n7": {
+  "mismatch_pct": 23.118265008999554,
+  "total_codetections": 31089314
+ },
+ "temporal": {
+  "coverage_pct": 96.48,
+  "median_vuln_young_lt1yr": 414.0,
+  "median_vuln_old_ge1yr": 1085.0,
+  "n_young": 10910,
+  "n_old": 40121
+ },
+ "repro": {
+  "liu_official_hc_pct": 93.8,
+  "liu_community_hc_pct": 95.6,
+  "wist_os_pct": 76.86976934622066,
+  "wist_lang_pct": 21.65898791721209,
+  "wist_sev_total": 43117698,
+  "dahl_secret_pct": 76.9,
+  "dahl_pk_pct": 40.2,
+  "dahl_pk_images": 21249
+ }
+}

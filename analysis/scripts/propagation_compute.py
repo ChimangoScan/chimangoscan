@@ -7,18 +7,18 @@ images is the sum of len(images) over the distinct reachable nodes, because
 each image ref lives in exactly one (top-layer) node.
 
 Inputs : cve_digests_v3.json (from extract_cve_digests.py),
-         /mnt/cache/exposure_work/{edges.tsv.gz, toplayers.jsonl.gz}
+         /data/cache/exposure_work/{edges.tsv.gz, toplayers.jsonl.gz}
 Output : propagation_v3.json  {top10:[...], range_min, range_max, zlib_value,
          factor_min, factor_max}
 """
 import gzip, json, array, sys
 from collections import deque
 
-WORK = "/mnt/cache/exposure_work"
+WORK = "/data/cache/exposure_work"
 EDGES = WORK + "/edges.tsv.gz"
 TOPL = WORK + "/toplayers.jsonl.gz"
-CVE = "/mnt/win_ssd/chimangoscan-paper/cve_digests_v3.json"
-OUT = "/mnt/win_ssd/chimangoscan-paper/propagation_v3.json"
+CVE = "./cve_digests_v3.json"
+OUT = "./propagation_v3.json"
 
 
 def log(*a):

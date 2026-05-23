@@ -1,6 +1,6 @@
-# ChimangoScan Dataset
+# AnonymousSystem Dataset
 
-This document describes the complete dataset produced by the ChimangoScan
+This document describes the complete dataset produced by the AnonymousSystem
 measurement pipeline. The dataset has three primary components — the **scan
 reports**, the **Docker Hub crawl metadata**, and the **image-layer graph** —
 plus a small set of **derived artifacts** used by the paper. Every component is
@@ -65,14 +65,14 @@ for image, rj in con.execute("SELECT image, report_json FROM reports"):
     vulns = [f for f in findings if f["category"] == "pkg-vuln"]
 ```
 
-A byte-identical copy lives on `gpu1:/home/cristhian/ditector-good.db`.
+A byte-identical copy lives on `host1:/home/anonymous/ditector-good.db`.
 
 ---
 
 ## 2. Docker Hub crawl metadata — MongoDB `dockerhub_data`
 
 Output of Stage I (crawl) and Stage II (layer-graph build). Hosted in the
-`ditector_mongo` Docker container on **gpu1** (port 27017).
+`ditector_mongo` Docker container on **host1** (port 27017).
 
 | collection          | documents   | description                                        |
 |---------------------|-------------|----------------------------------------------------|

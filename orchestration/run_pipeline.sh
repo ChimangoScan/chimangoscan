@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# ChimangoScan -- end-to-end pipeline orchestrator.
+# AnonymousSystem -- end-to-end pipeline orchestrator.
 #
 # Runs the two stages of the Docker Hub security measurement in order:
 #

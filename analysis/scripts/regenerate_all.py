@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-regenerate_all.py -- single-command regeneration pipeline for the ChimangoScan
+regenerate_all.py -- single-command regeneration pipeline for the AnonymousSystem
 Docker Hub measurement paper.
 
 Every table body and every figure in the paper derives, directly or through one
@@ -66,12 +66,12 @@ USAGE
                             [--stage analysis|figures|tables|all] [--sample N]
 
   --db    PATH   SQLite database (default: $DITECTOR_DB or
-                 /mnt/win_ssd/ditector-good.db)
+                 /data/ditector-good.db)
   --out   DIR    run/output directory for all JSONs and figures/*.pdf
                  (default: the paper directory itself). Point this at a
                  scratch directory to validate without touching the paper.
   --tags  PATH   tags_full.jsonl for the temporal analysis
-                 (default: $DITECTOR_TAGS or /mnt/cache/tags_full.jsonl;
+                 (default: $DITECTOR_TAGS or /data/cache/tags_full.jsonl;
                  if missing, the temporal analysis is skipped gracefully)
   --stage NAME   run only one stage (default: all)
   --sample N     LIMIT the database scan to N reports rows -- for a quick
@@ -80,7 +80,7 @@ USAGE
 ENVIRONMENT (alternative to flags): DITECTOR_DB, DITECTOR_OUT, DITECTOR_TAGS
 
 PRODUCTION RUN (after the database is updated, from the paper directory):
-  python3 regenerate_all.py --db /mnt/win_ssd/ditector-good.db
+  python3 regenerate_all.py --db /data/ditector-good.db
 This regenerates every JSON and every figures/*.pdf in place and writes
 table_values.json. main.tex is left untouched.
 """
@@ -273,11 +273,11 @@ def main():
         description="One-command regeneration of all paper analysis JSONs, "
                     "figures and table values from ditector-good.db.")
     ap.add_argument("--db", default=os.environ.get(
-        "DITECTOR_DB", "/mnt/win_ssd/ditector-good.db"))
+        "DITECTOR_DB", "/data/ditector-good.db"))
     ap.add_argument("--out", default=os.environ.get(
         "DITECTOR_OUT", PAPER_DIR))
     ap.add_argument("--tags", default=os.environ.get(
-        "DITECTOR_TAGS", "/mnt/cache/tags_full.jsonl"))
+        "DITECTOR_TAGS", "/data/cache/tags_full.jsonl"))
     ap.add_argument("--stage", choices=["analysis", "figures", "tables", "all"],
                     default="all")
     ap.add_argument("--sample", type=int, default=None,

@@ -1,0 +1,26 @@
+# config-template.yaml — substituir __HOST__ por worker-c01/worker-c02/.../worker-c10.
+queue:
+  backend: http
+  url: http://127.0.0.1:8918      # via reverse SSH tunnel from coordinator host
+output:
+  # paths HOST (idênticos dentro e fora do container) — necessário para o
+  # docker-out-of-docker que o worker usa pra spawnar scanners.
+  dir: ${SCANNER_HOME}/lampad-worker/out
+  cache_dir: ${SCANNER_HOME}/lampad-worker/cache
+  skip_done: true
+scanners:
+  only: [syft, trivy, grype, osv, dockle, trufflehog]
+  static: true
+  dynamic: false
+workers:
+  count: 6
+  scan_timeout: 1200
+  stale_minutes: 25
+  job_attempts: 2
+runtime:
+  remove_image_after: true
+  pull_retries: 3
+  pull_backoff: 60
+  max_image_mb: 15000
+  prune_every: 8
+  scan_parallelism: 3

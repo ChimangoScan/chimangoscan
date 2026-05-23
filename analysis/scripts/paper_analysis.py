@@ -1,24 +1,24 @@
 #!/usr/bin/env python3
 """
-Analise READ-ONLY do ditector-good.db para o paper. NAO modifica o banco.
+READ-ONLY analysis of ditector-good.db for the paper. Does NOT modify the database.
 
-Aplica a correcao de severidade OSV em memoria (osv_severity_cache.json) e,
-num unico scan streaming, coleta tudo que o paper precisa:
-  - most_severe          : imagens por pior severidade de vuln (Shu Fig.5)
-  - n_with_critical/high : imagens com >=1 finding critical / high (pos-correcao)
-  - sev_global_pkgvuln   : findings pkg-vuln por severidade (pos-correcao)
-  - cve_distinct_by_year : CVEs distintos por ano de publicacao (Shu Fig.7)
-  - pkg_top_by_images/vulns : pacotes causadores (Shu Tab.6)
+Applies the OSV severity correction in memory (osv_severity_cache.json) and,
+in a single streaming scan, collects everything the paper needs:
+  - most_severe          : images by worst vuln severity (Shu Fig.5)
+  - n_with_critical/high : images with >=1 critical / high finding (post-correction)
+  - sev_global_pkgvuln   : pkg-vuln findings by severity (post-correction)
+  - cve_distinct_by_year : distinct CVEs by publication year (Shu Fig.7)
+  - pkg_top_by_images/vulns : offending packages (Shu Tab.6)
 
-Saida: /home/cristhian/dit_analysis/paper_analysis.json
-Uso:   nohup python3 paper_analysis.py > paper_analysis.log 2>&1 &
+Output: /home/anonymous/dit_analysis/paper_analysis.json
+Usage:  nohup python3 paper_analysis.py > paper_analysis.log 2>&1 &
 """
 import sqlite3, json, sys, time, re
 from collections import Counter, defaultdict
 
-DB = "/mnt/win_ssd/ditector-good.db"
-OUT = "/mnt/win_ssd/chimangoscan-paper/paper_analysis.json"
-CACHE = "/mnt/win_ssd/chimangoscan-paper/osv_severity_cache.json"
+DB = "/data/ditector-good.db"
+OUT = "./paper_analysis.json"
+CACHE = "./osv_severity_cache.json"
 UNKNOWN = {"unknown", "", "none", "null", "n/a", "na"}
 SEV_RANK = {"unknown": 0, "info": 1, "low": 2, "medium": 3, "high": 4, "critical": 5}
 RANK_SEV = {v: k for k, v in SEV_RANK.items()}

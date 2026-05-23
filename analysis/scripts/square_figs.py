@@ -1,24 +1,24 @@
 #!/usr/bin/env python3
 """
-Figuras do paper agrupadas em PAINEIS unicos (grids), uma legenda por painel
-no LaTeX -- evita captions estreitas e compridas.
+Paper figures grouped into single PANELS (grids), one legend per panel
+in LaTeX -- avoids narrow, long captions.
 
-  figures/fig_panel_results.pdf    (1x3) vulns/imagem, severidade, tempo
-  figures/fig_panel_inventory.pdf  (1x3) ecossistemas, concordancia, secrets
-  figures/fig_panel_offcomm.pdf    (1x2) oficial x comunidade: vulns e secrets
+  figures/fig_panel_results.pdf    (1x3) vulns/image, severity, time
+  figures/fig_panel_inventory.pdf  (1x3) ecosystems, agreement, secrets
+  figures/fig_panel_offcomm.pdf    (1x2) official vs. community: vulns and secrets
 
-Le analyze_db.stats.json, step3_recompute.json, fig_official_vs_community_stats.json.
+Reads analyze_db.stats.json, step3_recompute.json, fig_official_vs_community_stats.json.
 """
 import json, os, math
 from collections import Counter
 
-OUT = "/mnt/win_ssd/chimangoscan-paper"
+OUT = "."
 SCANNERS = ["syft", "trivy", "grype", "osv", "dockle", "trufflehog"]
 SEVS = ["critical", "high", "medium", "low", "info", "unknown"]
 
 
 def figstyle_grid_x(ax):
-    """Grid sutil no eixo x, atras dos dados."""
+    """Subtle grid on the x axis, behind the data."""
     ax.set_axisbelow(True)
     ax.grid(axis="x", color="#d8d8d8", linewidth=0.5, zorder=0)
 
@@ -75,10 +75,10 @@ def main():
         plt.close(fig)
         print("wrote figures/" + base + ".pdf")
 
-    # ===== PAINEL 1: vulns/imagem, severidade, tempo =====
+    # ===== PANEL 1: vulns/image, severity, time =====
     fig, ax = plt.subplots(1, 3, figsize=(9.2, 2.45))
 
-    # (a) CDF vulns por imagem
+    # (a) CDF of vulns per image
     vpi = sorted(A["vulns_per_image"])
     x = np.array(vpi, dtype=float)
     y = np.arange(1, len(x) + 1) / len(x)
@@ -93,7 +93,7 @@ def main():
     ax[0].xaxis.set_major_formatter(mfmt)
     ax[0].set_title("(a)")
 
-    # (b) severidade por scanner (osv/dockle pos-correcao)
+    # (b) severity per scanner (osv/dockle post-correction)
     sbs = {k: dict(v) for k, v in A["sev_by_scanner"].items()}
     sbs["osv"] = S3["osv"]["after"]
     sbs["dockle"] = S3["dockle"]["after"]
@@ -114,7 +114,7 @@ def main():
     ax[1].tick_params(axis="x", labelrotation=38)
     for l in ax[1].get_xticklabels():
         l.set_ha("right")
-    # legenda horizontal acima do titulo do painel, fora da area de barras
+    # horizontal legend above the panel title, outside the bar area
     ax[1].legend(ncol=6, frameon=False, fontsize=5.8, loc="lower center",
                  bbox_to_anchor=(0.5, 1.13), columnspacing=0.7,
                  handlelength=1.0, handletextpad=0.4)
@@ -141,9 +141,9 @@ def main():
     fig.tight_layout(w_pad=1.6)
     savep(fig, "fig_panel_results")
 
-    # ===== PAINEL 2: ecossistemas SBOM, tipos de secret, pacotes/imagem =====
-    # painel compacto (1x3): barras horizontais com grid e rotulos de valor,
-    # mais a distribuicao do numero de componentes por imagem (CDF).
+    # ===== PANEL 2: SBOM ecosystems, secret types, packages/image =====
+    # compact panel (1x3): horizontal bars with grid and value labels,
+    # plus the distribution of the number of components per image (CDF).
     fig, ax = plt.subplots(1, 3, figsize=(9.2, 2.05))
 
     def hbar(a, names, vals, color):
@@ -156,14 +156,14 @@ def main():
                    ha="left", va="center", fontsize=6.4)
         a.set_xlim(0, vmax * 1.18)
 
-    # (a) ecossistemas SBOM
+    # (a) SBOM ecosystems
     eco = Counter(A["ecosystem_count"]).most_common(8)
     names = [e[0] for e in eco][::-1]; vals = [e[1] for e in eco][::-1]
     hbar(ax[0], names, vals, "#3182bd")
     ax[0].set_xlabel("SBOM components"); ax[0].xaxis.set_major_formatter(mfmt)
     ax[0].set_title("(a)")
 
-    # (b) tipos de secret
+    # (b) secret types
     styp = Counter(A["secret_type"]).most_common(8)
     sn = [(s[0][:12] + ".." if len(s[0]) > 14 else s[0]) for s in styp][::-1]
     sv = [s[1] for s in styp][::-1]
@@ -171,8 +171,8 @@ def main():
     ax[1].set_xlabel("Secret detections"); ax[1].xaxis.set_major_formatter(mfmt)
     ax[1].set_title("(b)")
 
-    # (c) CDF do numero de componentes (pacotes) por imagem inventariados
-    #     pelo Syft -- corte em p99 para nao ser dominado pela cauda longa.
+    # (c) CDF of the number of components (packages) per image inventoried
+    #     by Syft -- cut at p99 so it is not dominated by the long tail.
     cpi = sorted(A["components_per_image"])
     cx = np.array(cpi, dtype=float)
     cy = np.arange(1, len(cx) + 1) / len(cx)
@@ -192,14 +192,14 @@ def main():
     fig.tight_layout(w_pad=1.6)
     savep(fig, "fig_panel_inventory")
 
-    # ===== PAINEL 3: oficial x comunidade (1x2) =====
-    fig, ax = plt.subplots(1, 2, figsize=(6.4, 2.35))
+    # ===== PANEL 3: official vs. community (1x2) =====
+    fig, ax = plt.subplots(1, 2, figsize=(6.4, 1.95))
     grp = ["Official", "Community"]
-    # cores sobrias: azul-petroleo para oficial, ocre/vermelho-tijolo para comunidade
+    # muted colors: teal-blue for official, ochre/brick-red for community
     gcol = ["#2c7fb8", "#cb6a3e"]
 
-    # (a) violin: distribuicao completa de vulns/imagem, oficial x comunidade.
-    # escala log (max ~113k); apenas imagens com >=1 vuln entram no violino.
+    # (a) violin: full distribution of vulns/image, official vs. community.
+    # log scale (max ~113k); only images with >=1 vuln enter the violin.
     oc_d = EX["offcomm"]
     off = np.array([v for v in oc_d["official_vulns"] if v > 0], dtype=float)
     com = np.array([v for v in oc_d["community_vulns"] if v > 0], dtype=float)
@@ -209,13 +209,13 @@ def main():
     for body, cc in zip(vp["bodies"], gcol):
         body.set_facecolor(cc); body.set_alpha(0.62); body.set_edgecolor(cc)
         body.set_linewidth(1.0)
-    # quartis + mediana: marca a mediana com traco grosso, Q1/Q3 com tracos finos
+    # quartiles + median: draw the median with a thick stroke, Q1/Q3 with thin strokes
     for i, key in enumerate(("official_vulns", "community_vulns"), start=1):
         arr = np.array([v for v in oc_d[key] if v > 0], dtype=float)
         q1, q3 = np.percentile(arr, [25, 75])
         ax[0].vlines(i, np.log10(q1), np.log10(q3), color="#333", linewidth=4.2,
                      zorder=3, alpha=0.55)
-    # mediana desenhada no valor oficial do JSON (inclui imagens com 0 vulns)
+    # median drawn at the official value from the JSON (includes images with 0 vulns)
     medv = [OC["OFFICIAL"]["median"], OC["COMMUNITY"]["median"]]
     for i, mv in enumerate(medv, start=1):
         ax[0].scatter([i], [np.log10(mv)], s=26, color="white",
@@ -231,9 +231,9 @@ def main():
     ax[0].set_ylim(-0.3, 5.3)
     ax[0].set_title("(a)")
 
-    # (b) duas proporcoes comparaveis (0-100%): prevalencia de >=1 secret e
-    #     fracao de imagens acima da mediana de vulns do corpus. Barras
-    #     horizontais agrupadas -- leitura limpa, rotulos no fim de cada barra.
+    # (b) two comparable proportions (0-100%): prevalence of >=1 secret and
+    #     fraction of images above the corpus's median vuln count. Grouped
+    #     horizontal bars -- clean reading, labels at the end of each bar.
     corpus_med = float(np.median(oc_d["official_vulns"] + oc_d["community_vulns"]))
     above = []
     for key in ("official_vulns", "community_vulns"):

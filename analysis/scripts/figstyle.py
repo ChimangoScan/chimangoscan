@@ -1,5 +1,5 @@
-"""Estilo de figura nivel publicacao, compartilhado pelos scripts de figura.
-Fonte serif (casa com o texto do paper), grid sutil, tracos finos."""
+"""Publication-grade figure style, shared by the figure scripts.
+Serif font (matches the paper text), subtle grid, thin strokes."""
 import matplotlib
 
 
@@ -24,6 +24,6 @@ def apply():
 
 
 def grid(ax, axis="y"):
-    """Grid sutil atras dos dados, no eixo de valores."""
+    """Subtle grid behind the data, on the value axis."""
     ax.set_axisbelow(True)
     ax.grid(axis=axis, color="#d8d8d8", linewidth=0.5, zorder=0)

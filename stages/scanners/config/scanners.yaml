@@ -1,0 +1,206 @@
+# Scanner registry. Each entry is a Docker image plus how to invoke it and where
+# it writes. Placeholders expanded at runtime:
+#   {image}    target image reference (repo:tag)
+#   {tarball}  path (inside the scanner container, mounted at /work) to the saved image tar
+#   {url}      http(s)://host:port of the running target (dynamic scanners)
+#   {host}     bare host/ip of the running target
+#   {port}     primary tcp port of the running target
+#   {out}      output directory (inside the scanner container, mounted at /out)
+#   {name}     target slug (filesystem-safe)
+#
+# mode:        static  -> runs against the image, no running container needed
+#              dynamic -> runs against a running container; gated by `needs`
+# needs:       capabilities the target must expose for a dynamic scanner to run
+#              (http  -> at least one probed port speaks HTTP)
+# outputs:     files the adapter parses, relative to {out}
+# parser:      adapter module under scanners.adapters (defaults to the key)
+# user:        docker --user value (0:0 lets non-root images write the bind mount)
+# timeout:     per-invocation seconds (overrides run.scan_timeout)
+# enabled:     default on/off; the run config's `scanners.only/skip` still applies
+
+defaults:
+  user: "0:0"
+  pull: true
+
+scanners:
+
+  # Static scanners read the saved image tar ({tarball}), produced once per target
+  # by the worker (`docker save`) and mounted read-only. This keeps the scanner
+  # containers self-contained — no registry pulls (and no rate limits) from inside
+  # them, no dependence on a docker daemon being reachable.
+
+  syft:
+    image: anchore/syft:latest
+    mode: static
+    argv: ["docker-archive:{tarball}", "-o", "cyclonedx-json={out}/{name}.cdx.json", "-o", "spdx-json={out}/{name}.spdx.json", "-o", "syft-json={out}/{name}.syft.json"]
+    outputs: ["{name}.syft.json"]
+    needs_tarball: true
+
+  trivy:
+    image: aquasec/trivy:latest
+    mode: static
+    # Full JSON (parsed) + SBOM-grade CycloneDX + SARIF (for tooling). All kept.
+    # --cache-dir on a mounted volume so the ~50 MB vuln DB is downloaded once, not per invocation.
+    argv: ["--cache-dir", "/cache", "image", "--input", "{tarball}", "--scanners", "vuln,secret,misconfig,license",
+           "--format", "json", "--output", "{out}/{name}.trivy.json", "--list-all-pkgs", "--quiet"]
+    extra_invocations:
+      - argv: ["--cache-dir", "/cache", "image", "--input", "{tarball}", "--format", "cyclonedx", "--output", "{out}/{name}.trivy.cdx.json", "--quiet"]
+      - argv: ["--cache-dir", "/cache", "image", "--input", "{tarball}", "--scanners", "vuln,secret,misconfig", "--format", "sarif", "--output", "{out}/{name}.trivy.sarif", "--quiet"]
+    outputs: ["{name}.trivy.json"]
+    needs_tarball: true
+    needs_cache: trivy
+    timeout: 1800
+
+  grype:
+    image: anchore/grype:latest
+    mode: static
+    argv: ["docker-archive:{tarball}", "-o", "json={out}/{name}.grype.json", "-o", "sarif={out}/{name}.grype.sarif", "-o", "cyclonedx-json={out}/{name}.grype.cdx.json"]
+    outputs: ["{name}.grype.json"]
+    needs_tarball: true
+    needs_cache: grype                     # ~100 MB vuln DB cached across invocations
+    env: {GRYPE_DB_CACHE_DIR: /cache}
+    timeout: 900
+
+  osv:
+    image: ghcr.io/google/osv-scanner:latest
+    mode: static
+    # osv-scanner exits 1 when it finds vulns -> treated as success when output exists.
+    argv: ["scan", "image", "--archive", "--format", "json", "--output-file", "{out}/{name}.osv.json", "--all-packages", "{tarball}"]
+    outputs: ["{name}.osv.json"]
+    needs_tarball: true
+    ok_exit_codes: [0, 1]
+    timeout: 1200
+
+  dockle:
+    image: goodwithtech/dockle:latest
+    mode: static
+    argv: ["--input", "{tarball}", "--format", "json", "--output", "{out}/{name}.dockle.json", "--exit-code", "0"]
+    outputs: ["{name}.dockle.json"]
+    needs_tarball: true
+
+  trufflehog:
+    image: trufflesecurity/trufflehog:latest
+    mode: static
+    # trufflehog fetches the image itself (registry or, with file://, a saved tar).
+    argv: ["docker", "--image", "file://{tarball}", "--json", "--no-update"]
+    capture_stdout: "{name}.trufflehog.jsonl"
+    outputs: ["{name}.trufflehog.jsonl"]
+    needs_tarball: true
+    timeout: 1800
+    # if `docker --image file://...` proves unreliable on some images, switch to
+    # ["docker", "--image", "{image}", "--json", "--no-update"] and drop needs_tarball.
+
+  clair:
+    image: quay.io/projectquay/clair-action:v0.0.12
+    mode: static
+    entrypoint: clair-action
+    argv: ["report", "--image-path={tarball}", "--db-path={cache}/matcher.db", "--format", "clair"]
+    capture_stdout: "{name}.clair.json"
+    outputs: ["{name}.clair.json"]
+    needs_tarball: true
+    needs_cache: clair                   # matcher DB; built once per host by `scanners prepare`
+    enabled: false
+    prepare: ["update", "--db-path={cache}/matcher.db"]
+
+  # ── filesystem scanners: run against the flattened image rootfs ({rootfs}) ──
+  # The worker exports the image once per target (`docker create` + `docker export`),
+  # mounts it read-only, and removes it afterwards.
+
+  dependency-check:
+    image: owasp/dependency-check:latest
+    mode: static
+    needs_rootfs: true
+    needs_cache: dependency-check         # NVD/OSS-Index data; warmed by `scanners prepare`
+    cache_mount: /usr/share/dependency-check/data
+    argv: ["--scan", "{rootfs}", "--out", "{out}", "--project", "{name}", "--format", "JSON",
+           "--format", "SARIF", "--prettyPrint", "--noupdate", "--disableYarnAudit", "--disableNodeAudit"]
+    outputs: ["dependency-check-report.json"]
+    parser: dependency_check
+    timeout: 2400
+    enabled: false
+    # NVD throttles hard without a key; set runtime.nvd_api_key and `scanners prepare` passes it.
+    prepare: ["--updateonly"]
+
+  semgrep:
+    image: semgrep/semgrep:latest
+    mode: static
+    needs_rootfs: true
+    argv: ["scan", "--config=p/security-audit", "--config=p/owasp-top-ten", "--config=p/secrets",
+           "--config=p/ci", "--metrics=off", "--no-git-ignore", "--timeout=45", "--max-target-bytes=2000000",
+           "--exclude=node_modules", "--exclude=vendor", "--exclude=.git",
+           "--json", "--output={out}/{name}.semgrep.json", "{rootfs}"]
+    extra_invocations:
+      - argv: ["scan", "--config=p/security-audit", "--config=p/owasp-top-ten", "--config=p/secrets",
+               "--metrics=off", "--no-git-ignore", "--timeout=45", "--max-target-bytes=2000000",
+               "--sarif", "--output={out}/{name}.semgrep.sarif", "{rootfs}"]
+    outputs: ["{name}.semgrep.json"]
+    ok_exit_codes: [0, 1]
+    timeout: 1800
+    enabled: false
+
+  yara:
+    image: blacktop/yara:latest
+    mode: static
+    needs_rootfs: true
+    needs_cache: yara                     # rule set; cloned by `scanners prepare`
+    cache_mount: /rules
+    entrypoint: sh
+    argv: ["-c", "yara -r -w -s /rules/index.yar {rootfs} 2>/dev/null || true"]
+    capture_stdout: "{name}.yara.txt"
+    outputs: ["{name}.yara.txt"]
+    timeout: 1800
+    enabled: false
+    prepare_host:
+      - "mkdir -p {cache}/yara && ( [ -d {cache}/yara/.git ] && git -C {cache}/yara pull --quiet --ff-only || git clone --depth 1 https://github.com/Yara-Rules/rules {cache}/yara )"
+      - "cd {cache}/yara && ls malware/*.yar 2>/dev/null | sed 's#^#include \"#; s#$#\"#' > index.yar"
+
+  clamav:
+    image: clamav/clamav:latest
+    mode: static
+    needs_rootfs: true
+    entrypoint: clamscan                  # the image bundles a base signature DB
+    # Scanning a full rootfs is dominated by the distro's own /usr/{lib,share,bin,sbin}, /lib etc. —
+    # tens of thousands of legit binaries that just slow it down and add false positives. Skip those;
+    # keep the dirs where injected malware actually lands. Tight limits + a shorter timeout cap runaways.
+    argv: ["-r", "-i", "--no-summary", "--stdout", "--max-filesize=50M", "--max-scansize=200M",
+           "--max-files=12000", "--max-recursion=10", "--exclude-dir=/scan/(usr/(lib|lib32|lib64|libexec|share|bin|sbin|src|include)|lib|lib32|lib64|libexec|bin|sbin|boot|sys|proc|dev|run|var/lib/(apt|dpkg|yum|dnf|rpm)|var/cache)($|/)", "{rootfs}"]
+    capture_stdout: "{name}.clamav.txt"
+    outputs: ["{name}.clamav.txt"]
+    ok_exit_codes: [0, 1]                  # 1 = infected file found
+    timeout: 900
+    enabled: false
+
+  nuclei:
+    image: projectdiscovery/nuclei:latest
+    mode: dynamic
+    needs: [http]
+    argv: ["-target", "{url}", "-jsonl", "-output", "{out}/{name}.nuclei.jsonl", "-stats", "-no-color", "-disable-update-check"]
+    outputs: ["{name}.nuclei.jsonl"]
+    timeout: 1800
+
+  nikto:
+    image: ghcr.io/sullo/nikto:latest
+    mode: dynamic
+    needs: [http]
+    argv: ["-host", "{host}", "-port", "{port}", "-Format", "json", "-output", "{out}/{name}.nikto.json", "-ask", "no", "-nointeractive"]
+    outputs: ["{name}.nikto.json"]
+    timeout: 1200
+
+  zap:
+    image: zaproxy/zap-stable:latest
+    mode: dynamic
+    needs: [http]
+    entrypoint: zap-baseline.py
+    workdir: /zap/wrk
+    argv: ["-t", "{url}", "-J", "{name}.zap.json", "-I", "-d", "-m", "2"]
+    out_as_workdir: true
+    outputs: ["{name}.zap.json"]
+    timeout: 1800
+
+  sqlmap:
+    image: googlesky/sqlmap:latest
+    mode: dynamic
+    needs: [http]
+    enabled: false   # targeted only; enable per-run when an injection point is known
+    argv: ["-u", "{url}", "--batch", "--crawl=1", "--output-dir=/out", "--flush-session"]
+    outputs: []

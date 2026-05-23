@@ -1,0 +1,714 @@
+- name: '--mount'
+  sensitive_type: 'violate the isolation of file systems'
+  description: 'attach a filesystem mount to the container'
+  regex: '--mount(=|\s+)\S+'
+  severity: 'MEDIUM'
+  severity_score: 4
+- name: '--volume'
+  sensitive_type: 'violate the isolation of file systems'
+  description: 'bind mount a volume to the container'
+  regex: '(-v|--volume)(=|\s+)\S+'
+  severity: 'MEDIUM'
+  severity_score: 4
+
+- name: '--net'
+  sensitive_type: 'violate the isolation of networking'
+  description: 'connect container to a network'
+  regex: '--net(work)?(=|\s+)\S+'
+  severity: 'MEDIUM'
+  severity_score: 4
+- name: '--publish'
+  sensitive_type: 'violate the isolation of networking'
+  description: 'publish a container port(s) to the host'
+  regex: '(-p|--publish)(=|\s+)\S+'
+  severity: 'LOW'
+  severity_score: 2
+- name: '--publish-all'
+  sensitive_type: 'violate the isolation of networking'
+  description: 'publish all exposed ports to random ports'
+  regex: '(-P|--publish-all)\s+'
+  severity: 'LOW'
+  severity_score: 2
+
+- name: '--ipc'
+  sensitive_type: 'break the separation of processes'
+  description: 'set IPC mode for container'
+  regex: '--ipc(=|\s+)\S+'
+  severity: 'HIGH'
+  severity_score: 7
+- name: '--pid'
+  sensitive_type: 'break the separation of processes'
+  description: 'set the PID namespace mode for the container'
+  regex: '--pid(=|\s+)\S+'
+  severity: 'HIGH'
+  severity_score: 7
+
+- name: '--cgroupns'
+  sensitive_type: 'break the separation of resources'
+  description: '指定容器是否共享与宿主机相同的 cgroup 命名空间'
+  regex: '--cgroupns(=|\s+)\S+'
+  severity: 'LOW'
+  severity_score: 3
+
+- name: '--privileged'
+  sensitive_type: 'escalate runtime privileges'
+  description: 'give extended privileges to the container'
+  regex: '--privileged\s+'
+  severity: 'CRITICAL'
+  severity_score: 10
+- name: '--cap-add'
+  sensitive_type: 'escalate runtime privileges'
+  description: 'add Linux capabilities to container'
+  regex: '--cap-add(=|\s+)\S+'
+  severity: 'HIGH'
+  severity_score: 7
+- name: '--device'
+  sensitive_type: 'escalate runtime privileges'
+  description: ''
+  regex: '--device(=|\s+)\S+'
+  severity: 'MEDIUM'
+  severity_score: 5
+
+#  Insensitive parameters with no security risks
+- name: '--add-host'
+  sensitive_type: 'none'
+  description: '将(host:ip)添加到容器/etc/hosts中，添加自定义DNS解析规则'
+  regex: '--add-host(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--annotation'
+  sensitive_type: 'none'
+  description: '向容器添加注释'
+  regex: '--annotation(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--attach'
+  sensitive_type: 'none'
+  description: '将容器连接到STDIN, STDOUT, STDERR'
+  regex: '(--attach|-a)(=|\s+)'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--blkio-weight'
+  sensitive_type: 'none'
+  description: '容器对系统I/O资源的访问权重'
+  regex: '--blkio-weight(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--blkio-weight-device'
+  sensitive_type: 'none'
+  description: '容器对指定设备I/O资源的访问权重'
+  regex: '--blkio-weight-device(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--cap-drop'
+  sensitive_type: 'none'
+  description: '从容器移除容器运行时中的特权'
+  regex: '--cap-drop(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--cgroup-parent'
+  sensitive_type: 'none'
+  description: '指定容器的父cgroup'
+  regex: '--cgroup-parent(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--cidfile'
+  sensitive_type: 'none'
+  description: '将容器的唯一标识符（Container ID）写入指定文件'
+  regex: '--cidfile(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--cpu-count'
+  sensitive_type: 'none'
+  description: '在Windows上可以使用的 CPU 核心数量'
+  regex: '--cpu-count(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--cpu-percent'
+  sensitive_type: 'none'
+  description: '在Windows上可以使用的 CPU 核心的百分比'
+  regex: '--cpu-percent(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--cpu-period'
+  sensitive_type: 'none'
+  description: '限制CFS CPU period'
+  regex: '--cpu-period(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--cpu-quota'
+  sensitive_type: 'none'
+  description: '限制CFS CPU quota'
+  regex: '--cpu-quota(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--cpu-rt-period'
+  sensitive_type: 'none'
+  description: '设置实时CPU period'
+  regex: '--cpu-rt-period(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--cpu-rt-runtime'
+  sensitive_type: 'none'
+  description: '设置实时CPU runtime'
+  regex: '--cpu-rt-runtime(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--cpu-shares'
+  sensitive_type: 'none'
+  description: 'CPU分配权重'
+  regex: '(--cpu-shares|-c)(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--cpus'
+  sensitive_type: 'none'
+  description: '使用的cpu核心数量'
+  regex: '--cpus(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--cpuset-cpus'
+  sensitive_type: 'none'
+  description: '指定可以使用的CPU核心'
+  regex: '--cpuset-cpus(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--cpuset-mems'
+  sensitive_type: 'none'
+  description: '指定可以使用的内存节点'
+  regex: '--cpuset-mems(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--detach, -d'
+  sensitive_type: 'none'
+  description: '后台模式运行容器'
+  regex: '(--detach|-d)\s+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--detach-keys'
+  sensitive_type: 'none'
+  description: '设置容器在后台模式下运行时的分离键盘序列'
+  regex: '--detach-keys(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--device-cgroup-rule'
+  sensitive_type: 'none'
+  description: '配置容器内的设备访问规则'
+  regex: '--device-cgroup-rule(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--device-read-bps'
+  sensitive_type: 'none'
+  description: '设备读速率（bytes）'
+  regex: '--device-read-bps(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--device-read-iops'
+  sensitive_type: 'none'
+  description: '设备读速率（IOs）'
+  regex: '--device-read-iops(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--device-write-bps'
+  sensitive_type: 'none'
+  description: '设备写速率（bytes）'
+  regex: '--device-write-bps(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--device-write-iops'
+  sensitive_type: 'none'
+  description: '设备写速率（IOs）'
+  regex: '--device-write-iops(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--disable-content-trust'
+  sensitive_type: 'none'
+  description: '禁用Docker内容信任'
+  regex: '--disable-content-trust\s+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--dns'
+  sensitive_type: 'none'
+  description: '配置DNS服务器'
+  regex: '--dns(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--dns-opt'
+  sensitive_type: 'none'
+  description: '设置DNS'
+  regex: '--dns-opt(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--dns-option'
+  sensitive_type: 'none'
+  description: '设置DNS'
+  regex: '--dns-option(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--dns-search'
+  sensitive_type: 'none'
+  description: '设置自定义DNS搜索域'
+  regex: '--dns-search(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--domainname'
+  sensitive_type: 'none'
+  description: '容器NIS域名'
+  regex: '--domainname(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--entrypoint'
+  sensitive_type: 'none'
+  description: '覆盖镜像默认的ENTRYPOINT'
+  regex: '--entrypoint(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--env'
+  sensitive_type: 'none'
+  description: '设置环境变量'
+  regex: '(--env|-e)(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--env-file'
+  sensitive_type: 'none'
+  description: '从文件中读取环境变量'
+  regex: '--env-file(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--expose'
+  sensitive_type: 'none'
+  description: '指定容器要暴露的端口，不会实际暴露端口'
+  regex: '--expose(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--gpus'
+  sensitive_type: 'none'
+  description: '配置可以访问的GPU资源'
+  regex: '--gpus(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--group-add'
+  sensitive_type: 'none'
+  description: '向容器添加附加的用户组'
+  regex: '--group-add(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--health-cmd'
+  sensitive_type: 'none'
+  description: '检查运行状态的命令'
+  regex: '--health-cmd(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--health-interval'
+  sensitive_type: 'none'
+  description: '状态检查时间间隔'
+  regex: '--health-interval(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--health-retries'
+  sensitive_type: 'none'
+  description: '失败retry次数'
+  regex: '--health-retries(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--health-start-period'
+  sensitive_type: 'none'
+  description: '在状态检查前给容器初始化留的period'
+  regex: '--health-start-period(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--health-timeout'
+  sensitive_type: 'none'
+  description: '状态检查超时时间'
+  regex: '--health-timeout(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--help'
+  sensitive_type: 'none'
+  description: '输出帮助信息'
+  regex: '--help\s+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--hostname, -h'
+  sensitive_type: 'none'
+  description: '设置容器的主机名'
+  regex: '(--hostname|-h)(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--init'
+  sensitive_type: 'none'
+  description: '在容器内启动一个初始化进程'
+  regex: '--init\s+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--interactive, -i'
+  sensitive_type: 'none'
+  description: '创建交互式容器会话'
+  regex: '(--interactive|-i)\s+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--io-maxbandwidth'
+  sensitive_type: 'none'
+  description: 'Windows上的IO带宽限制'
+  regex: '--io-maxbandwidth(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--io-maxiops'
+  sensitive_type: 'none'
+  description: 'Windows上的IOps限制'
+  regex: '--io-maxiops(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--ip'
+  sensitive_type: 'none'
+  description: 'IPv4地址'
+  regex: '--ip(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--ip6'
+  sensitive_type: 'none'
+  description: 'IPv6地址'
+  regex: '--ip6(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--isolation'
+  sensitive_type: 'none'
+  description: '配置容器的运行时隔离模式'
+  regex: '--isolation(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--kernel-memory'
+  sensitive_type: 'none'
+  description: '限制内核内存最大数量'
+  regex: '--kernel-memory(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--label'
+  sensitive_type: 'none'
+  description: '向容器添加自定义标签'
+  regex: '(--label|-l)(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--label-file'
+  sensitive_type: 'none'
+  description: '从文件读取容器自定义标签'
+  regex: '--label-file(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--link'
+  sensitive_type: 'none'
+  description: '在容器之间创建连接，以便容器能够相互通信'
+  regex: '--link(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--link-local-ip'
+  sensitive_type: 'none'
+  description: '容器IPv4/IPv6链路本地地址'
+  regex: '--link-local-ip(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--log-driver'
+  sensitive_type: 'none'
+  description: '指定日志驱动程序'
+  regex: '--log-driver(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--log-opt'
+  sensitive_type: 'none'
+  description: '日志配置'
+  regex: '--log-opt(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--mac-address'
+  sensitive_type: 'none'
+  description: '容器MAC地址'
+  regex: '--mac-address(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--memory'
+  sensitive_type: 'none'
+  description: '内存使用量限制'
+  regex: '(--memory|-m)(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--memory-reservation'
+  sensitive_type: 'none'
+  description: '内存使用量软限制'
+  regex: '--memory-reservation(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--memory-swap'
+  sensitive_type: 'none'
+  description: '限制容器使用内存和交换空间的总量'
+  regex: '--memory-swap(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--memory-swappiness'
+  sensitive_type: 'none'
+  description: '容器内存交换'
+  regex: '--memory-swappiness(=|\s+)\S+'
+  severity:
+
+- name: '--name'
+  sensitive_type: 'none'
+  description: '指定容器名称'
+  regex: '--name(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--net-alias'
+  sensitive_type: 'none'
+  description: '为容器添加网络范围的别名'
+  regex: '--net-alias(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--network-alias'
+  sensitive_type: 'none'
+  description: '为容器添加网络范围的别名'
+  regex: '--network-alias(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--no-healthcheck'
+  sensitive_type: 'none'
+  description: '关闭容器运行状态检查'
+  regex: '--no-healthcheck\s+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--oom-kill-disable'
+  sensitive_type: 'none'
+  description: '禁用OOM Killer'
+  regex: '--oom-kill-disable\s+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--oom-score-adj'
+  sensitive_type: 'none'
+  description: '设置主机OOM选项'
+  regex: '--oom-score-adj(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--pids-limit'
+  sensitive_type: 'none'
+  description: '容器pid限制'
+  regex: '--pids-limit(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--platform'
+  sensitive_type: 'none'
+  description: '为多平台服务器设置平台'
+  regex: '--platform(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--quiet'
+  sensitive_type: 'none'
+  description: '不输出pull消息'
+  regex: '(--quiet|-q)\s+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--read-only'
+  sensitive_type: 'none'
+  description: '将容器root文件系统挂载为只读'
+  regex: '--read-only\s+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--restart'
+  sensitive_type: 'none'
+  description: '容器重启策略'
+  regex: '--restart(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--rm'
+  sensitive_type: 'none'
+  description: '容器退出时自动删除容器'
+  regex: '--rm\s+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--runtime'
+  sensitive_type: 'none'
+  description: '指定容器运行时'
+  regex: '--runtime(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--security-opt'
+  sensitive_type: 'none'
+  description: '安全选项'
+  regex: '--security-opt(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--shm-size'
+  sensitive_type: 'none'
+  description: '共享内存大小'
+  regex: '--shm-size(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--sig-proxy'
+  sensitive_type: 'none'
+  description: '代理接收到的进程信号'
+  regex: '--sig-proxy(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--stop-signal'
+  sensitive_type: 'none'
+  description: '停止容器的信号'
+  regex: '--stop-signal(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--stop-timeout'
+  sensitive_type: 'none'
+  description: '停止容器的超时时间'
+  regex: '--stop-timeout(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--storage-opt'
+  sensitive_type: 'none'
+  description: '存储驱动程序选项'
+  regex: '--storage-opt(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--sysctl'
+  sensitive_type: 'none'
+  description: 'sysctl选项'
+  regex: '--sysctl(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--tmpfs'
+  sensitive_type: 'none'
+  description: '将空的临时目录挂载到容器，（仅存在主机内存中）'
+  regex: '--tmpfs(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--tty'
+  sensitive_type: 'none'
+  description: '分配伪TTY（终端）'
+  regex: '(--tty|-t)\s+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--ulimit'
+  sensitive_type: 'none'
+  description: 'ulimit选项，限制用户进程资源'
+  regex: '--ulimit(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--user'
+  sensitive_type: 'none'
+  description: '容器用户'
+  regex: '(--user|-u)(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--userns'
+  sensitive_type: 'none'
+  description: '容器用户命名空间'
+  regex: '--userns(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--uts'
+  sensitive_type: 'none'
+  description: '设置UTS命名空间（用于hostname、domainname）'
+  regex: '--uts(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--volume-driver'
+  sensitive_type: 'none'
+  description: '卷驱动程序'
+  regex: '--volume-driver(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--volumes-from'
+  sensitive_type: 'none'
+  description: '从指定容器挂载卷'
+  regex: '--volumes-from(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0
+
+- name: '--workdir'
+  sensitive_type: 'none'
+  description: '容器工作目录'
+  regex: '(--workdir|-w)(=|\s+)\S+'
+  severity: 'NEGLIGIBLE'
+  severity_score: 0

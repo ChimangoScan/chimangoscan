@@ -1,0 +1,34 @@
+# compose-template.yml — gerado por host LAMPAD.
+# Substituir __HOST__ e __WORKERS__ no deploy.
+services:
+  scanners-worker:
+    image: scanners-worker:0.1
+    container_name: scanners-worker-__HOST__
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      # CRITICAL: identical bind path host↔container. The worker spawns scanners via
+      # docker.sock (DooD); when it passes "-v ${SCANNER_HOME}/lampad-worker/cache/tars/foo.tar:/work/image.tar",
+      # the docker daemon resolves that path on the HOST. If the worker had its cache in
+      # /app/cache, the spawned scanner would not find the tarball.
+      - ${SCANNER_HOME}/lampad-worker/accounts.json:${SCANNER_HOME}/lampad-worker/accounts.json:ro
+      - ${SCANNER_HOME}/lampad-worker/config.yaml:${SCANNER_HOME}/lampad-worker/config.yaml:ro
+      - ${SCANNER_HOME}/lampad-worker/scanners.yaml:${SCANNER_HOME}/lampad-worker/scanners.yaml:ro
+      - ${SCANNER_HOME}/lampad-worker/cache:${SCANNER_HOME}/lampad-worker/cache:rw
+      - ${SCANNER_HOME}/lampad-worker/out:${SCANNER_HOME}/lampad-worker/out:rw
+      - ${SCANNER_HOME}/lampad-worker/work:${SCANNER_HOME}/lampad-worker/work:rw
+    command:
+      - run
+      - --config
+      - /app/config.yaml
+      - --static-only
+      - --watch
+      - --dockerhub-accounts
+      - /app/accounts.json
+      - -v
+    logging:
+      driver: json-file
+      options:
+        max-size: "20m"
+        max-file: "5"

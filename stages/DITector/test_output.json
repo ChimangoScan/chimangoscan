@@ -1,0 +1,5 @@
+{"repository_namespace":"tonydou","repository_name":"nginx","tag_name":"latest","image_digest":"sha256:769d22d626c1acf47405e1dcc4eee0426dbc45abf817055704c83d52d7248e19","weights":0,"downstream_images":[]}
+{"repository_namespace":"digitalist","repository_name":"nginx","tag_name":"1.29","image_digest":"sha256:d2955b2a7bab8945e66cfa9d8ba255889efaa5ac9655c9c6738c2920ccf89777","weights":0,"downstream_images":[]}
+{"repository_namespace":"getstackhead","repository_name":"nginx","tag_name":"standalone","image_digest":"sha256:83d1f8d15bece53bcebc331f78fcf8458ab5357cf442b8bee910833117ebf581","weights":0,"downstream_images":[]}
+{"repository_namespace":"getstackhead","repository_name":"nginx","tag_name":"php","image_digest":"sha256:a74f84529984ab5d2746662bdd1096c407d899bae5c01ae8c30f90a68af191ed","weights":0,"downstream_images":[]}
+{"repository_namespace":"modestcoders","repository_name":"nginx","tag_name":"1.13","image_digest":"sha256:e551c6d079c1c0631983c6f7b91dc5511f6b90a73d53ca2e899877ed066271b9","weights":0,"downstream_images":[]}

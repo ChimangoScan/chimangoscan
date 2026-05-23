@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Shared helper sourced by the orchestration scripts so that every stage runs
-# inside the ChimangoScan runner image. The host only needs Docker installed.
+# inside the AnonymousSystem runner image. The host only needs Docker installed.
 #
 #   ensure_runner          build the runner image once (no-op if it exists)
 #   in_runner CMD...       run CMD inside the runner image with:
@@ -15,7 +15,7 @@
 #
 # $ROOT must be set by the sourcing script (the repository root).
 
-RUNNER_IMG="${RUNNER_IMG:-chimangoscan/runner:local}"
+RUNNER_IMG="${RUNNER_IMG:-anonymoussystem/runner:local}"
 
 ensure_runner() {
   if ! docker image inspect "$RUNNER_IMG" >/dev/null 2>&1; then
@@ -30,8 +30,8 @@ in_runner() {
     -e MPLBACKEND=Agg -e MPLCONFIGDIR=/tmp/mpl \
     -v "$ROOT:$ROOT" \
     -v /var/run/docker.sock:/var/run/docker.sock \
-    -v chimango-gocache:/go \
-    -v chimango-uvcache:/root/.cache/uv \
+    -v anonymoussystem-gocache:/go \
+    -v anonymoussystem-uvcache:/root/.cache/uv \
     ${RUNNER_EXTRA_MOUNT:-} \
     -w "${RUNNER_WORKDIR:-$ROOT}" \
     "$RUNNER_IMG" "$@"

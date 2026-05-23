@@ -1,0 +1,22 @@
+# Elasticsearch configuration file
+
+# Disable security features
+#xpack.security.enabled: false
+
+# Bind to all interfaces
+network.host: 0.0.0.0
+
+# Set the port number
+http.port: 9200
+
+# Set the logfile path
+path.logs: /var/log/elasticsearch
+
+# Set the data directory
+path.data: /var/lib/elasticsearch
+
+# Disable shard allocation awareness
+cluster.routing.allocation.awareness.attributes: ""
+
+# Disable shard allocation filtering
+cluster.routing.allocation.exclude: ""

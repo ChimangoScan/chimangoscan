@@ -1,0 +1,100 @@
+# Run configuration. Copy to config/config.yaml and edit, or pass --config PATH.
+# Every value below has a built-in default; override only what you need.
+
+# ── Where the work queue lives ──────────────────────────────────────────────
+# backend: sqlite -> single host, zero setup (good for dev / one machine)
+#          http   -> many hosts; workers talk to a `scanners coordinator` over HTTP
+queue:
+  backend: sqlite
+  sqlite_path: work/queue.db          # backend=sqlite
+  url: http://127.0.0.1:8900          # backend=http (workers); coordinator binds this host:port
+  bind: 0.0.0.0:8900                  # `scanners coordinator` listen address
+  token: ""                           # optional shared secret (sent as Bearer; "" disables auth)
+
+# ── What to scan ────────────────────────────────────────────────────────────
+source:
+  type: csv                           # csv | jsonl | txt
+  path: data/inventory.csv            # csv: columns include Image, optional Container/Port/IP/Category
+  image_column: Image
+  ip_column: IP                       # optional; enables vuln↔container-IP correlation for the lab
+  name_column: Container              # optional; used as the target slug if present
+  meta_columns: [Category, Type, Port]
+  limit: 0                            # 0 = no limit
+  # jsonl (DITector): keys repository_namespace/repository_name/tag_name + weights
+  # txt: one image reference per line
+
+# ── Which scanners ──────────────────────────────────────────────────────────
+scanners:
+  registry: config/scanners.yaml
+  only: []                            # [] = all enabled in the registry; else this exact set
+  skip: []                            # subtracted from the above
+  static: true                        # run the static phase
+  dynamic: true                       # run the dynamic phase (needs to bring the container up)
+
+# ── Worker pool (per machine) ───────────────────────────────────────────────
+workers:
+  count: 4                            # concurrent targets on this machine
+  scan_timeout: 1200                  # default per-scanner seconds (registry can override)
+  job_attempts: 3                     # transient-failure retries before a job is marked failed
+  heartbeat_seconds: 30               # how often a running job touches the queue
+  stale_minutes: 15                   # a running job older than this (no heartbeat) is reclaimed
+  worker_id: ""                       # "" = "<hostname>/<pid>"
+
+# ── Output ──────────────────────────────────────────────────────────────────
+output:
+  dir: out                            # out/<target-slug>/<scanner>/...  (raw artifacts, kept verbatim)
+  keep_image_tarball: false           # keep the `docker save` tar after scanning (large)
+  cache_dir: cache                    # shared caches (e.g. clair matcher.db)
+  skip_done: true                     # resume-friendly: a scanner whose output already exists is re-used,
+                                       # not re-run — kill the run anytime and restart, it picks up per-scanner
+                                       # (delete out/ or set false to force a clean re-run)
+
+# ── Bringing target containers up (dynamic phase) ───────────────────────────
+runtime:
+  network: scannet                    # docker bridge network created on demand
+  subnet: 172.28.0.0/16
+  startup_wait: 8                     # seconds before the first port probe
+  health_timeout: 90                  # max seconds to wait for any probed port to open
+  probe_ports: [80, 443, 8080, 8443, 8000, 3000, 5000, 8888, 9000, 9090, 9200,
+                5601, 8161, 15672, 3306, 5432, 27017, 6379, 11211, 9042, 5984,
+                2181, 9092, 22, 21, 23, 25, 143, 389, 636]
+  http_ports:  [80, 443, 8080, 8443, 8000, 3000, 5000, 8888, 9000, 9090, 9200,
+                5601, 8161, 15672, 5601, 8983, 5984]
+  hardened: true                      # cap_drop ALL, no-new-privileges, read-only rootfs (RW retry on failure)
+  mem_limit: "1g"
+  pids_limit: 512
+  cpu_quota: 0                        # 0 = unlimited; else µs per 100ms (100000 = 1 cpu)
+  scan_parallelism: 4                 # scanners run concurrently per target (per worker);
+                                       # total concurrent scanner containers on a host = workers.count × this
+  pull_retries: 4
+  pull_backoff: 30                    # seconds, exponential
+  max_image_mb: 12000                 # skip targets whose pulled image exceeds this
+  prune_every: 25                     # `docker image prune` every N completed targets on this worker
+  remove_image_after: false           # `docker rmi` the target image after scanning it (bounds disk on big runs)
+  dockerhub_user: ""                  # `docker login` before pulling — lifts the anonymous pull rate limit
+  dockerhub_token: ""                 # a Docker Hub access token (not your password)
+  dockerhub_accounts: ""              # path to a JSON list [{"username":..,"password":..}, ...];
+                                       # the worker logs in as one and rotates to the next on a pull rate-limit
+                                       # (each authenticated account ≈ 200 pulls / 6 h on the free tier)
+  nvd_api_key: ""                     # speeds up `scanners prepare` for dependency-check (NVD throttles without one)
+
+# Scanners disabled by default in config/scanners.yaml — enable per run via scanners.only:
+#   clair             4th CVE engine (layer-indexed); needs `scanners prepare` (matcher DB ~1 GB)
+#   dependency-check  OWASP, strong on Java/Maven; needs `scanners prepare` (NVD feed) and the rootfs export
+#   semgrep           SAST over the image filesystem
+#   yara              IOC/pattern matching; needs `scanners prepare` (rule set)
+#   clamav            antivirus over the image filesystem (bundled signature DB)
+#   sqlmap            SQLi, targeted only
+
+# ── External data to fold into the merged view ──────────────────────────────
+imports:
+  openvas: ""                         # path to a directory of OpenVAS reports or an `openvas_completo.csv`
+
+# ── Distributed run (used by `scanners cluster ...`) ────────────────────────
+cluster:
+  hosts: []                           # ssh aliases of worker machines, e.g. [worker-1, worker-2];
+                                       # leave empty here and set them in your local config/config.yaml
+  remote_dir: ~/scanners              # where the repo is rsync'd to on each host
+  workers_per_host: 4
+  use_uv: true                        # bootstrap uv on the remote if missing, run via `uv run`
+  reverse_tunnel: true                # ssh -R so remote workers reach the local coordinator

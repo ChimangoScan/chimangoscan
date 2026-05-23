@@ -1,6 +1,0 @@
-[submodule "stages/DITector"]
-	path = stages/DITector
-	url = https://github.com/ChimangoScan/DITector.git
-[submodule "stages/scanners"]
-	path = stages/scanners
-	url = https://github.com/ChimangoScan/scanners.git

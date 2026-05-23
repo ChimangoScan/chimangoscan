@@ -1,0 +1,158 @@
+{
+ "n_reports": 52895,
+ "liu": {
+  "n_official": 130,
+  "n_community": 52765,
+  "official_high_or_crit": 122,
+  "community_high_or_crit": 50454,
+  "official_hc_pct": 93.8,
+  "community_hc_pct": 95.6
+ },
+ "wist": {
+  "sev_findings_by_eco_class": {
+   "lang": 9338857,
+   "os": 33144475,
+   "other": 634366
+  },
+  "sev_findings_top_lang_eco": [
+   [
+    "go",
+    2123559
+   ],
+   [
+    "go-module",
+    1808226
+   ],
+   [
+    "gobinary",
+    1374192
+   ],
+   [
+    "npm",
+    757646
+   ],
+   [
+    "pypi",
+    622430
+   ],
+   [
+    "binary",
+    584232
+   ],
+   [
+    "java-archive",
+    558965
+   ],
+   [
+    "node-pkg",
+    555615
+   ],
+   [
+    "maven",
+    483758
+   ],
+   [
+    "python",
+    209699
+   ],
+   [
+    "python-pkg",
+    155930
+   ],
+   [
+    "gem",
+    45108
+   ]
+  ]
+ },
+ "dahl": {
+  "img_with_secret": 40667,
+  "img_with_private_key": 21249,
+  "img_with_secret_pct": 76.9,
+  "img_with_private_key_pct": 40.2,
+  "secret_detector_top": [
+   [
+    "Box",
+    2111375
+   ],
+   [
+    "URI",
+    559409
+   ],
+   [
+    "PrivateKey",
+    281128
+   ],
+   [
+    "BingSubscriptionKey",
+    208728
+   ],
+   [
+    "GitHubOauth2",
+    190480
+   ],
+   [
+    "Alchemy",
+    150323
+   ],
+   [
+    "Confluent",
+    102894
+   ],
+   [
+    "FixerIO",
+    98313
+   ],
+   [
+    "FTP",
+    79011
+   ],
+   [
+    "Polygon",
+    69810
+   ],
+   [
+    "Flickr",
+    63327
+   ],
+   [
+    "CloudflareApiToken",
+    62825
+   ],
+   [
+    "Gitlab",
+    49381
+   ],
+   [
+    "PivotalTracker",
+    41332
+   ],
+   [
+    "Swell",
+    36290
+   ],
+   [
+    "Pepipost",
+    35442
+   ],
+   [
+    "AzureSearchAdminKey",
+    35418
+   ],
+   [
+    "Atlassian",
+    35242
+   ],
+   [
+    "YoutubeApiKey",
+    30106
+   ],
+   [
+    "SentryToken",
+    30091
+   ]
+  ],
+  "n_secret_findings": 4955892
+ },
+ "elapsed_s": 2800
+}

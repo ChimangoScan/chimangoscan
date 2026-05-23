@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+
+# Runtime state / artifacts
+*.db
+*.db-wal
+*.db-shm
+work/
+out/
+output/
+runs/
+reports_out/
+*.log
+targets.txt
+
+# Local config (the example is committed; the live one is not)
+config/config.yaml
+config/config.local.yaml
+.env
+
+# Editors / OS
+.idea/
+.vscode/
+.DS_Store
+
+# tooling
+.pytest_cache/
+uv.lock.bak
+
+# docker hub account pools (credentials — never commit)
+accounts*.json
+config/config.*.yaml

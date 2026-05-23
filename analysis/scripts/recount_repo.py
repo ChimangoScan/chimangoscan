@@ -32,10 +32,10 @@ import sqlite3, json, sys, time, math, re, shutil, os, itertools
 from collections import Counter, defaultdict
 from datetime import datetime, timezone
 
-DB = "/mnt/win_ssd/ditector-good.db"
-OUT = "/mnt/win_ssd/chimangoscan-paper"
+DB = "/data/ditector-good.db"
+OUT = "."
 CACHE = os.path.join(OUT, "osv_severity_cache.json")
-TAGS = "/mnt/cache/tags_full.jsonl"
+TAGS = "/data/cache/tags_full.jsonl"
 NOW_TEMPORAL = datetime(2026, 5, 18, tzinfo=timezone.utc)
 UNKNOWN = {"unknown", "", "none", "null", "n/a", "na"}
 SEV_RANK = {"unknown": 0, "info": 1, "low": 2, "medium": 3, "high": 4, "critical": 5}
@@ -295,7 +295,7 @@ def main():
     # dependency_weight/downstream_pull_sum from the v2 ranking, keyed by repo:tag.
     RANKING_V2 = os.environ.get(
         "DITECTOR_RANKING_V2",
-        "/mnt/win_ssd/chimangoscan-paper/exposure_ranked_v2.jsonl")
+        "./exposure_ranked_v2.jsonl")
     v2_by_rt = {}
     if os.path.exists(RANKING_V2):
         for _l in open(RANKING_V2):

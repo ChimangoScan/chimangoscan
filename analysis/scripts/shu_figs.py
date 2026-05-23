@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Painel unico (grid 1x3) das analises do Shu 2017 reproduzidas neste trabalho:
-(a) severidade do pior achado, (b) CVEs por ano, (c) vulnerabilidades x idade.
-Saida: figures/fig_shu_panel.pdf
+Single panel (1x3 grid) of the Shu 2017 analyses reproduced in this work:
+(a) severity of the worst finding, (b) CVEs per year, (c) vulnerabilities vs. age.
+Output: figures/fig_shu_panel.pdf
 """
 import json, os
 import matplotlib
@@ -12,7 +12,7 @@ from matplotlib.ticker import FuncFormatter
 import numpy as np
 import figstyle
 
-OUT = "/mnt/win_ssd/chimangoscan-paper"
+OUT = "."
 PA = json.load(open(os.path.join(OUT, "paper_analysis.json")))
 figstyle.apply()
 
@@ -31,7 +31,7 @@ mfmt = FuncFormatter(mil)
 
 fig, ax = plt.subplots(1, 3, figsize=(9.2, 2.45))
 
-# (a) imagens pela severidade do pior achado
+# (a) images by the severity of the worst finding
 ms = PA["most_severe"]
 n = PA["n_reports"]
 order = ["none", "low", "medium", "high", "critical"]
@@ -51,23 +51,23 @@ for b, v in zip(bars, vals):
         ax[0].text(b.get_x() + b.get_width() / 2, v, f"{v:.1f}", ha="center",
                    va="bottom", fontsize=7, zorder=4)
 
-# (b) CVEs distintos por ano de publicacao
+# (b) distinct CVEs by publication year
 cy = {int(k): v for k, v in PA["cve_distinct_by_year"].items()}
-anos = sorted(y for y in cy if y <= 2026)
+years = sorted(y for y in cy if y <= 2026)
 figstyle.grid(ax[1], "y")
-ax[1].bar([str(y) for y in anos], [cy[y] for y in anos], color="#3a6ea5",
+ax[1].bar([str(y) for y in years], [cy[y] for y in years], color="#3a6ea5",
           width=0.80, zorder=3)
 ax[1].set_ylabel("Distinct CVEs detected")
 ax[1].set_xlabel("CVE publication year")
 ax[1].set_title("(b)")
-_ticks = list(range(0, len(anos), 4))
-if len(anos) - 1 not in _ticks:        # always show the first and last year
-    _ticks.append(len(anos) - 1)
+_ticks = list(range(0, len(years), 4))
+if len(years) - 1 not in _ticks:        # always show the first and last year
+    _ticks.append(len(years) - 1)
 ax[1].set_xticks(_ticks)
-ax[1].set_xticklabels([str(anos[i]) for i in _ticks], rotation=45, ha="right")
+ax[1].set_xticklabels([str(years[i]) for i in _ticks], rotation=45, ha="right")
 ax[1].yaxis.set_major_formatter(mfmt)
 
-# (c) vulnerabilidades x idade da imagem
+# (c) vulnerabilities vs. image age
 TA = json.load(open(os.path.join(OUT, "temporal_analysis.json")))
 pairs = TA.get("pairs", [])
 by_year = {}

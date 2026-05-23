@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# ChimangoScan -- regenerate every analysis JSON, figure and table value of the
+# AnonymousSystem -- regenerate every analysis JSON, figure and table value of the
 # Docker Hub measurement paper from a scan-results SQLite database.
 #
 # This wraps analysis/scripts/regenerate_all.py: one read-only streaming pass

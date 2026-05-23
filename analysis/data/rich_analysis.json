@@ -1,0 +1,375 @@
+{
+ "n_reports": 52895,
+ "sev_images": {
+  "critical": 49392,
+  "high": 50534,
+  "medium": 50872,
+  "low": 49951,
+  "info": 33708,
+  "unknown": 37393
+ },
+ "sev_findings": {
+  "critical": 7377355,
+  "high": 35740343,
+  "medium": 65727713,
+  "low": 19418002,
+  "info": 9927589,
+  "unknown": 3492958
+ },
+ "pkg_table": [
+  {
+   "package": "zlib",
+   "images": 44574,
+   "findings": 177503,
+   "distinct_cves": 15,
+   "ecosystem": "apk",
+   "critical_images": 28695
+  },
+  {
+   "package": "openssl",
+   "images": 39209,
+   "findings": 2597921,
+   "distinct_cves": 290,
+   "ecosystem": "deb",
+   "critical_images": 27479
+  },
+  {
+   "package": "tar",
+   "images": 32031,
+   "findings": 499294,
+   "distinct_cves": 27,
+   "ecosystem": "npm",
+   "critical_images": 0
+  },
+  {
+   "package": "util-linux",
+   "images": 28555,
+   "findings": 785349,
+   "distinct_cves": 21,
+   "ecosystem": "ubuntu:20.04",
+   "critical_images": 14
+  },
+  {
+   "package": "curl",
+   "images": 28516,
+   "findings": 2836304,
+   "distinct_cves": 187,
+   "ecosystem": "deb",
+   "critical_images": 18309
+  },
+  {
+   "package": "coreutils",
+   "images": 27896,
+   "findings": 142134,
+   "distinct_cves": 33,
+   "ecosystem": "deb",
+   "critical_images": 0
+  },
+  {
+   "package": "ncurses-base",
+   "images": 27671,
+   "findings": 372917,
+   "distinct_cves": 30,
+   "ecosystem": "deb",
+   "critical_images": 1440
+  },
+  {
+   "package": "systemd",
+   "images": 27343,
+   "findings": 1121059,
+   "distinct_cves": 57,
+   "ecosystem": "ubuntu:16.04",
+   "critical_images": 3476
+  },
+  {
+   "package": "expat",
+   "images": 25886,
+   "findings": 649552,
+   "distinct_cves": 47,
+   "ecosystem": "ubuntu:18.04",
+   "critical_images": 16282
+  },
+  {
+   "package": "bash",
+   "images": 25857,
+   "findings": 85097,
+   "distinct_cves": 15,
+   "ecosystem": "deb",
+   "critical_images": 19
+  },
+  {
+   "package": "libc6",
+   "images": 25388,
+   "findings": 1030711,
+   "distinct_cves": 128,
+   "ecosystem": "deb",
+   "critical_images": 13655
+  },
+  {
+   "package": "ncurses",
+   "images": 25149,
+   "findings": 820982,
+   "distinct_cves": 31,
+   "ecosystem": "ubuntu:16.04",
+   "critical_images": 9592
+  },
+  {
+   "package": "libc-bin",
+   "images": 25058,
+   "findings": 1021343,
+   "distinct_cves": 128,
+   "ecosystem": "deb",
+   "critical_images": 13386
+  },
+  {
+   "package": "passwd",
+   "images": 25041,
+   "findings": 175342,
+   "distinct_cves": 14,
+   "ecosystem": "deb",
+   "critical_images": 4931
+  },
+  {
+   "package": "login",
+   "images": 25022,
+   "findings": 178484,
+   "distinct_cves": 18,
+   "ecosystem": "deb",
+   "critical_images": 4931
+  },
+  {
+   "package": "libudev1",
+   "images": 24861,
+   "findings": 534360,
+   "distinct_cves": 57,
+   "ecosystem": "deb",
+   "critical_images": 59
+  },
+  {
+   "package": "libuuid1",
+   "images": 24811,
+   "findings": 136792,
+   "distinct_cves": 17,
+   "ecosystem": "deb",
+   "critical_images": 0
+  },
+  {
+   "package": "libblkid1",
+   "images": 24715,
+   "findings": 136272,
+   "distinct_cves": 17,
+   "ecosystem": "deb",
+   "critical_images": 0
+  },
+  {
+   "package": "libmount1",
+   "images": 24707,
+   "findings": 136234,
+   "distinct_cves": 17,
+   "ecosystem": "deb",
+   "critical_images": 0
+  },
+  {
+   "package": "bsdutils",
+   "images": 24629,
+   "findings": 136149,
+   "distinct_cves": 17,
+   "ecosystem": "deb",
+   "critical_images": 0
+  },
+  {
+   "package": "mount",
+   "images": 24599,
+   "findings": 135778,
+   "distinct_cves": 17,
+   "ecosystem": "deb",
+   "critical_images": 0
+  },
+  {
+   "package": "ncurses-bin",
+   "images": 24586,
+   "findings": 282302,
+   "distinct_cves": 30,
+   "ecosystem": "deb",
+   "critical_images": 1433
+  },
+  {
+   "package": "gpgv",
+   "images": 24370,
+   "findings": 133546,
+   "distinct_cves": 21,
+   "ecosystem": "deb",
+   "critical_images": 108
+  },
+  {
+   "package": "libsystemd0",
+   "images": 24318,
+   "findings": 521905,
+   "distinct_cves": 56,
+   "ecosystem": "deb",
+   "critical_images": 57
+  },
+  {
+   "package": "glibc",
+   "images": 24228,
+   "findings": 1890310,
+   "distinct_cves": 127,
+   "ecosystem": "ubuntu:16.04",
+   "critical_images": 19344
+  }
+ ],
+ "n_distinct_packages": 19144,
+ "sbom_top_by_images": [
+  [
+   "ca-certificates",
+   38077
+  ],
+  [
+   "bash",
+   35362
+  ],
+  [
+   "tar",
+   33229
+  ],
+  [
+   "tzdata",
+   30208
+  ],
+  [
+   "findutils",
+   29529
+  ],
+  [
+   "grep",
+   29487
+  ],
+  [
+   "sed",
+   29428
+  ],
+  [
+   "gzip",
+   29030
+  ],
+  [
+   "coreutils",
+   29016
+  ],
+  [
+   "ncurses-base",
+   28849
+  ],
+  [
+   "util-linux",
+   28541
+  ],
+  [
+   "diffutils",
+   28207
+  ],
+  [
+   "openssl",
+   27949
+  ],
+  [
+   "hostname",
+   27633
+  ],
+  [
+   "passwd",
+   27312
+  ],
+  [
+   "base-files",
+   26359
+  ],
+  [
+   "curl",
+   25977
+  ],
+  [
+   "libstdc++6",
+   25707
+  ],
+  [
+   "libc6",
+   25705
+  ],
+  [
+   "perl-base",
+   25679
+  ],
+  [
+   "libacl1",
+   25581
+  ],
+  [
+   "libattr1",
+   25580
+  ],
+  [
+   "libselinux1",
+   25564
+  ],
+  [
+   "liblzma5",
+   25560
+  ],
+  [
+   "libuuid1",
+   25554
+  ],
+  [
+   "mount",
+   25548
+  ],
+  [
+   "zlib1g",
+   25485
+  ],
+  [
+   "dash",
+   25458
+  ],
+  [
+   "libblkid1",
+   25456
+  ],
+  [
+   "libmount1",
+   25442
+  ]
+ ],
+ "sbom_eco": {
+  "apk": 809293,
+  "deb": 6518878,
+  "go-module": 1799062,
+  "rpm": 909847,
+  "python": 718343,
+  "binary": 255042,
+  "java-archive": 1955128,
+  "bitnami": 762,
+  "npm": 7803865,
+  "dotnet": 1579467,
+  "wordpress-plugin": 187,
+  "php-pear": 9893,
+  "gem": 200006,
+  "rust-crate": 207339,
+  "alpm": 20489,
+  "php-composer": 68253,
+  "jenkins-plugin": 14754,
+  "lua-rocks": 1970,
+  "nix": 6002,
+  "r-package": 37368,
+  "linux-kernel": 130,
+  "linux-kernel-module": 176011,
+  "homebrew": 59029,
+  "portage": 300,
+  "model": 6,
+  "unknownpackage": 4,
+  "conan": 21
+ },
+ "n_distinct_components": 240440,
+ "elapsed_s": 2800
+}

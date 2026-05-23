@@ -1,0 +1,36 @@
+max_thread: 0
+log_file: '<log-file-path>'
+repo_with_many_tags_file: '<repo-with-too-many-tags-file-path>[only for statistics]'
+tmp_dir: '<tmp-dir-path>'
+proxy:
+  http_proxy: ''
+  https_proxy: ''
+docker_config:
+  username: '<dockerhub-username>'
+  password: '<dockerhub-password>'
+  auth: ''
+  serveraddress: ''
+  identitytoken: ''
+  registrytoken: ''
+mongo_config:
+  uri: 'mongodb://localhost:27017'
+  database: 'dockerhub_data'
+  collections:
+    repositories: 'repositories_data'
+    tags: 'tags_data'
+    images: 'images_data'
+    image_results: 'image_results'
+    layer_results: 'layer_results'
+    user: 'user'
+neo4j_config:
+  neo4j_uri: 'neo4j://localhost:7687'
+  neo4j_username: '<neo4j-username>'
+  neo4j_password: '<neo4j-password>'
+rules_config:
+  secret_rules_file: 'rules/secret_rules.yaml'
+  sensitive_param_rules_file: 'rules/sensitive_param_rules.yaml'
+trufflehog_config:
+  filepath: '<trufflehog-path>'
+  verify: false
+anchore_config:
+  filepath: '<anchore-cli-path>'

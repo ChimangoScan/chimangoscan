@@ -1,0 +1,13 @@
+# Python dependencies for the PRECOMPUTED reproduction path
+# (./reproduce.sh precomputed): regenerate every paper figure and table value
+# from the shipped precomputed data, with no database, network, or credentials.
+#
+# These two libraries are all the figure/table scripts in analysis/scripts/
+# need. Versions are pinned for a byte-stable, deterministic regeneration; the
+# matplotlib boxplot API used by the panels requires >= 3.9.
+#
+# The FULL reproduction path (./reproduce.sh full) does NOT use this file: it
+# runs every stage inside the containerized runner image (docker/Dockerfile.runner),
+# so the host needs only Docker. See README.md, section "Reproduction".
+numpy==1.26.4
+matplotlib==3.9.2

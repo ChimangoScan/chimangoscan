@@ -23,7 +23,7 @@ from matplotlib.patches import Circle
 import numpy as np
 import figstyle
 
-OUT = "/mnt/win_ssd/chimangoscan-paper"
+OUT = "."
 figstyle.apply()
 PL = json.load(open(os.path.join(OUT, "plan_analysis.json")))
 
@@ -166,7 +166,7 @@ def fig_secret_cdf():
     com = np.array(sorted(sd["sec_com"]), dtype=float)
     # low, wide panel: it sits beside Table 8 (Dockle misconfiguration) in a
     # side-by-side minipage, so it is kept short to save vertical space.
-    fig, ax = plt.subplots(figsize=(3.5, 1.85))
+    fig, ax = plt.subplots(figsize=(3.5, 1.55))
     figstyle.grid(ax, "both")
     for arr, col, lab in ((com, "#cb6a3e", "Community"),
                           (off, "#2c7fb8", "Official")):
@@ -248,7 +248,7 @@ def fig_marginal_scanner():
 # fig_allvsdistinct to use vertical space efficiently.
 # ============================================================
 def fig_panel_divergence():
-    fig, ax = plt.subplots(1, 3, figsize=(7.0, 2.2))
+    fig, ax = plt.subplots(1, 3, figsize=(7.0, 2.05))
 
     # ---- (a) Venn-3: Trivy / Grype / OSV ----
     ex = json.load(open(os.path.join(OUT, "extra_analysis.json")))

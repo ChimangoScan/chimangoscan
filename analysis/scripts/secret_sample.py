@@ -7,7 +7,7 @@ import sqlite3, json, re, random
 from collections import Counter
 
 random.seed(42)
-DB = "/mnt/win_ssd/ditector-good.db"
+DB = "/data/ditector-good.db"
 K = 1100                                  # 95% CI, +-3% on a proportion
 con = sqlite3.connect(DB)
 
@@ -45,8 +45,8 @@ con.close()
 
 json.dump({"total_secret_findings": total, "images_with_secret": n_img,
            "by_detector": det.most_common(), "by_location": locp.most_common()},
-          open("/mnt/win_ssd/chimangoscan-paper/secret_dist.json", "w"), indent=1)
-json.dump(reservoir, open("/mnt/win_ssd/chimangoscan-paper/secret_sample.json", "w"), indent=1)
+          open("./secret_dist.json", "w"), indent=1)
+json.dump(reservoir, open("./secret_sample.json", "w"), indent=1)
 print(f"DONE total={total:,} images={n_img:,} sample={len(reservoir)}")
 print("top detectors:", det.most_common(8))
 print("locations:", locp.most_common())

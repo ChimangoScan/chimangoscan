@@ -41,8 +41,8 @@ Anything matching none of the above is REVIEW and hand-classified.
 """
 import json, re, csv, math
 
-SAMPLE = "/mnt/win_ssd/chimangoscan-paper/secret_sample.json"
-DIST = "/mnt/win_ssd/chimangoscan-paper/secret_dist.json"
+SAMPLE = "./secret_sample.json"
+DIST = "./secret_dist.json"
 
 HEX = re.compile(r'^[0-9a-f]{32}$|^[0-9a-f]{40}$', re.I)
 DEP = re.compile(r'(node_modules|\.pnpm|/\.npm/|_cacache|package-lock|yarn|\.cargo/registry|go-build|go/pkg/mod|/nix/store|site-packages|dist-packages|/venv/|vendor/|vendored|\.dist-info|/gems/|/\.bundle/|/\.cache/|/\.config/|\.composer|packagist|/registries|registry\.toml|registry/storage|/bundle/)', re.I)
@@ -100,7 +100,7 @@ def main():
     lo = (p + z*z/(2*n) - z*math.sqrt((p*(1-p)+z*z/(4*n))/n)) / (1+z*z/n)
     hi = (p + z*z/(2*n) + z*math.sqrt((p*(1-p)+z*z/(4*n))/n)) / (1+z*z/n)
     # full per-detection CSV (the whole sample, every detection classified)
-    with open("/mnt/win_ssd/chimangoscan-paper/secret_classification.csv", "w", newline="") as f:
+    with open("./secret_classification.csv", "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=["detector", "verdict", "category", "value", "location"])
         w.writeheader(); w.writerows(rows)
     report = {
@@ -114,7 +114,7 @@ def main():
         "by_category": cat.most_common(),
         "manual_tp_locations": sorted(MANUAL_TP),
     }
-    json.dump(report, open("/mnt/win_ssd/chimangoscan-paper/secret_validation_report.json", "w"), indent=1)
+    json.dump(report, open("./secret_validation_report.json", "w"), indent=1)
     print(f"sample={n}  FP={fp} ({100*p:.1f}%, Wilson 95% CI {100*lo:.1f}-{100*hi:.1f}%)  TP candidates={tp}")
     print("by category:", cat.most_common())
 

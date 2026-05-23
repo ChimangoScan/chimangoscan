@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
 """
-Reproducoes graficas dos estudos anteriores de medicao do Docker Hub,
-para a Secao "Reproducing Prior Docker Hub Analyses".
+Graphical reproductions of prior Docker Hub measurement studies,
+for the Section "Reproducing Prior Docker Hub Analyses".
 
-Painel 2x1:
- (a) Liu et al. 2020 -- prevalencia de vulnerabilidades high/critical,
-     imagens oficiais vs comunidade: valores reportados por Liu (2020)
-     ao lado dos medidos neste corpus.
- (b) Wist et al. 2021 -- parcela das vulnerabilidades severas
-     (high+critical) por classe de ecossistema (SO vs linguagem).
+2x1 panel:
+ (a) Liu et al. 2020 -- prevalence of high/critical vulnerabilities,
+     official vs. community images: the values reported by Liu (2020)
+     alongside those measured in this corpus.
+ (b) Wist et al. 2021 -- share of severe vulnerabilities
+     (high+critical) by ecosystem class (OS vs. language).
 
-Todos os numeros vem de repro_analysis.json (ja computado). Os valores
-de Liu sao os reportados no proprio paper (~30% oficiais, >64% comunidade).
-Saida: figures/fig_repro_panel.pdf
+All numbers come from repro_analysis.json (already computed). Liu's values
+are those reported in their own paper (~30% official, >64% community).
+Output: figures/fig_repro_panel.pdf
 """
 import json
 import os
@@ -22,7 +22,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import figstyle
 
-OUT = "/mnt/win_ssd/chimangoscan-paper"
+OUT = "."
 R = json.load(open(os.path.join(OUT, "repro_analysis.json")))
 figstyle.apply()
 
@@ -30,7 +30,7 @@ fig, ax = plt.subplots(1, 2, figsize=(7.0, 2.4))
 
 # (a) Liu et al. 2020: high/critical prevalence, official vs community
 liu = R["liu"]
-# valores reportados por Liu et al. 2020 (ESORICS): ~30% oficiais, >64% comm.
+# values reported by Liu et al. 2020 (ESORICS): ~30% official, >64% community.
 liu_reported = {"official": 30.0, "community": 64.0}
 groups = ["Official", "Community"]
 reported = [liu_reported["official"], liu_reported["community"]]

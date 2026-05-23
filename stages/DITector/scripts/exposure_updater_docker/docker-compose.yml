@@ -1,0 +1,35 @@
+services:
+  exposure-updater:
+    build: .
+    image: exposure-updater:0.1.0
+    container_name: exposure-updater
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      # queue.db (rw) — escreve weights novos
+      - ${SCANNER_HOME}/scanners/work/ditector.db:/queue/ditector.db:rw
+      - ${SCANNER_HOME}/scanners/work/ditector.db-wal:/queue/ditector.db-wal:rw
+      - ${SCANNER_HOME}/scanners/work/ditector.db-shm:/queue/ditector.db-shm:rw
+      # scratch dir — dumps do mongo/neo4j + jsonl ranqueado (persistente entre runs)
+      - ${SCANNER_HOME}/exposure-data:/scratch:rw
+    command:
+      - --queue-db
+      - /queue/ditector.db
+      - --ranker-script
+      - /app/compute_exposure_ranking.py
+      - --work-dir
+      - /scratch/exposure_work
+      - --ranked-jsonl
+      - /scratch/ditector_exposure_ranked.jsonl
+      - --top-n
+      - "500000"
+      - --loop
+      - "21600"
+    environment:
+      MONGO_URI: mongodb://127.0.0.1:27017
+      NEO4J_URI: bolt://127.0.0.1:7687
+    logging:
+      driver: json-file
+      options:
+        max-size: "20m"
+        max-file: "5"

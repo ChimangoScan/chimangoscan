@@ -1,0 +1,53 @@
+.git/
+go.work
+go.work.sum
+crawler/proxyaddr.json
+secret.json
+.secret
+config.yaml
+.env
+accounts_*.json
+
+test.json
+*.log
+
+pkg/
+
+# jetbrains file
+**/.uuid
+.idea/
+
+# ==========================
+# used for build files
+# ==========================
+*result.json
+ditector
+accounts*.json
+docker-scan
+mongo_data_secure/
+
+# Arquivos operacionais internos — nunca commitar
+RUNBOOK.txt
+a9_sudo_commands.txt
+
+# Binários compilados
+ditector_bin
+ditector_deepen
+ditector_final
+ditector_no_cache
+ditector_pure
+
+# Estado operacional com IPs e paths internos
+STATE.md
+
+# Dados e banco
+neo4j_data/
+reports/
+node_modules/
+scripts/__pycache__/
+
+# PDFs e arquivos temporários
+*.pdf
+dashboard.html
+*.pyc
+network_services_prioritized.jsonl

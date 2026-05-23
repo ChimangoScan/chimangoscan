@@ -1,4 +1,4 @@
-# ChimangoScan — Reproduction Artifact
+# AnonymousSystem — Reproduction Artifact
 
 *Large-Scale Security Measurement of the Docker Hub Image Ecosystem*
 
@@ -45,13 +45,13 @@ This README is organized exactly as the CTA minimum-README requires:
 The repository itself is laid out as follows:
 
 ```
-chimangoscan/
+anonymoussystem/
 ├── README.md                     this file (artifact roadmap)
 ├── DATASET.md                    dataset schema and access (reports, crawl, graph)
 ├── LICENSE                       MIT
 ├── stages/
-│   ├── DITector/                 submodule — Stages I+II + exposure ranker (Go + Python)
-│   └── scanners/                 submodule — Stage III, multi-scanner scan (Python)
+│   ├── DITector/                 vendored — Stages I+II + exposure ranker (Go + Python)
+│   └── scanners/                 vendored — Stage III, multi-scanner scan (Python)
 ├── orchestration/
 │   ├── run_pipeline.sh           runs the full pipeline end to end
 │   ├── minimal_test.sh           minimal test — the reproducibility claim
@@ -73,6 +73,66 @@ chimangoscan/
 
 ---
 
+# Reproduction
+
+Reproduction is fully automated through a top-level `Makefile` and `reproduce.sh`,
+in **two modes**.
+
+## Precomputed (figures + tables, no database/network/credentials)
+
+```bash
+python3 -m venv .venv && . .venv/bin/activate
+pip install -r requirements.txt
+./reproduce.sh precomputed         # or:  make precomputed
+```
+
+This regenerates **every** paper figure and every table value from the small
+precomputed data shipped in `analysis/data/` — it needs **no database, no
+network access, no credentials, and no Docker**, only Python and the two
+libraries pinned in `requirements.txt`. It runs in seconds and writes:
+
+- `figures/*.pdf` — the twelve data-driven figures of the paper;
+- `figures/table_values.json` — every numeric value and pre-formatted LaTeX
+  table-row body the paper's tables use (e.g. 96.3% vulnerability prevalence,
+  66.8% single-scanner findings, 2.7% agreed by all three, 51,751 distinct
+  content digests).
+
+Internally this drives the figure scripts (`analysis/scripts/plan_figs.py`,
+`square_figs.py`, `shu_figs.py`, `panels3.py`, shared style in `figstyle.py`)
+and the table-value emitter (`apply_repo_numbers.py`), orchestrated by
+`regenerate_all.py`, over the shipped JSON inputs in `analysis/data/`. The
+283 GB scan dataset is **not** required for this path (it is released on
+acceptance); the precomputed JSONs are the small per-image aggregates those
+scripts consume.
+
+`make precomputed` is self-contained: it creates `.venv`, installs
+`requirements.txt`, and runs the precomputed reproduction in one step.
+
+## Full (the real pipeline, end to end, at a configurable scale)
+
+```bash
+./reproduce.sh full --scale 10     # or:  make full SCALE=10
+```
+
+This runs the real pipeline end to end — **Stage I** (crawl Docker Hub) →
+**Stage II** (build the IDEA layer graph) → **exposure ranker** → **Stage III**
+(six-scanner scan) → analysis — at a **configurable scale**. The host needs only
+Docker; every stage runs inside the containerized runner image
+(`docker/Dockerfile.runner`). Scale and targets come from flags
+(`--scale`, `--prefixes`, `--crawl-duration`) — there is **no hardcoded
+infrastructure**. The default scale is small (a few repositories, one
+laptop + Docker) and finishes in tens of minutes. Provide Docker Hub accounts
+in `stages/DITector/accounts.json` first (see *Security concerns*).
+
+Reproducing the paper at **full scale (52,895 images, 663.8 billion pulls)**
+requires the authors' **multi-machine setup** (distributed crawl, a large Neo4j
+layer graph, and a six-scanner sweep over hundreds of GB of images) and runs for
+**months**; `./reproduce.sh full` reproduces the *same* pipeline at the scale you
+choose. The full pipeline can also be driven directly through
+`orchestration/run_pipeline.sh` (see *Experiments*).
+
+---
+
 # Seals considered
 
 The seals requested for evaluation are: **Available (SeloD), Functional (SeloF),
@@ -80,7 +140,7 @@ Sustainable (SeloS), and Reproducible (SeloR)**.
 
 | Seal | Code | Justification |
 |------|------|---------------|
-| Available    | **SeloD** | Code is publicly versioned on GitHub (this repository and its two submodules); the dataset is published on Zenodo with a DOI. |
+| Available    | **SeloD** | Code is publicly versioned in this repository (the two pipeline stages are vendored under `stages/`); the dataset is published on Zenodo with a DOI. |
 | Functional   | **SeloF** | The pipeline runs; the *Minimal test* below validates end-to-end operation on a single machine. |
 | Sustainable  | **SeloS** | The code is modular and documented: Stages I/II are a distributed Go service, Stage III is a Python scan system with one adapter per scanner and a single `Finding` schema, and every analysis script carries a module docstring. The "Experiments" section maps each paper claim to the exact file and command that produces it. |
 | Reproducible | **SeloR** | `orchestration/run_analysis.sh` regenerates *every* number, figure, and table of the paper from the released scan database in one read-only pass. |
@@ -192,12 +252,10 @@ Third-party access:
 # Installation
 
 ```bash
-# 1. Clone the repository with its submodules (DITector and scanners)
-git clone --recurse-submodules https://github.com/ChimangoScan/chimangoscan.git
-cd chimangoscan
-
-# If you already cloned without --recurse-submodules:
-git submodule update --init --recursive
+# 1. Clone the repository. The two pipeline stages (DITector and scanners)
+#    are vendored directly under stages/ -- no submodule init is needed.
+git clone https://anonymous.4open.science/r/AnonymousSystem-2131/
+cd anonymoussystem
 
 # 2. Bring up the database infrastructure (MongoDB + Neo4j)
 cd stages/DITector
@@ -224,7 +282,7 @@ required.
 
 The minimal test is the artifact's reproducibility **claim**:
 
-> *The ChimangoScan pipeline runs end to end — Docker Hub discovery,
+> *The AnonymousSystem pipeline runs end to end — Docker Hub discovery,
 > prioritization, and multi-scanner scanning — producing a consolidated report.*
 
 `orchestration/minimal_test.sh` validates this claim **without** scanning all of
@@ -350,10 +408,9 @@ hand-labeled secret sample are non-credentials.
 
 # License
 
-Distributed under the MIT License — see [`LICENSE`](LICENSE). The submodules
-[`DITector`](https://github.com/ChimangoScan/DITector) and
-[`scanners`](https://github.com/ChimangoScan/scanners) carry their own licenses;
-the released dataset is licensed CC BY 4.0 (see `DATASET.md`). `DITector` is a
-fork of [NSSL-SJTU/DITector](https://github.com/NSSL-SJTU/DITector); the discovery
-and IDEA-graph method is inspired by *Dr. Docker* (WWW '25), with an original
-implementation by the authors of this work.
+Distributed under the MIT License — see [`LICENSE`](LICENSE). The vendored
+pipeline stages `stages/DITector/` and `stages/scanners/` carry their own
+licenses; the released dataset is licensed CC BY 4.0 (see `DATASET.md`).
+`DITector` builds on the DITector framework (Dr. Docker);
+the discovery and IDEA-graph method is inspired by *Dr. Docker* (WWW '25), with an
+original implementation by the authors of this work.

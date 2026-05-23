@@ -34,7 +34,7 @@ SIG_TAG_RE = re.compile(r"^sha256-[0-9a-f]{64}\.(sig|att)$")
 NEO4J_URI = os.environ.get("NEO4J_URI", "bolt://127.0.0.1:7687")
 MONGO_URI = os.environ.get("MONGO_URI", "mongodb://127.0.0.1:27017")
 WORKDIR = os.environ.get("WORKDIR", os.path.expanduser("~/scanners/data/exposure_work"))
-OUT_PATH = os.environ.get("OUT_PATH", "/mnt/win_ssd/chimangoscan-paper/exposure_ranked_v3.jsonl")
+OUT_PATH = os.environ.get("OUT_PATH", "./exposure_ranked_v3.jsonl")
 
 os.makedirs(WORKDIR, exist_ok=True)
 
@@ -443,12 +443,12 @@ def main():
     for ni, imgs in top_images.items():
         dps = downstream[ni]
         dw = dep_weight[ni]
-        # Heuristica do representante canonico: varias imagens podem compartilhar
-        # o mesmo top layer -- sao copias byte-identicas de uma base (p.ex.
-        # alguem publica uma imagem que e apenas "FROM alpine" sem nenhuma
-        # mudanca). O downstream daquele layer pertence a UMA representante: a de
-        # maior pull_count. As demais sao duplicatas e recebem exposure igual ao
-        # seu proprio pull_count, sem herdar o downstream que nao causaram.
+        # Canonical-representative heuristic: several images can share
+        # the same top layer -- they are byte-identical copies of a base (e.g.
+        # someone publishes an image that is just "FROM alpine" with no
+        # change). The downstream of that layer belongs to ONE representative: the
+        # one with the highest pull_count. The rest are duplicates and get an exposure
+        # equal to their own pull_count, without inheriting the downstream they did not cause.
         if len(imgs) > 1:
             multi_node += 1
             canon = max(imgs, key=lambda r: repo_pull.get(
