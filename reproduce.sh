@@ -60,7 +60,11 @@ reproduce_precomputed() {
   # writes figures into <out>/figures and table_values.json into <out>; both live
   # under the repo, so they land on the host whether we run natively or in Docker.
   WORK="$ROOT/artifacts/precomputed"
-  rm -rf "$WORK"; mkdir -p "$WORK"
+  # Clean the scratch dir; if a prior Docker-runner run left root-owned files,
+  # remove them via a throwaway container (the reviewer has Docker).
+  rm -rf "$WORK" 2>/dev/null || \
+    docker run --rm -v "$ROOT/artifacts:/mnt" alpine rm -rf /mnt/precomputed 2>/dev/null || true
+  mkdir -p "$WORK"
   cp "$DATA"/*.json "$WORK/"
   cp "$DATA"/recount_repo.log "$WORK/"   # carries the distinct-digest count
 
@@ -91,7 +95,8 @@ reproduce_precomputed() {
     # shellcheck source=orchestration/_runner.sh
     source "$ROOT/orchestration/_runner.sh"
     ensure_runner
-    regen() { RUNNER_WORKDIR="$ROOT" in_runner sh -c \
+    # Write outputs as the invoking user so re-runs can clean them without sudo.
+    regen() { RUNNER_USER="$(id -u):$(id -g)" RUNNER_WORKDIR="$ROOT" in_runner sh -c \
               "MPLBACKEND=Agg MPLCONFIGDIR='$WORK/.mpl' python3 '$SCRIPTS/regenerate_all.py' --stage $1 --out '$WORK' --db /dev/null"; }
   fi
 

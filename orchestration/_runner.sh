@@ -25,8 +25,12 @@ ensure_runner() {
 }
 
 in_runner() {
+  # RUNNER_USER="uid:gid" makes the container write host files as that user
+  # (default: root). Set it for stages that only produce host artifacts (e.g.
+  # the precomputed figures) so re-runs can clean them without sudo.
   docker run --rm \
     --network host \
+    ${RUNNER_USER:+--user "$RUNNER_USER"} \
     -e MPLBACKEND=Agg -e MPLCONFIGDIR=/tmp/mpl \
     -v "$ROOT:$ROOT" \
     -v /var/run/docker.sock:/var/run/docker.sock \
