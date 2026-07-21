@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compute Docker-image supply-chain exposure ranking from the DITector IDEA graph.
+"""Compute Docker-image supply-chain exposure ranking from the ChimangoScan IDEA graph.
 
 Strategy (justified by the graph construction in myutils/neo4j.go):
   - IS_BASE_OF builds a *forest of out-trees*: a Layer's id = sha256(parent.id + sha256(layer.digest)),
@@ -7,7 +7,7 @@ Strategy (justified by the graph construction in myutils/neo4j.go):
   - An image lives at its top Layer L (its docker.io/ns/repo:tag@digest string is in L.images).
   - downstream images of image I (at top layer L) = images carried by every *strict* descendant of L.
     Because it is a tree, each descendant node contributes its images exactly once -> no cross-branch dedup.
-  - So dependency_weight(I) = sum over strict-descendant nodes N of len(images[N])  (DITector's metric).
+  - So dependency_weight(I) = sum over strict-descendant nodes N of len(images[N])  (ChimangoScan's metric).
     downstream_pull_sum(I) = sum over strict-descendant nodes N of (sum of repo pull_count over refs in images[N]).
     Both are *subtree sums* (excluding L itself) -> one O(nodes) bottom-up pass, no per-image traversal.
 

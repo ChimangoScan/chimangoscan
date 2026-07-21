@@ -20,7 +20,7 @@ source:
   name_column: Container              # optional; used as the target slug if present
   meta_columns: [Category, Type, Port]
   limit: 0                            # 0 = no limit
-  # jsonl (DITector): keys repository_namespace/repository_name/tag_name + weights
+  # jsonl (ChimangoScan): keys repository_namespace/repository_name/tag_name + weights
   # txt: one image reference per line
 
 # ── Which scanners ──────────────────────────────────────────────────────────

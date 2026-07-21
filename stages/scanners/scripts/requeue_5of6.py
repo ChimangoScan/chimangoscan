@@ -6,7 +6,7 @@
 # One-shot operational script — invoke once per re-scan cycle:
 #   python3 scripts/requeue_5of6.py
 import sqlite3, json, time, os, sys
-DB = "/home/user/scanners/work/ditector.db"
+DB = "/home/user/scanners/work/chimangoscan.db"
 BAK = "/home/user/exposure-data/requeue_5of6_backup_" + time.strftime("%Y%m%d-%H%M%S") + ".jsonl"
 
 c = sqlite3.connect(DB, timeout=60)

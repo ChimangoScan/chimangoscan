@@ -20,7 +20,7 @@
 #   --out DIR         working/output directory (extraction, dumps, results)
 #   --with-mongo URI  MongoDB with the crawl (dockerhub_data); enables the
 #                     exposure ranking and everything derived from it
-#   --sqlite PATH     scan-results SQLite (ditector-good.db); enables the
+#   --sqlite PATH     scan-results SQLite (chimangoscan-reports.db); enables the
 #                     CVE-digest extraction and propagation
 #   --keep            leave the Neo4j container running on exit
 #
@@ -166,7 +166,7 @@ fi
 
 if [ -n "$SQLITE" ] && [ -s "$FILTER" ]; then
   log "per-CVE affected digests"
-  in_runner sh -c "DITECTOR_DB='$SQLITE' DITECTOR_FILTER_RT='$FILTER' OUT_PATH='$CVES' \
+  in_runner sh -c "CHIMANGOSCAN_DB='$SQLITE' CHIMANGOSCAN_FILTER_RT='$FILTER' OUT_PATH='$CVES' \
     python3 '$SCRIPTS/extract_cve_digests.py'"
 elif [ -z "$SQLITE" ]; then
   echo "skipping CVE digests: pass --sqlite PATH (scan-results database)"

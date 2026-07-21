@@ -25,7 +25,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-DITECTOR="$ROOT/stages/DITector"
+CHIMANGOSCAN="$ROOT/stages/chimangoscan"
 SCANNERS="$ROOT/stages/scanners"
 ARTIFACTS="$ROOT/artifacts"
 RANKED="$ARTIFACTS/exposure_ranked.jsonl"
@@ -51,8 +51,8 @@ fail() { echo "MINIMAL TEST FAILED: $*" >&2; exit 1; }
 
 mkdir -p "$ARTIFACTS"
 
-[ -e "$DITECTOR/main.go" ] || fail "submodules not initialised -- run: git submodule update --init --recursive"
-[ -e "$DITECTOR/accounts.json" ] || fail "stages/DITector/accounts.json missing (Docker Hub accounts needed for the crawl)"
+[ -e "$CHIMANGOSCAN/main.go" ] || fail "submodules not initialised -- run: git submodule update --init --recursive"
+[ -e "$CHIMANGOSCAN/accounts.json" ] || fail "stages/chimangoscan/accounts.json missing (Docker Hub accounts needed for the crawl)"
 
 # Build the runner image once; every stage runs inside it so the host needs
 # only Docker. MongoDB and Neo4j are reached over the host network.
@@ -62,7 +62,7 @@ ensure_runner
 # 1. Stage I -- short crawl restricted to a few namespace prefixes
 # ---------------------------------------------------------------------------
 log "Stage I -- crawling Docker Hub prefixes [$PREFIXES] for $CRAWL_DURATION"
-RUNNER_WORKDIR="$DITECTOR" in_runner sh -c \
+RUNNER_WORKDIR="$CHIMANGOSCAN" in_runner sh -c \
   "timeout $CRAWL_DURATION go run main.go crawl --workers 8 --seed $PREFIXES --accounts accounts.json --config config.yaml" \
   || true   # the timeout ending the crawl is expected
 
@@ -70,7 +70,7 @@ RUNNER_WORKDIR="$DITECTOR" in_runner sh -c \
 # 2. Stage II -- build the IDEA graph for everything discovered (threshold 0)
 # ---------------------------------------------------------------------------
 log "Stage II -- building the IDEA dependency graph"
-RUNNER_WORKDIR="$DITECTOR" in_runner go run main.go build \
+RUNNER_WORKDIR="$CHIMANGOSCAN" in_runner go run main.go build \
     --format mongo \
     --threshold 0 \
     --tags 3 \
@@ -82,7 +82,7 @@ RUNNER_WORKDIR="$DITECTOR" in_runner go run main.go build \
 # 3. Ranker -- sort repositories by pull count + supply-chain exposure
 # ---------------------------------------------------------------------------
 log "Ranker -- computing exposure ranking"
-RUNNER_WORKDIR="$DITECTOR" in_runner sh -c \
+RUNNER_WORKDIR="$CHIMANGOSCAN" in_runner sh -c \
   "OUT_PATH=$RANKED WORKDIR=$ARTIFACTS/exposure_work python3 scripts/compute_exposure_ranking.py"
 
 [ -s "$RANKED" ] || fail "ranker produced no exposure_ranked.jsonl"

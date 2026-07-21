@@ -5,7 +5,7 @@ Ground-truth validation of TruffleHog secret detections (paper Section 4.5).
 REPRODUCIBILITY
 ---------------
 1. secret_sample.py  -- reservoir-samples K=1100 detections (random.seed(42))
-   from every secret finding in ditector-good.db, plus the full population
+   from every secret finding in chimangoscan-reports.db, plus the full population
    distribution. Outputs secret_sample.json + secret_dist.json.
 2. validate_secrets.py (this file) -- classifies EVERY one of the 1100 sampled
    detections into true-positive / false-positive with the explicit rules

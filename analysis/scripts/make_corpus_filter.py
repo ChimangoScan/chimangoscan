@@ -3,7 +3,7 @@
 ranking, in ranking order, one per line, with the `library/` prefix stripped.
 
 This is the exact format extract_cve_digests.py and recount_repo.py
-(DITECTOR_FILTER_RT) match scanned report references against.
+(CHIMANGOSCAN_FILTER_RT) match scanned report references against.
 
 Env: EXPOSURE_JSONL (default ./exposure_ranked_v3.jsonl), TOP_N (default
 60000), OUT (default ./corpus_filter.txt).

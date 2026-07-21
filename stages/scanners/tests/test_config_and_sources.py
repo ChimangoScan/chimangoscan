@@ -40,7 +40,7 @@ def test_csv_source(tmp_path):
     assert redis.ip == "172.31.1.33" and redis.meta["Category"] == "DB"
 
 
-def test_jsonl_ditector_source(tmp_path):
+def test_jsonl_chimangoscan_source(tmp_path):
     j = tmp_path / "r.jsonl"
     j.write_text('{"repository_namespace":"library","repository_name":"nginx","tag_name":"1.12","weights":900}\n'
                  '{"repository_namespace":"bitnami","repository_name":"redis","tag_name":"6.0","weights":300}\n')

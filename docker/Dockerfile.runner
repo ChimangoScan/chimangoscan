@@ -2,7 +2,7 @@
 #
 # Every pipeline stage runs inside this image, so the ONLY thing a reviewer
 # installs on the host is Docker itself:
-#   - Go 1.22            Stage I (crawl) and Stage II (build)        [stages/DITector]
+#   - Go 1.22            Stage I (crawl) and Stage II (build)        [stages/chimangoscan]
 #   - Python 3 + uv      exposure ranker, Stage III orchestration, analysis
 #   - matplotlib, numpy  analysis figures                            [analysis/]
 #   - Docker CLI         Stage III starts the six scanner containers through the

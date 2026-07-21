@@ -138,7 +138,7 @@ reproduce_full() {
 This runs the real pipeline end to end inside the containerized runner:
   Stage I  (crawl)   -> Stage II (layer graph) -> exposure ranker -> Stage III (scan)
 The host needs only Docker; provide Docker Hub accounts in
-stages/DITector/accounts.json (see README.md, "Security concerns").
+stages/chimangoscan/accounts.json (see README.md, "Security concerns").
 
 Reproducing the paper at full scale (52,895 images) needs the authors'
 multi-machine setup and runs for months. This command reproduces the SAME
@@ -162,7 +162,7 @@ EOF
 #                         [--out DIR] [-- extra args passed to the stage driver]
 #
 # DIR must hold the released dataset files (any subset; each stage names what
-# it needs): ditector-good.db[.zst], dockerhub_data_*.archive.gz,
+# it needs): chimangoscan-reports.db[.zst], dockerhub_data_*.archive.gz,
 # neo4j_data_*.tar.gz, exposure_ranked_v3.jsonl, tags_full.jsonl. Stages are
 # independent so the ~300 GB dataset can be validated one database at a time;
 # verify checks whatever stage outputs exist in --out and skips the rest.
@@ -195,7 +195,7 @@ reproduce_analysis() {
 
   find_one() { find "$DATASET" -maxdepth 1 -name "$1" | sort | head -1; }
   local DB ARCHIVE DUMP EXPOSURE TAGS
-  DB="$(find_one 'ditector-good.db')"; [ -n "$DB" ] || DB="$(find_one 'ditector-good.db.zst')"
+  DB="$(find_one 'chimangoscan-reports.db')"; [ -n "$DB" ] || DB="$(find_one 'chimangoscan-reports.db.zst')"
   ARCHIVE="$(find_one 'dockerhub_data*.archive.gz')"
   DUMP="$(find_one 'neo4j_data*.tar.gz')"
   EXPOSURE="$(find_one 'exposure_ranked_v3.jsonl')"
@@ -211,7 +211,7 @@ reproduce_analysis() {
         "$ROOT/orchestration/analysis_neo4j.sh" --dump "$DUMP" --out "$OUT" \
           ${DB:+--sqlite "$DB"} "${EXTRA[@]}" ;;
       sqlite)
-        [ -n "$DB" ] || die "analysis: no ditector-good.db[.zst] in $DATASET"
+        [ -n "$DB" ] || die "analysis: no chimangoscan-reports.db[.zst] in $DATASET"
         local FILTER="$OUT/corpus_filter.txt"
         if [ ! -f "$FILTER" ] && [ -n "$EXPOSURE" ]; then
           EXPOSURE_JSONL="$EXPOSURE" OUT="$FILTER" python3 "$SCRIPTS/make_corpus_filter.py" \

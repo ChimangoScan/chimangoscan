@@ -2,7 +2,7 @@
 # ChimangoScan -- SQLite analysis stage driver.
 #
 # Recomputes every analysis JSON, figure and table value of the Docker Hub
-# measurement paper from a scan-results SQLite database (ditector-good.db), and
+# measurement paper from a scan-results SQLite database (chimangoscan-reports.db), and
 # runs the secret-detection ground-truth sampling/validation alongside it. Wraps
 # analysis/scripts/regenerate_all.py and the two secret scripts, wiring the
 # environment recount_repo.py reads (corpus filter, exposure-ranking override,
@@ -15,14 +15,14 @@
 #   orchestration/analysis_sqlite.sh --db PATH --out DIR
 #       [--filter FILE] [--exposure FILE] [--tags FILE] [--sample N]
 #
-#   --db PATH        ditector-good.db, or a .zst that is decompressed first
+#   --db PATH        chimangoscan-reports.db, or a .zst that is decompressed first
 #                    (~150 GB; a neighbouring PATH.sha256 is verified if present).
 #   --out DIR        run/output directory for JSONs, figures/ and table_values.json.
-#   --filter FILE    corpus filter (repo:tag per line) -> DITECTOR_FILTER_RT.
+#   --filter FILE    corpus filter (repo:tag per line) -> CHIMANGOSCAN_FILTER_RT.
 #                    Production used the top-60k list (52,895 kept).
-#   --exposure FILE  exposure_ranked_v3.jsonl override -> DITECTOR_RANKING_V2
+#   --exposure FILE  exposure_ranked_v3.jsonl override -> CHIMANGOSCAN_RANKING_V2
 #                    (recount_repo.py's in-script default points at a stale v2).
-#   --tags FILE      tags_full.jsonl for the temporal analysis -> DITECTOR_TAGS.
+#   --tags FILE      tags_full.jsonl for the temporal analysis -> CHIMANGOSCAN_TAGS.
 #   --sample N       cap the reports scan to N rows -- quick smoke pass only,
 #                    NOT production numbers.
 set -euo pipefail
@@ -102,21 +102,21 @@ for f in osv_severity_cache.json plan_crawl.json step3_recompute.json; do
 done
 
 # --- validate optional inputs and wire the environment recount_repo.py reads ---
-export DITECTOR_DB="$DB"
+export CHIMANGOSCAN_DB="$DB"
 if [ -n "$FILTER" ]; then
   [ -s "$FILTER" ] || die "corpus filter file not found: $FILTER"
-  export DITECTOR_FILTER_RT="$(realpath "$FILTER")"
+  export CHIMANGOSCAN_FILTER_RT="$(realpath "$FILTER")"
 fi
 if [ -n "$EXPOSURE" ]; then
   [ -s "$EXPOSURE" ] || die "exposure ranking file not found: $EXPOSURE"
-  export DITECTOR_RANKING_V2="$(realpath "$EXPOSURE")"
+  export CHIMANGOSCAN_RANKING_V2="$(realpath "$EXPOSURE")"
 fi
 if [ -n "$TAGS" ]; then
   [ -s "$TAGS" ] || die "tags file not found: $TAGS"
   TAGS="$(realpath "$TAGS")"
-  export DITECTOR_TAGS="$TAGS"
+  export CHIMANGOSCAN_TAGS="$TAGS"
 fi
-[ -n "$SAMPLE" ] && export DITECTOR_SAMPLE="$SAMPLE" || true
+[ -n "$SAMPLE" ] && export CHIMANGOSCAN_SAMPLE="$SAMPLE" || true
 
 regen() { python3 "$SCRIPTS/regenerate_all.py" --db "$DB" --out "$OUT" --stage "$1" \
             ${TAGS:+--tags "$TAGS"} ${SAMPLE:+--sample "$SAMPLE"}; }

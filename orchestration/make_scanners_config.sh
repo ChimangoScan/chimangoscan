@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Emit (on stdout) a `scanners` run config that points the Stage III pipeline at
-# a given exposure_ranked.jsonl file. The DITector jsonl schema
+# a given exposure_ranked.jsonl file. The ChimangoScan jsonl schema
 # (repository_namespace / repository_name / tag_name) is understood natively by
 # the scanners jsonl source -- no conversion is needed.
 #

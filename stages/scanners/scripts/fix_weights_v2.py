@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-# fix_weights_v2.py — syncs jobs.weight in ditector.db with the exposure
-# computed by the ranker (read from ditector_exposure_ranked_fixed.jsonl).
+# fix_weights_v2.py — syncs jobs.weight in chimangoscan.db with the exposure
+# computed by the ranker (read from chimangoscan_exposure_ranked_fixed.jsonl).
 # Lookup by (ns,repo,tag,digest) with a fallback to base, in batches of 5000
 # UPDATEs per commit so as not to inflate the WAL.
 #
 # Invocation (on host1):
 #   python3 scripts/fix_weights_v2.py
 import json, sqlite3, time, re
-SRC = "/home/user/exposure-data/ditector_exposure_ranked_fixed.jsonl"
-DB  = "/home/user/scanners/work/ditector.db"
+SRC = "/home/user/exposure-data/chimangoscan_exposure_ranked_fixed.jsonl"
+DB  = "/home/user/scanners/work/chimangoscan.db"
 
 def parse_jobs_image(img):
     """parse jobs.image -> (ns, repo, tag, digest) ou None se mal-formado.

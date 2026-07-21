@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  crawler_node2:
+    image: golang:1.22
+    container_name: chimangoscan_crawler_node2
+    restart: unless-stopped
+    volumes:
+      - .:/app
+    working_dir: /app
+    network_mode: host
+    environment:
+      - MONGO_URI=${MONGO_URI}
+      - NEO4J_URI=${NEO4J_URI}
+      - PAGE_CONCURRENCY=${PAGE_CONCURRENCY:-0}
+      - ROLE=${ROLE:-secondary}
+    command: sh -c "go build -buildvcs=false -o /tmp/chimangoscan . && /tmp/chimangoscan crawl --workers ${WORKERS:-3} --shard ${SHARD:-0} --shards ${SHARDS:-1} --accounts ${ACCOUNTS:-accounts.json} --config config.yaml"

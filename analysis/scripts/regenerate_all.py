@@ -4,7 +4,7 @@ regenerate_all.py -- single-command regeneration pipeline for the ChimangoScan
 Docker Hub measurement paper.
 
 Every table body and every figure in the paper derives, directly or through one
-intermediate JSON, from the SQLite database ditector-good.db. When the database
+intermediate JSON, from the SQLite database chimangoscan-reports.db. When the database
 is updated (after new scans finish) all of those numbers must be recomputed.
 This script does that in one command, in the correct order:
 
@@ -53,7 +53,7 @@ The database is opened READ-ONLY (file:...?mode=ro). The pipeline never writes
 to the database and never edits main.tex or paper.bib. It is idempotent: each
 run overwrites its own JSON/PDF outputs and nothing else.
 
-Two inputs are NOT derived from ditector-good.db and are reused as-is (the
+Two inputs are NOT derived from chimangoscan-reports.db and are reused as-is (the
 pipeline copies them into the run directory if it is a fresh directory, and
 errors out if they are missing):
   osv_severity_cache.json  OSV severity backfill, built by osv_step1..3 scripts
@@ -66,22 +66,22 @@ USAGE
   python3 regenerate_all.py [--db PATH] [--out DIR] [--tags PATH]
                             [--stage analysis|figures|tables|all] [--sample N]
 
-  --db    PATH   SQLite database (default: $DITECTOR_DB or
-                 /data/ditector-good.db)
+  --db    PATH   SQLite database (default: $CHIMANGOSCAN_DB or
+                 /data/chimangoscan-reports.db)
   --out   DIR    run/output directory for all JSONs and figures/*.pdf
                  (default: the paper directory itself). Point this at a
                  scratch directory to validate without touching the paper.
   --tags  PATH   tags_full.jsonl for the temporal analysis
-                 (default: $DITECTOR_TAGS or /data/cache/tags_full.jsonl;
+                 (default: $CHIMANGOSCAN_TAGS or /data/cache/tags_full.jsonl;
                  if missing, the temporal analysis is skipped gracefully)
   --stage NAME   run only one stage (default: all)
   --sample N     LIMIT the database scan to N reports rows -- for a quick
                  SAMPLED validation run only; do NOT use for production numbers
 
-ENVIRONMENT (alternative to flags): DITECTOR_DB, DITECTOR_OUT, DITECTOR_TAGS
+ENVIRONMENT (alternative to flags): CHIMANGOSCAN_DB, CHIMANGOSCAN_OUT, CHIMANGOSCAN_TAGS
 
 PRODUCTION RUN (after the database is updated, from the paper directory):
-  python3 regenerate_all.py --db /data/ditector-good.db
+  python3 regenerate_all.py --db /data/chimangoscan-reports.db
 This regenerates every JSON and every figures/*.pdf in place and writes
 table_values.json. main.tex is left untouched.
 """
@@ -274,13 +274,13 @@ def stage_tables(out):
 def main():
     ap = argparse.ArgumentParser(
         description="One-command regeneration of all paper analysis JSONs, "
-                    "figures and table values from ditector-good.db.")
+                    "figures and table values from chimangoscan-reports.db.")
     ap.add_argument("--db", default=os.environ.get(
-        "DITECTOR_DB", "/data/ditector-good.db"))
+        "CHIMANGOSCAN_DB", "/data/chimangoscan-reports.db"))
     ap.add_argument("--out", default=os.environ.get(
-        "DITECTOR_OUT", PAPER_DIR))
+        "CHIMANGOSCAN_OUT", PAPER_DIR))
     ap.add_argument("--tags", default=os.environ.get(
-        "DITECTOR_TAGS", "/data/cache/tags_full.jsonl"))
+        "CHIMANGOSCAN_TAGS", "/data/cache/tags_full.jsonl"))
     ap.add_argument("--stage", choices=["analysis", "figures", "tables", "all"],
                     default="all")
     ap.add_argument("--sample", type=int, default=None,

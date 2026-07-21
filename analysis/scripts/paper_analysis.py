@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-READ-ONLY analysis of ditector-good.db for the paper. Does NOT modify the database.
+READ-ONLY analysis of chimangoscan-reports.db for the paper. Does NOT modify the database.
 
 Applies the OSV severity correction in memory (osv_severity_cache.json) and,
 in a single streaming scan, collects everything the paper needs:
@@ -16,7 +16,7 @@ Usage:  nohup python3 paper_analysis.py > paper_analysis.log 2>&1 &
 import sqlite3, json, sys, time, re
 from collections import Counter, defaultdict
 
-DB = "/data/ditector-good.db"
+DB = "/data/chimangoscan-reports.db"
 OUT = "./paper_analysis.json"
 CACHE = "./osv_severity_cache.json"
 UNKNOWN = {"unknown", "", "none", "null", "n/a", "na"}

@@ -14,7 +14,7 @@ described below with its schema, row counts, on-disk size, and how to read it.
 
 ---
 
-## 1. Scan reports — `ditector-good.db` (SQLite, 192 GB)
+## 1. Scan reports — `chimangoscan-reports.db` (SQLite, 192 GB)
 
 One row per scanned image; the full multi-scanner output is stored as JSON.
 
@@ -59,7 +59,7 @@ detections). Read example:
 
 ```python
 import sqlite3, json
-con = sqlite3.connect("ditector-good.db")
+con = sqlite3.connect("chimangoscan-reports.db")
 for image, rj in con.execute("SELECT image, report_json FROM reports"):
     findings = json.loads(rj)["findings"]
     vulns = [f for f in findings if f["category"] == "pkg-vuln"]

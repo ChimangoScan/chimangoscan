@@ -7,7 +7,7 @@ from .base import Source
 
 
 class JsonlSource(Source):
-    """One JSON object per line. Understands the DITector ranking schema
+    """One JSON object per line. Understands the ChimangoScan ranking schema
     (repository_namespace / repository_name / tag_name / weights) and a plain
     {"image": ..., "weight": ..., "ip": ...} schema."""
 

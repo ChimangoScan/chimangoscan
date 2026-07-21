@@ -168,7 +168,7 @@ def fetch_vuln(vid: str, timeout: float = 15.0) -> tuple[str, str | None, dict |
     for attempt in range(5):
         _throttle()
         try:
-            req = Request(OSV_URL.format(id=vid), headers={"User-Agent": "ditector-osv-fill/1"})
+            req = Request(OSV_URL.format(id=vid), headers={"User-Agent": "chimangoscan-osv-fill/1"})
             with urlopen(req, timeout=timeout) as resp:
                 data = resp.read()
             try:
@@ -463,7 +463,7 @@ def stage_apply(cve_to_sev: dict[str, tuple[str, float | None]],
 
 def main() -> int:
     p = argparse.ArgumentParser()
-    p.add_argument("--db", default="/home/user/scanners/work/ditector.db")
+    p.add_argument("--db", default="/home/user/scanners/work/chimangoscan.db")
     p.add_argument("--workers", type=int, default=50)
     p.add_argument("--batch", type=int, default=200)
     p.add_argument("--cache", default=None,

@@ -7,8 +7,8 @@ Writes cve_digests_v3.json with the top-30 CVEs by distinct-digest count:
 import sqlite3, json, sys, os
 from collections import Counter, defaultdict
 
-DB = os.environ.get("DITECTOR_DB", "/data/ditector-good.db")
-FRT_PATH = os.environ.get("DITECTOR_FILTER_RT", "/tmp/top60k_rt_v3.txt")
+DB = os.environ.get("CHIMANGOSCAN_DB", "/data/chimangoscan-reports.db")
+FRT_PATH = os.environ.get("CHIMANGOSCAN_FILTER_RT", "/tmp/top60k_rt_v3.txt")
 FRT = set(l.strip() for l in open(FRT_PATH) if l.strip())
 OUT = os.environ.get("OUT_PATH", "./cve_digests_v3.json")
 

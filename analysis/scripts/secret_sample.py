@@ -7,7 +7,7 @@ import sqlite3, json, re, random, os
 from collections import Counter
 
 random.seed(42)
-DB = os.environ.get("DITECTOR_DB", "/data/ditector-good.db")
+DB = os.environ.get("CHIMANGOSCAN_DB", "/data/chimangoscan-reports.db")
 K = 1100                                  # 95% CI, +-3% on a proportion
 con = sqlite3.connect(DB)
 
@@ -24,8 +24,8 @@ def locpat(l):
     return "other"
 
 _sql = "SELECT image, report_json FROM reports"
-if os.environ.get("DITECTOR_SAMPLE"):
-    _sql += " LIMIT %d" % int(os.environ["DITECTOR_SAMPLE"])
+if os.environ.get("CHIMANGOSCAN_SAMPLE"):
+    _sql += " LIMIT %d" % int(os.environ["CHIMANGOSCAN_SAMPLE"])
 for (img, rj) in con.execute(_sql):
     try: j = json.loads(rj)
     except Exception: continue

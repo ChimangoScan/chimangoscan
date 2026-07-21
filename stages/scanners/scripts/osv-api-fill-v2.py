@@ -187,7 +187,7 @@ def fetch_vuln(vid: str, timeout: float = 15.0) -> tuple[str, str | None, dict |
     for attempt in range(5):
         _throttle()
         try:
-            req = Request(OSV_URL.format(id=vid), headers={"User-Agent": "ditector-osv-fill-v2/1"})
+            req = Request(OSV_URL.format(id=vid), headers={"User-Agent": "chimangoscan-osv-fill-v2/1"})
             with urlopen(req, timeout=timeout) as resp:
                 data = resp.read()
             try:
@@ -508,7 +508,7 @@ def apply_updates(db_path: str,
 # ---------------------------------------------------------------------------
 def main() -> int:
     p = argparse.ArgumentParser()
-    p.add_argument("--db", default="/home/user/scanners/work/ditector.db")
+    p.add_argument("--db", default="/home/user/scanners/work/chimangoscan.db")
     p.add_argument("--cache", default="/home/user/exposure-data/osv-api-cache-20260515.jsonl",
                    help="JSONL cache of CVE -> severity (resumed if exists, appended to).")
     p.add_argument("--backup", default=None,

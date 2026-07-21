@@ -6,13 +6,13 @@ every finding traces back to the container (and its IP) that produced it.
 
 > **Stage III of the ChimangoScan pipeline.** Discovery and prioritisation
 > (Stage I crawler + Stage II layer graph + the exposure ranker) live in the
-> [`DITector`](https://github.com/ChimangoScan/chimangoscan) repository and produce
+> [`ChimangoScan`](https://github.com/ChimangoScan/chimangoscan) repository and produce
 > `exposure_ranked.jsonl` — one line per repository, sorted by supply-chain
 > exposure. That file is the contract this repository consumes: feed it to
 > `scanners seed` and the six default scanners run the multi-scanner sweep over
 > the prioritised targets. The exposure ranker itself
 > (`compute_exposure_ranking.py`) is **not** part of this repository — it is
-> owned by `DITector`. End-to-end orchestration of both stages lives in the
+> owned by `ChimangoScan`. End-to-end orchestration of both stages lives in the
 > [`chimangoscan`](https://github.com/ChimangoScan/chimangoscan) repository.
 
 Each scanner is a pinned Docker image. The pipeline pulls each target, runs the
@@ -53,7 +53,7 @@ cd scanners && uv sync
 
 ```bash
 make config                           # copy config/config.example.yaml → config.yaml (edit source.path)
-uv run scanners seed                  # load targets into the queue (point source.path at DITector's exposure_ranked.jsonl)
+uv run scanners seed                  # load targets into the queue (point source.path at ChimangoScan's exposure_ranked.jsonl)
 uv run scanners run --workers 4       # pull each image, run the scanners
 uv run scanners status                # progress
 uv run scanners report -o report.html # the HTML corpus report

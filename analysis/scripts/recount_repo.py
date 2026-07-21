@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Single READ-ONLY streaming pass over ditector-good.db that recomputes EVERY
+Single READ-ONLY streaming pass over chimangoscan-reports.db that recomputes EVERY
 aggregate statistic the paper reports, COUNTED PER REPOSITORY.
 
 The reports table holds one row per scanned repository reference. The paper
@@ -32,7 +32,7 @@ import sqlite3, json, sys, time, math, re, shutil, os, itertools
 from collections import Counter, defaultdict
 from datetime import datetime, timezone
 
-DB = "/data/ditector-good.db"
+DB = "/data/chimangoscan-reports.db"
 OUT = "."
 CACHE = os.path.join(OUT, "osv_severity_cache.json")
 TAGS = "/data/cache/tags_full.jsonl"
@@ -44,10 +44,10 @@ SEVS = ["critical", "high", "medium", "low", "info", "unknown"]
 SCANNERS = ["syft", "trivy", "grype", "osv", "clair", "dockle", "trufflehog"]
 
 # Optional corpus filter: restrict the analysis to image_digests listed in the
-# file named by DITECTOR_FILTER_DIGESTS (one digest per line). Used to keep only
+# file named by CHIMANGOSCAN_FILTER_DIGESTS (one digest per line). Used to keep only
 # the highest-exposure head of the ranking (top-N) and drop low-exposure images
 # that were scanned by an earlier exposure bug. None => no filtering.
-_FD_PATH = os.environ.get("DITECTOR_FILTER_DIGESTS")
+_FD_PATH = os.environ.get("CHIMANGOSCAN_FILTER_DIGESTS")
 FILTER_DIGESTS = None
 if _FD_PATH:
     with open(_FD_PATH) as _fh:
@@ -56,9 +56,9 @@ if _FD_PATH:
                      % (len(FILTER_DIGESTS), _FD_PATH))
 
 # Optional corpus filter by repository reference (repo:tag), one per line in the
-# file named by DITECTOR_FILTER_RT. This is the unit used in the paper: the
+# file named by CHIMANGOSCAN_FILTER_RT. This is the unit used in the paper: the
 # top-N highest-exposure repository references that were actually scanned.
-_FRT_PATH = os.environ.get("DITECTOR_FILTER_RT")
+_FRT_PATH = os.environ.get("CHIMANGOSCAN_FILTER_RT")
 FILTER_RT = None
 if _FRT_PATH:
     with open(_FRT_PATH) as _fh:
@@ -294,7 +294,7 @@ def main():
     # term only to the canonical reference. We therefore override pull/exposure/
     # dependency_weight/downstream_pull_sum from the v2 ranking, keyed by repo:tag.
     RANKING_V2 = os.environ.get(
-        "DITECTOR_RANKING_V2",
+        "CHIMANGOSCAN_RANKING_V2",
         "./exposure_ranked_v2.jsonl")
     v2_by_rt = {}
     if os.path.exists(RANKING_V2):

@@ -50,7 +50,7 @@ chimangoscan/
 ├── DATASET.md                    dataset schema and access (reports, crawl, graph)
 ├── LICENSE                       MIT
 ├── stages/
-│   ├── DITector/                 vendored — Stages I+II + exposure ranker (Go + Python)
+│   ├── chimangoscan/             vendored — Stages I+II + exposure ranker (Go + Python)
 │   └── scanners/                 vendored — Stage III, multi-scanner scan (Python)
 ├── orchestration/
 │   ├── run_pipeline.sh           runs the full pipeline end to end
@@ -122,7 +122,7 @@ Docker; every stage runs inside the containerized runner image
 (`--scale`, `--prefixes`, `--crawl-duration`) — there is **no hardcoded
 infrastructure**. The default scale is small (a few repositories, one
 laptop + Docker) and finishes in tens of minutes. Provide Docker Hub accounts
-in `stages/DITector/accounts.json` first (see *Security concerns*).
+in `stages/chimangoscan/accounts.json` first (see *Security concerns*).
 
 Reproducing the paper at **full scale (52,895 images, 663.8 billion pulls)**
 requires the authors' **multi-machine setup** (distributed crawl, a large Neo4j
@@ -170,7 +170,7 @@ re-crawling or re-scanning.
 |----------|-------------|
 | CPU | 4+ cores |
 | Memory | 8+ GB |
-| Disk | ~192 GB for the released `ditector-good.db` (or use `--sample` for a quick partial run) |
+| Disk | ~192 GB for the released `chimangoscan-reports.db` (or use `--sample` for a quick partial run) |
 | Time | ~45–50 min full pass; minutes with `--sample` |
 
 **Full measurement** — reproduces the paper's at-scale crawl and scan. Designed
@@ -222,19 +222,19 @@ installed on the host.
 Third-party access:
 
 - **Docker Hub accounts** (free accounts suffice) are required by the Stage I
-  crawler, supplied in `stages/DITector/accounts.json` (never committed; covered
+  crawler, supplied in `stages/chimangoscan/accounts.json` (never committed; covered
   by `.gitignore`).
 - **The released dataset** (192 GB of per-image reports, the 12.7-million-repo
   crawl metadata, and the layer graph) will be published on Zenodo (DOI pending); see `DATASET.md`
   for the DOI and schema. The analysis experiments below need only the scan
-  database, `ditector-good.db`.
+  database, `chimangoscan-reports.db`.
 
 ---
 
 # Security concerns
 
 - The Stage I crawler requires Docker Hub accounts in
-  `stages/DITector/accounts.json`. **This file must never be committed** — it is
+  `stages/chimangoscan/accounts.json`. **This file must never be committed** — it is
   already covered by `.gitignore`.
 - Stage III **downloads and runs third-party container images**. The static
   scanners analyze the image artifact only; the (disabled-by-default) dynamic
@@ -252,13 +252,13 @@ Third-party access:
 # Installation
 
 ```bash
-# 1. Clone the repository. The two pipeline stages (DITector and scanners)
+# 1. Clone the repository. The two pipeline stages (ChimangoScan and scanners)
 #    are vendored directly under stages/ -- no submodule init is needed.
 git clone https://github.com/ChimangoScan/chimangoscan
 cd chimangoscan
 
 # 2. Bring up the database infrastructure (MongoDB + Neo4j)
-cd stages/DITector
+cd stages/chimangoscan
 docker compose up -d mongodb neo4j
 cp config_template.yaml config.yaml          # adjust if needed
 
@@ -273,7 +273,7 @@ That's the whole host-side setup — **no Go, Python, uv, or pip install**. The
 runner image (Go + Python + uv + matplotlib/numpy + Docker CLI) is built
 automatically the first time you run any `orchestration/*.sh` script, and every
 stage executes inside it. For the analysis experiments, download
-`ditector-good.db` from the Zenodo record (see `DATASET.md`); no other setup is
+`chimangoscan-reports.db` from the Zenodo record (see `DATASET.md`); no other setup is
 required.
 
 ---
@@ -313,7 +313,7 @@ orchestration/minimal_test.sh
 # Experiments
 
 Every table value and every data-driven figure in the paper derives from the
-released SQLite scan database `ditector-good.db`. Re-running the full at-scale
+released SQLite scan database `chimangoscan-reports.db`. Re-running the full at-scale
 crawl and scan is **not** feasible in a review window (days, 13 machines), so —
 as the CTA allows — the experiments below reproduce the paper's **main claims**
 from the released artifacts. The only artifact crossing the boundary between the
@@ -326,7 +326,7 @@ the pipeline's *contract*.
 report.* This is the Minimal test above.
 
 - **Command:** `orchestration/minimal_test.sh --prefixes a,b,c --crawl-duration 5m --top 10`
-- **Config:** Docker Hub accounts in `stages/DITector/accounts.json`; databases up
+- **Config:** Docker Hub accounts in `stages/chimangoscan/accounts.json`; databases up
   (`docker compose up -d mongodb neo4j`).
 - **Expected time / resources:** ~20–45 min; 4 cores, 8 GB RAM, 20 GB disk.
 - **Expected result:** `MINIMAL TEST PASSED`; `artifacts/report.html`,
@@ -375,18 +375,18 @@ hand-labeled secret sample are non-credentials.
   `apply_repo_numbers.py` for `table_values.json`).
 - **Command (full):**
   ```bash
-  orchestration/run_analysis.sh --db /path/to/ditector-good.db
+  orchestration/run_analysis.sh --db /path/to/chimangoscan-reports.db
   # individual stages: --stage analysis | figures | tables
   ```
 - **Command (quick sampled validation):**
   ```bash
-  orchestration/run_analysis.sh --db /path/to/ditector-good.db --sample 100000
+  orchestration/run_analysis.sh --db /path/to/chimangoscan-reports.db --sample 100000
   ```
 - **Flags:** `--db` (database path), `--stage` (run one of analysis/figures/tables/all),
   `--sample N` (cap the scan to N report rows — sampled validation only, not for
   production numbers).
 - **Expected time / resources:** ~45–50 min full pass over the 64,595-report
-  database; minutes with `--sample`. Needs the ~192 GB `ditector-good.db` on disk
+  database; minutes with `--sample`. Needs the ~192 GB `chimangoscan-reports.db` on disk
   and several GB RAM. The database is opened **read-only**; the step is idempotent
   and never edits the paper.
 - **Expected result:** the analysis JSONs (e.g., `dedup_analysis.json` reporting
@@ -425,8 +425,8 @@ hand-labeled secret sample are non-credentials.
 # License
 
 Distributed under the MIT License — see [`LICENSE`](LICENSE). The vendored
-pipeline stages `stages/DITector/` and `stages/scanners/` carry their own
+pipeline stages `stages/chimangoscan/` and `stages/scanners/` carry their own
 licenses; the released dataset is licensed CC BY 4.0 (see `DATASET.md`).
-`DITector` builds on the DITector framework (Dr. Docker);
+ChimangoScan builds on ideas from the DITector framework of Dr. Docker;
 the discovery and IDEA-graph method is inspired by *Dr. Docker* (WWW '25), with an
 original implementation by the authors of this work.

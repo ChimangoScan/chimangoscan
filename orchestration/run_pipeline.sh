@@ -3,11 +3,11 @@
 #
 # Runs the two stages of the Docker Hub security measurement in order:
 #
-#   Stage I+II + ranker  (stages/DITector)  -> exposure_ranked.jsonl
+#   Stage I+II + ranker  (stages/chimangoscan)  -> exposure_ranked.jsonl
 #   Stage III scan       (stages/scanners)  -> out/_corpus/{report.html,analysis.md}
 #
 # The single artefact that crosses the stage boundary is exposure_ranked.jsonl:
-# DITector produces it, scanners consumes it via `scanners seed`.
+# ChimangoScan produces it, scanners consumes it via `scanners seed`.
 #
 # This is the FULL run. For a quick end-to-end sanity check that does not crawl
 # the whole of Docker Hub, use orchestration/minimal_test.sh instead.
@@ -17,11 +17,11 @@
 #                                 [--threshold N] [--workers N] [--skip-crawl]
 #
 # Prerequisites (see README.md): Go 1.21+, Python 3.10+, Docker, MongoDB and
-# Neo4j reachable, and Docker Hub accounts.json placed in stages/DITector/.
+# Neo4j reachable, and Docker Hub accounts.json placed in stages/chimangoscan/.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-DITECTOR="$ROOT/stages/DITector"
+CHIMANGOSCAN="$ROOT/stages/chimangoscan"
 SCANNERS="$ROOT/stages/scanners"
 ARTIFACTS="$ROOT/artifacts"
 RANKED="$ARTIFACTS/exposure_ranked.jsonl"
@@ -49,7 +49,7 @@ log() { printf '\n=== [%s] %s ===\n' "$(date +%H:%M:%S)" "$*"; }
 
 mkdir -p "$ARTIFACTS"
 
-if [ ! -e "$DITECTOR/main.go" ]; then
+if [ ! -e "$CHIMANGOSCAN/main.go" ]; then
   echo "submodules not initialised -- run: git submodule update --init --recursive" >&2
   exit 1
 fi
@@ -63,7 +63,7 @@ ensure_runner
 # ---------------------------------------------------------------------------
 if [ "$SKIP_CRAWL" -eq 0 ]; then
   log "Stage I -- crawling Docker Hub (duration=$CRAWL_DURATION, workers=$WORKERS)"
-  RUNNER_WORKDIR="$DITECTOR" in_runner sh -c \
+  RUNNER_WORKDIR="$CHIMANGOSCAN" in_runner sh -c \
     "timeout $CRAWL_DURATION go run main.go crawl --workers $WORKERS ${SEED:+--seed $SEED} --accounts accounts.json --config config.yaml" \
     || true   # timeout terminating the crawl is expected
 else
@@ -74,7 +74,7 @@ fi
 # Stage II -- build the IDEA layer graph
 # ---------------------------------------------------------------------------
 log "Stage II -- building the IDEA dependency graph (threshold=$THRESHOLD)"
-RUNNER_WORKDIR="$DITECTOR" in_runner go run main.go build \
+RUNNER_WORKDIR="$CHIMANGOSCAN" in_runner go run main.go build \
     --format mongo \
     --threshold "$THRESHOLD" \
     --tags 3 \
@@ -86,7 +86,7 @@ RUNNER_WORKDIR="$DITECTOR" in_runner go run main.go build \
 # Ranker -- compute exposure ranking -> exposure_ranked.jsonl
 # ---------------------------------------------------------------------------
 log "Ranker -- computing exposure ranking"
-RUNNER_WORKDIR="$DITECTOR" in_runner sh -c \
+RUNNER_WORKDIR="$CHIMANGOSCAN" in_runner sh -c \
   "OUT_PATH=$RANKED WORKDIR=$ARTIFACTS/exposure_work python3 scripts/compute_exposure_ranking.py"
 
 if [ ! -s "$RANKED" ]; then
