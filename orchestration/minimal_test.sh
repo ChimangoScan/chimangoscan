@@ -51,8 +51,17 @@ fail() { echo "MINIMAL TEST FAILED: $*" >&2; exit 1; }
 
 mkdir -p "$ARTIFACTS"
 
-[ -e "$CHIMANGOSCAN/main.go" ] || fail "submodules not initialised -- run: git submodule update --init --recursive"
-[ -e "$CHIMANGOSCAN/accounts.json" ] || fail "stages/DITector/accounts.json missing (Docker Hub accounts needed for the crawl)"
+[ -e "$CHIMANGOSCAN/main.go" ] || fail "stages/DITector/main.go missing -- clone the repository fully"
+
+# Docker Hub accounts are OPTIONAL: with none, the crawler runs anonymously
+# (rate-limited, fine for this short top-N test). Provide accounts.json only to
+# raise the crawl rate. Auto-create the empty defaults so the reviewer needs no
+# manual config step.
+if [ ! -e "$CHIMANGOSCAN/accounts.json" ]; then
+  echo '[]' > "$CHIMANGOSCAN/accounts.json"
+  log "no accounts.json -- crawling anonymously (rate-limited)"
+fi
+[ -e "$CHIMANGOSCAN/config.yaml" ] || cp "$CHIMANGOSCAN/config_template.yaml" "$CHIMANGOSCAN/config.yaml"
 
 # Build the runner image once; every stage runs inside it so the host needs
 # only Docker. MongoDB and Neo4j are reached over the host network.

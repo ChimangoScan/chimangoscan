@@ -181,61 +181,36 @@ Third-party access:
 # Installation
 
 ```bash
-# 1. Clone the repository. The two pipeline stages (DITector and scanners)
-#    are vendored directly under stages/ -- no submodule init is needed.
 git clone https://github.com/ChimangoScan/chimangoscan
 cd chimangoscan
-
-# 2. Bring up the database infrastructure (MongoDB + Neo4j)
-cd stages/DITector
-docker compose up -d mongodb neo4j
-cp config_template.yaml config.yaml          # adjust if needed
-
-# 3. Provide Docker Hub accounts for the crawler
-cat > accounts.json <<'EOF'
-[{"username": "YOUR_USER", "password": "YOUR_PASSWORD"}]
-EOF
-cd ../..
 ```
 
-That's the whole host-side setup — **no Go, Python, uv, or pip install**. The
-runner image (Go + Python + uv + matplotlib/numpy + Docker CLI) is built
-automatically the first time you run any `orchestration/*.sh` script, and every
-stage executes inside it. For the analysis experiments, download
-the dataset with `./scripts/fetch_dataset.sh --out ./dataset` (see [`DATASET.md`](DATASET.md)); no other setup is
-required.
+That is the entire setup for the analysis reproduction (the *Fast path* and
+*Claim #3* below): **nothing else to install** — the runner image builds itself
+on first use and the analysis stages start their own ephemeral MongoDB/Neo4j.
+**Run every command below from this repository root (`chimangoscan/`).** The
+live-crawl *Minimal test* additionally needs the two databases up and a Docker
+Hub account; those two lines are shown in that section, not here.
 
 ---
 
 # Minimal test
 
-The minimal test is the artifact's reproducibility **claim**:
-
-> *The ChimangoScan pipeline runs end to end — Docker Hub discovery,
-> prioritization, and multi-scanner scanning — producing a consolidated report.*
-
-[`orchestration/minimal_test.sh`](orchestration/minimal_test.sh) validates this claim **without** scanning all of
-Docker Hub. It:
-
-1. **crawls** Docker Hub briefly, restricted to a few namespace prefixes
-   (default `a,b,c`) — Stage I, in miniature;
-2. **builds** the layer graph for the discovered repositories — Stage II;
-3. runs the **ranker**, ordering all discovered repositories by pull count and
-   supply-chain exposure;
-4. selects the **top 10** most-exposed repositories and runs the six default
-   scanners on them — Stage III;
-5. **verifies** that the consolidated corpus report (`report.html`,
-   `summary.json`, `analysis.md`) was produced.
+Runs the pipeline end to end in miniature — a brief Docker Hub crawl (Stage I),
+layer graph (Stage II), exposure ranker, and the six scanners on the top 10
+images (Stage III). From the repository root, two lines:
 
 ```bash
-orchestration/minimal_test.sh
-# options: --prefixes a,b,c   --crawl-duration 5m   --top 10
+docker compose -f stages/DITector/docker-compose.yml up -d mongodb neo4j
+orchestration/minimal_test.sh --top 10
 ```
 
-- **Expected time:** ~20–45 min, dominated by pulling and scanning the 10 images.
-- **Expected resources:** 4 cores, 8 GB RAM, ~20 GB disk.
-- **Expected result:** the script prints `MINIMAL TEST PASSED` and the path to the
-  generated artifacts under `artifacts/`.
+No credentials needed: with no `accounts.json` the crawler runs anonymously
+(rate-limited, fine for this short test); add one only to speed up the crawl.
+
+- **Time / resources:** ~20–45 min; 4 cores, 8 GB RAM, ~20 GB disk.
+- **Expected result:** prints `MINIMAL TEST PASSED` and writes the consolidated
+  report (`report.html`, `summary.json`, `analysis.md`) under `artifacts/`.
 
 ---
 
