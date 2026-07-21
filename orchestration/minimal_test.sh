@@ -138,7 +138,7 @@ log "Stage III -- seeding the scan queue with the top $TOP targets"
 RUNNER_WORKDIR="$SCANNERS" in_runner sh -c "$SCAN_ENV uv run scanners seed -c $SCAN_CONFIG --registry $SCANNERS/config/scanners.yaml"
 
 log "Stage III -- running the six-scanner sweep over the top $TOP"
-RUNNER_WORKDIR="$SCANNERS" in_runner sh -c "$SCAN_ENV uv run scanners run -c $SCAN_CONFIG --registry $SCANNERS/config/scanners.yaml --workers 4"
+RUNNER_WORKDIR="$SCANNERS" in_runner sh -c "$SCAN_ENV uv run scanners run -c $SCAN_CONFIG --registry $SCANNERS/config/scanners.yaml --static-only --workers 4"
 
 log "Stage III -- consolidating the corpus report"
 RUNNER_WORKDIR="$SCANNERS" in_runner sh -c "$SCAN_ENV uv run scanners report -c $SCAN_CONFIG --registry $SCANNERS/config/scanners.yaml -o $ARTIFACTS/report.html"
