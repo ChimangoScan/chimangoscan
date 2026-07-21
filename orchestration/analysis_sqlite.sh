@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# AnonymousSystem -- SQLite analysis stage driver.
+# ChimangoScan -- SQLite analysis stage driver.
 #
 # Recomputes every analysis JSON, figure and table value of the Docker Hub
 # measurement paper from a scan-results SQLite database (ditector-good.db), and

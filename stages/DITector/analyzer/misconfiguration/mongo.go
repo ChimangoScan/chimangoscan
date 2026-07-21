@@ -5,7 +5,7 @@ import (
 	"os"
 	"regexp"
 
-	"github.com/anonymous/DITector/myutils"
+	"github.com/ChimangoScan/DITector/myutils"
 	"gopkg.in/yaml.v3"
 )
 

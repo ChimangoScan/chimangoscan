@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/anonymous/DITector/myutils"
+	"github.com/ChimangoScan/DITector/myutils"
 )
 
 // ParsePartial 仅解析指定镜像的元数据

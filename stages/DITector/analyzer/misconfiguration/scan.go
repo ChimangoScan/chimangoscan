@@ -3,7 +3,7 @@ package misconfiguration
 import (
 	"regexp"
 
-	"github.com/anonymous/DITector/myutils"
+	"github.com/ChimangoScan/DITector/myutils"
 )
 
 const (

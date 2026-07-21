@@ -8,8 +8,8 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/anonymous/DITector/buildgraph"
-	"github.com/anonymous/DITector/myutils"
+	"github.com/ChimangoScan/DITector/buildgraph"
+	"github.com/ChimangoScan/DITector/myutils"
 	"go.mongodb.org/mongo-driver/bson"
 )
 

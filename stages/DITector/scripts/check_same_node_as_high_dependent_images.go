@@ -7,7 +7,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/anonymous/DITector/myutils"
+	"github.com/ChimangoScan/DITector/myutils"
 )
 
 // CheckSameNodeAsHighDependentImages 统计高依赖权重镜像的节点

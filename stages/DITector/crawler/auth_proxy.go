@@ -12,7 +12,7 @@ import (
 	"time"
 	"crypto/tls"
 
-	"github.com/anonymous/DITector/myutils"
+	"github.com/ChimangoScan/DITector/myutils"
 )
 
 // Account represents a Docker Hub account with its own sticky User-Agent

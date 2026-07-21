@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# AnonymousSystem -- one-command reproduction driver.
+# ChimangoScan -- one-command reproduction driver.
 #
 # Two modes, selected by the first argument:
 #

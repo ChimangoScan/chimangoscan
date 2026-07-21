@@ -1,4 +1,4 @@
-# AnonymousSystem — Reproduction Artifact
+# ChimangoScan — Reproduction Artifact
 
 *Large-Scale Security Measurement of the Docker Hub Image Ecosystem*
 
@@ -45,7 +45,7 @@ This README is organized exactly as the CTA minimum-README requires:
 The repository itself is laid out as follows:
 
 ```
-anonymoussystem/
+chimangoscan/
 ├── README.md                     this file (artifact roadmap)
 ├── DATASET.md                    dataset schema and access (reports, crawl, graph)
 ├── LICENSE                       MIT
@@ -140,7 +140,7 @@ Sustainable (SeloS), and Reproducible (SeloR)**.
 
 | Seal | Code | Justification |
 |------|------|---------------|
-| Available    | **SeloD** | Code is publicly versioned in this repository (the two pipeline stages are vendored under `stages/`); the dataset is published on Zenodo with a DOI. |
+| Available    | **SeloD** | Code is publicly versioned in this repository (the two pipeline stages are vendored under `stages/`); the dataset is being published on Zenodo (DOI pending; see DATASET.md). |
 | Functional   | **SeloF** | The pipeline runs; the *Minimal test* below validates end-to-end operation on a single machine. |
 | Sustainable  | **SeloS** | The code is modular and documented: Stages I/II are a distributed Go service, Stage III is a Python scan system with one adapter per scanner and a single `Finding` schema, and every analysis script carries a module docstring. The "Experiments" section maps each paper claim to the exact file and command that produces it. |
 | Reproducible | **SeloR** | `orchestration/run_analysis.sh` regenerates *every* number, figure, and table of the paper from the released scan database in one read-only pass. |
@@ -225,7 +225,7 @@ Third-party access:
   crawler, supplied in `stages/DITector/accounts.json` (never committed; covered
   by `.gitignore`).
 - **The released dataset** (192 GB of per-image reports, the 12.7-million-repo
-  crawl metadata, and the layer graph) is published on Zenodo; see `DATASET.md`
+  crawl metadata, and the layer graph) will be published on Zenodo (DOI pending); see `DATASET.md`
   for the DOI and schema. The analysis experiments below need only the scan
   database, `ditector-good.db`.
 
@@ -254,8 +254,8 @@ Third-party access:
 ```bash
 # 1. Clone the repository. The two pipeline stages (DITector and scanners)
 #    are vendored directly under stages/ -- no submodule init is needed.
-git clone https://anonymous.4open.science/r/AnonymousSystem-2131/
-cd anonymoussystem
+git clone https://github.com/ChimangoScan/chimangoscan
+cd chimangoscan
 
 # 2. Bring up the database infrastructure (MongoDB + Neo4j)
 cd stages/DITector
@@ -282,7 +282,7 @@ required.
 
 The minimal test is the artifact's reproducibility **claim**:
 
-> *The AnonymousSystem pipeline runs end to end — Docker Hub discovery,
+> *The ChimangoScan pipeline runs end to end — Docker Hub discovery,
 > prioritization, and multi-scanner scanning — producing a consolidated report.*
 
 `orchestration/minimal_test.sh` validates this claim **without** scanning all of

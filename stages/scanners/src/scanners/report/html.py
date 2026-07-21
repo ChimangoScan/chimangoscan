@@ -253,11 +253,11 @@ def render(corpus: dict, out_path: Path) -> None:
 
     head = f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AnonymousSystem · multi-scanner scan of vulnerable containers</title>
+<title>ChimangoScan · multi-scanner scan of vulnerable containers</title>
 <style>{_CSS}</style></head><body>
 <header class="top">
-  <h1>AnonymousSystem — multi-scanner scan of vulnerable containers</h1>
-  <div class="sub"><b>{_n(n_targets)}</b> vulnerable container images (corpus <code>lab-corpus</code>) scanned by a battery of <b>{_n(n_scanners)}</b> static security scanners, on two machines, via the distributed pipeline <a href="https://anonymous.4open.science/r/AnonymousSystem-2131/">AnonymousSystem/scanners</a>. <b>{_n(n_findings)}</b> consolidated findings; each traces back to the image (and the container IP) that originated it. Generated on {gen}.</div>
+  <h1>ChimangoScan — multi-scanner scan of vulnerable containers</h1>
+  <div class="sub"><b>{_n(n_targets)}</b> vulnerable container images (corpus <code>lab-corpus</code>) scanned by a battery of <b>{_n(n_scanners)}</b> static security scanners, on two machines, via the distributed pipeline <a href="https://github.com/ChimangoScan/chimangoscan">ChimangoScan/scanners</a>. <b>{_n(n_findings)}</b> consolidated findings; each traces back to the image (and the container IP) that originated it. Generated on {gen}.</div>
 </header>
 <nav class="sticky">
   <a href="#summary">Summary</a><a href="#performance">Performance</a><a href="#scanners">Coverage per scanner</a>
@@ -310,7 +310,7 @@ def render(corpus: dict, out_path: Path) -> None:
   <div class="scroll"><table id="t-find"><thead><tr><th>sev</th><th class="num">CVSS</th><th>id</th><th>title</th><th>category</th><th>package / location</th><th>version → fix</th><th>container</th><th>IP</th><th>seen by</th></tr></thead><tbody></tbody></table></div>
 </section>
 <footer>
-  <p><b>Methodology.</b> Pipeline <a href="https://anonymous.4open.science/r/AnonymousSystem-2131/">AnonymousSystem/scanners</a> — distributed work queue, one Docker container per scanner (hardened: <code>cap-drop ALL</code>, read-only rootfs, memory/PID limits, isolated network), finding normalization and dedup with <code>found_by</code>, import of OpenVAS results by IP. Severity <code>unknown</code> = no rating/CVSS assigned by the scanner. "consolidated" = after intra-scanner dedup (same CVE/package/path).</p>
+  <p><b>Methodology.</b> Pipeline <a href="https://github.com/ChimangoScan/chimangoscan">ChimangoScan/scanners</a> — distributed work queue, one Docker container per scanner (hardened: <code>cap-drop ALL</code>, read-only rootfs, memory/PID limits, isolated network), finding normalization and dedup with <code>found_by</code>, import of OpenVAS results by IP. Severity <code>unknown</code> = no rating/CVSS assigned by the scanner. "consolidated" = after intra-scanner dedup (same CVE/package/path).</p>
   <p>Earlier methodological comparison (35 tools × 3 canonical targets): <a href="scanner-bench-35tools.html">scanner-bench-35tools.html</a> · Generated on {gen}.</p>
 </footer>
 </main>"""

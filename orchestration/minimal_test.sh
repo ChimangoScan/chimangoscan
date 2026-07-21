@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# AnonymousSystem -- minimal end-to-end test (the artifact's reproducibility claim).
+# ChimangoScan -- minimal end-to-end test (the artifact's reproducibility claim).
 #
-# CLAIM: the AnonymousSystem pipeline runs end to end -- discovery on Docker Hub,
+# CLAIM: the ChimangoScan pipeline runs end to end -- discovery on Docker Hub,
 # prioritisation, and a multi-scanner sweep -- producing a consolidated report.
 #
 # This script validates that claim quickly, without crawling the whole of

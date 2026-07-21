@@ -8,7 +8,7 @@ import (
 	"os/exec"
 	"time"
 
-	"github.com/anonymous/DITector/myutils"
+	"github.com/ChimangoScan/DITector/myutils"
 )
 
 // scanSecretsInFilepath 调用trufflehog扫描指定文件路径下的隐私信息

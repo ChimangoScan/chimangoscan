@@ -463,13 +463,13 @@ def stage_apply(cve_to_sev: dict[str, tuple[str, float | None]],
 
 def main() -> int:
     p = argparse.ArgumentParser()
-    p.add_argument("--db", default="/home/anonymous/scanners/work/ditector.db")
+    p.add_argument("--db", default="/home/user/scanners/work/ditector.db")
     p.add_argument("--workers", type=int, default=50)
     p.add_argument("--batch", type=int, default=200)
     p.add_argument("--cache", default=None,
-                   help="Path to JSONL cache (default: /home/anonymous/exposure-data/osv-api-cache-<ts>.jsonl)")
+                   help="Path to JSONL cache (default: /home/user/exposure-data/osv-api-cache-<ts>.jsonl)")
     p.add_argument("--backup", default=None,
-                   help="Path to gz backup (default: /home/anonymous/exposure-data/osv-api-fill-backup-<ts>.jsonl.gz)")
+                   help="Path to gz backup (default: /home/user/exposure-data/osv-api-fill-backup-<ts>.jsonl.gz)")
     p.add_argument("--resume", action="store_true",
                    help="If --cache exists, skip ids already fetched.")
     p.add_argument("--dry-run", action="store_true",
@@ -478,8 +478,8 @@ def main() -> int:
     args = p.parse_args()
 
     ts = datetime.utcnow().strftime("%Y%m%d-%H%M%S")
-    cache_path = Path(args.cache or f"/home/anonymous/exposure-data/osv-api-cache-{ts}.jsonl")
-    backup_path = Path(args.backup or f"/home/anonymous/exposure-data/osv-api-fill-backup-{ts}.jsonl.gz")
+    cache_path = Path(args.cache or f"/home/user/exposure-data/osv-api-cache-{ts}.jsonl")
+    backup_path = Path(args.backup or f"/home/user/exposure-data/osv-api-fill-backup-{ts}.jsonl.gz")
 
     log_fh = open(args.log, "a") if args.log else None
 

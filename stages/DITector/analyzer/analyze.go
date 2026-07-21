@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/anonymous/DITector/myutils"
+	"github.com/ChimangoScan/DITector/myutils"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
 )

@@ -10,7 +10,7 @@ in a single streaming scan, collects everything the paper needs:
   - cve_distinct_by_year : distinct CVEs by publication year (Shu Fig.7)
   - pkg_top_by_images/vulns : offending packages (Shu Tab.6)
 
-Output: /home/anonymous/dit_analysis/paper_analysis.json
+Output: /home/user/dit_analysis/paper_analysis.json
 Usage:  nohup python3 paper_analysis.py > paper_analysis.log 2>&1 &
 """
 import sqlite3, json, sys, time, re

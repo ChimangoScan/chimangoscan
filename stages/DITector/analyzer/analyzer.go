@@ -1,7 +1,7 @@
 package analyzer
 
 import (
-	"github.com/anonymous/DITector/myutils"
+	"github.com/ChimangoScan/DITector/myutils"
 )
 
 type ImageAnalyzer struct {

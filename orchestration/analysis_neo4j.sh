@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# AnonymousSystem -- Neo4j layer-graph analysis stage.
+# ChimangoScan -- Neo4j layer-graph analysis stage.
 #
 # Restores the released Neo4j data-directory archive into an EPHEMERAL Neo4j
 # container, then recomputes the layer-graph results of the paper, in order:
@@ -40,7 +40,7 @@ source "$ROOT/orchestration/_runner.sh"
 NEO4J_IMAGE="${NEO4J_IMAGE:-neo4j:5}"
 NEO4J_BOLT_ADDR="${NEO4J_BOLT_ADDR:-127.0.0.1:7688}"
 NEO4J_WAIT_S="${NEO4J_WAIT_S:-600}"
-NEO4J_CONTAINER="${NEO4J_CONTAINER:-anonymoussystem-neo4j}"
+NEO4J_CONTAINER="${NEO4J_CONTAINER:-chimangoscan-neo4j}"
 TOP_N="${TOP_N:-60000}"
 
 DUMP=""

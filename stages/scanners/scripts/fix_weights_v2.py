@@ -7,8 +7,8 @@
 # Invocation (on host1):
 #   python3 scripts/fix_weights_v2.py
 import json, sqlite3, time, re
-SRC = "/home/anonymous/exposure-data/ditector_exposure_ranked_fixed.jsonl"
-DB  = "/home/anonymous/scanners/work/ditector.db"
+SRC = "/home/user/exposure-data/ditector_exposure_ranked_fixed.jsonl"
+DB  = "/home/user/scanners/work/ditector.db"
 
 def parse_jobs_image(img):
     """parse jobs.image -> (ns, repo, tag, digest) ou None se mal-formado.

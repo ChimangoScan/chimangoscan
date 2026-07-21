@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compute the headline statistics of the AnonymousSystem layer graph (Neo4j).
+"""Compute the headline statistics of the ChimangoScan layer graph (Neo4j).
 
 Writes a JSON file with:
   total_nodes          all nodes                     (count store, paper: 84.7M)

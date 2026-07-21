@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/anonymous/DITector/myutils"
+	"github.com/ChimangoScan/DITector/myutils"
 )
 
 func (analyzer *ImageAnalyzer) analyzeConfiguration(ci *CurrentImage) (*myutils.ConfigurationResult, error) {

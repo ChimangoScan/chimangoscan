@@ -2,7 +2,7 @@
 
 > Based on the DITector framework (Dr. Docker), extended to support large-scale distributed crawling, parallel construction of the dependency graph, and generation of prioritized datasets for security scanning.
 
-> **Stages I and II of the AnonymousSystem pipeline — discovery and prioritization.**
+> **Stages I and II of the ChimangoScan pipeline — discovery and prioritization.**
 > This repository contains the three components of the *discovery and
 > prioritization* step:
 >
@@ -24,9 +24,9 @@
 > The **output** of this step is the file `exposure_ranked.jsonl` — one JSON line
 > per repository, ordered by decreasing exposure. This file is the
 > **contract** consumed by Stage III (multi-scanner scanning), which lives in the
-> [`scanners`](https://anonymous.4open.science/r/AnonymousSystem-2131/) repository. The
+> [`scanners`](https://github.com/ChimangoScan/chimangoscan) repository. The
 > end-to-end orchestration of the two stages is handled by the
-> [`anonymoussystem`](https://anonymous.4open.science/r/AnonymousSystem-2131/) repository.
+> [`chimangoscan`](https://github.com/ChimangoScan/chimangoscan) repository.
 
 ---
 
@@ -747,7 +747,7 @@ first; the recomputation re-reads those dumps without re-querying the databases.
 ### Contract with Stage III
 
 `exposure_ranked.jsonl` is the only artifact that crosses the boundary into
-Stage III. The [`scanners`](https://anonymous.4open.science/r/AnonymousSystem-2131/)
+Stage III. The [`scanners`](https://github.com/ChimangoScan/chimangoscan)
 repository consumes it directly via `scanners seed` — its JSONL reader natively
 recognizes this schema (`repository_namespace` / `repository_name` /
 `tag_name`). No intermediate conversion is needed.
@@ -759,7 +759,7 @@ recognizes this schema (`repository_namespace` / `repository_name` /
 Discovery and prioritization end here. The `exposure_ranked.jsonl` artifact
 produced by the ranker (Section 9) is handed off to **Stage III — multi-scanner
 scanning**, implemented in the
-[`scanners`](https://anonymous.4open.science/r/AnonymousSystem-2131/) repository.
+[`scanners`](https://github.com/ChimangoScan/chimangoscan) repository.
 
 ```
 DITector (this repo)                       scanners (Stage III)
@@ -779,7 +779,7 @@ with pre-existing OpenVAS scans via `scanners import-openvas` — are
 documented in the `README.md` of the `scanners` repository.
 
 The automatic orchestration of the two stages in sequence is in the
-[`anonymoussystem`](https://anonymous.4open.science/r/AnonymousSystem-2131/) repository.
+[`chimangoscan`](https://github.com/ChimangoScan/chimangoscan) repository.
 
 ---
 

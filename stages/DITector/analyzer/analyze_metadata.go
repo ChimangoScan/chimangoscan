@@ -7,8 +7,8 @@ import (
 	"path"
 	"strings"
 
-	"github.com/anonymous/DITector/analyzer/extractor"
-	"github.com/anonymous/DITector/myutils"
+	"github.com/ChimangoScan/DITector/analyzer/extractor"
+	"github.com/ChimangoScan/DITector/myutils"
 )
 
 func (analyzer *ImageAnalyzer) analyzeMetadata(ci *CurrentImage) (*myutils.MetadataResult, error) {

@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/anonymous/DITector/myutils"
+	"github.com/ChimangoScan/DITector/myutils"
 	"go.mongodb.org/mongo-driver/bson"
 )
 

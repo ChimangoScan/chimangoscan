@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/anonymous/DITector/cmd"
+	"github.com/ChimangoScan/DITector/cmd"
 )
 
 func main() {

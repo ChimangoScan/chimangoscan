@@ -1,6 +1,6 @@
 package buildgraph
 
-import "github.com/anonymous/DITector/myutils"
+import "github.com/ChimangoScan/DITector/myutils"
 
 type GraphJob struct {
 	Registry      string

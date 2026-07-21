@@ -8,11 +8,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/anonymous/DITector/analyzer"
-	"github.com/anonymous/DITector/buildgraph"
-	"github.com/anonymous/DITector/crawler"
-	"github.com/anonymous/DITector/myutils"
-	"github.com/anonymous/DITector/scripts"
+	"github.com/ChimangoScan/DITector/analyzer"
+	"github.com/ChimangoScan/DITector/buildgraph"
+	"github.com/ChimangoScan/DITector/crawler"
+	"github.com/ChimangoScan/DITector/myutils"
+	"github.com/ChimangoScan/DITector/scripts"
 	"github.com/spf13/cobra"
 )
 

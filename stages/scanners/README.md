@@ -4,16 +4,16 @@ Run a battery of container-security scanners over a list of images — on one
 machine or many at once — and consolidate everything into one schema, keyed so
 every finding traces back to the container (and its IP) that produced it.
 
-> **Stage III of the AnonymousSystem pipeline.** Discovery and prioritisation
+> **Stage III of the ChimangoScan pipeline.** Discovery and prioritisation
 > (Stage I crawler + Stage II layer graph + the exposure ranker) live in the
-> [`DITector`](https://anonymous.4open.science/r/AnonymousSystem-2131/) repository and produce
+> [`DITector`](https://github.com/ChimangoScan/chimangoscan) repository and produce
 > `exposure_ranked.jsonl` — one line per repository, sorted by supply-chain
 > exposure. That file is the contract this repository consumes: feed it to
 > `scanners seed` and the six default scanners run the multi-scanner sweep over
 > the prioritised targets. The exposure ranker itself
 > (`compute_exposure_ranking.py`) is **not** part of this repository — it is
 > owned by `DITector`. End-to-end orchestration of both stages lives in the
-> [`anonymoussystem`](https://anonymous.4open.science/r/AnonymousSystem-2131/) repository.
+> [`chimangoscan`](https://github.com/ChimangoScan/chimangoscan) repository.
 
 Each scanner is a pinned Docker image. The pipeline pulls each target, runs the
 scanners (static ones against the image, dynamic ones against the running
@@ -45,7 +45,7 @@ Docker daemon on every machine that runs workers. The only Python dependency is
 PyYAML; the rest is the standard library.
 
 ```bash
-git clone https://anonymous.4open.science/r/AnonymousSystem-2131/
+git clone https://github.com/ChimangoScan/chimangoscan
 cd scanners && uv sync
 ```
 

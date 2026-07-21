@@ -1,4 +1,4 @@
-# Scanning pipeline — DITector / AnonymousSystem
+# Scanning pipeline — DITector / ChimangoScan
 
 ## 3-stage overview
 
@@ -18,7 +18,7 @@ STAGE II — Builder (Go)                                      [IN PROGRESS]
        ~50 M edges in the graph (includes transitive relations)
        rate: ~207 repos/min → ETA ~30 days for 100%
 
-STAGE III — Distributed scanner (AnonymousSystem)               [IN PROGRESS]
+STAGE III — Distributed scanner (ChimangoScan)               [IN PROGRESS]
   └─ Queue: 504,837 total jobs ranked by exposure
        done:    8,382 scans completed  (1.66%)
        pending: 488,659 waiting

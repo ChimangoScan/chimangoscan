@@ -7,8 +7,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/anonymous/DITector/analyzer"
-	"github.com/anonymous/DITector/myutils"
+	"github.com/ChimangoScan/DITector/analyzer"
+	"github.com/ChimangoScan/DITector/myutils"
 )
 
 type job struct {

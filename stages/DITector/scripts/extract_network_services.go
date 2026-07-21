@@ -8,7 +8,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/anonymous/DITector/myutils"
+	"github.com/ChimangoScan/DITector/myutils"
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
 

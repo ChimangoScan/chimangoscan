@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/anonymous/DITector/myutils"
+	"github.com/ChimangoScan/DITector/myutils"
 )
 
 type cpEntry struct {

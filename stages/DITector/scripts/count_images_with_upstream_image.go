@@ -7,8 +7,8 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/anonymous/DITector/buildgraph"
-	"github.com/anonymous/DITector/myutils"
+	"github.com/ChimangoScan/DITector/buildgraph"
+	"github.com/ChimangoScan/DITector/myutils"
 )
 
 type ImageWithUpstream struct {

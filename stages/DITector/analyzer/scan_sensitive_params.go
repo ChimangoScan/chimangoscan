@@ -1,6 +1,6 @@
 package analyzer
 
-import "github.com/anonymous/DITector/myutils"
+import "github.com/ChimangoScan/DITector/myutils"
 
 func (analyzer *ImageAnalyzer) scanSensitiveParamInString(s string) []*myutils.SensitiveParam {
 	res := make([]*myutils.SensitiveParam, 0)

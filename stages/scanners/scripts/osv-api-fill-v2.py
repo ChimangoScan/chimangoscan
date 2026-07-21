@@ -508,11 +508,11 @@ def apply_updates(db_path: str,
 # ---------------------------------------------------------------------------
 def main() -> int:
     p = argparse.ArgumentParser()
-    p.add_argument("--db", default="/home/anonymous/scanners/work/ditector.db")
-    p.add_argument("--cache", default="/home/anonymous/exposure-data/osv-api-cache-20260515.jsonl",
+    p.add_argument("--db", default="/home/user/scanners/work/ditector.db")
+    p.add_argument("--cache", default="/home/user/exposure-data/osv-api-cache-20260515.jsonl",
                    help="JSONL cache of CVE -> severity (resumed if exists, appended to).")
     p.add_argument("--backup", default=None,
-                   help="Path to gz backup (default: /home/anonymous/exposure-data/osv-backfill-v2-backup-<ts>.jsonl.gz)")
+                   help="Path to gz backup (default: /home/user/exposure-data/osv-backfill-v2-backup-<ts>.jsonl.gz)")
     p.add_argument("--api-workers", type=int, default=2,
                    help="Concurrent OSV API requests. Keep low to not overload coord (default 2).")
     p.add_argument("--row-sleep", type=float, default=0.1,
@@ -528,7 +528,7 @@ def main() -> int:
 
     ts = datetime.utcnow().strftime("%Y%m%d-%H%M%S")
     cache_path = Path(args.cache)
-    backup_path = Path(args.backup or f"/home/anonymous/exposure-data/osv-backfill-v2-backup-{ts}.jsonl.gz")
+    backup_path = Path(args.backup or f"/home/user/exposure-data/osv-backfill-v2-backup-{ts}.jsonl.gz")
     log_fh = open(args.log, "a") if args.log else None
 
     def log(msg: str) -> None:

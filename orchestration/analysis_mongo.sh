@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# AnonymousSystem -- MONGO (crawl) analysis stage.
+# ChimangoScan -- MONGO (crawl) analysis stage.
 #
 # Restores the Stage I/II mongodump archive into an EPHEMERAL MongoDB container
 # and computes every crawl-wide artefact of the paper:
@@ -33,7 +33,7 @@ MONGO_PORT="${MONGO_PORT:-27100}"
 MONGO_DB="${MONGO_DB:-dockerhub_data}"
 MONGO_IMAGE="${MONGO_IMAGE:-mongo:7}"
 MONGO_WAIT_S="${MONGO_WAIT_S:-120}"
-CONTAINER="anonymoussystem-mongo-analysis"
+CONTAINER="chimangoscan-mongo-analysis"
 VOLUME="$CONTAINER-data"
 
 ARCHIVE=""

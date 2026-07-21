@@ -12,8 +12,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/anonymous/DITector/analyzer/misconfiguration"
-	"github.com/anonymous/DITector/myutils"
+	"github.com/ChimangoScan/DITector/analyzer/misconfiguration"
+	"github.com/ChimangoScan/DITector/myutils"
 )
 
 type FileReputation struct {

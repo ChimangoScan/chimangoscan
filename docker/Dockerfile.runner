@@ -1,4 +1,4 @@
-# AnonymousSystem runner image.
+# ChimangoScan runner image.
 #
 # Every pipeline stage runs inside this image, so the ONLY thing a reviewer
 # installs on the host is Docker itself:

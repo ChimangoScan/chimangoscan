@@ -1,4 +1,4 @@
-module github.com/anonymous/DITector
+module github.com/ChimangoScan/DITector
 
 go 1.20
 

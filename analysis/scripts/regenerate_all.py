@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-regenerate_all.py -- single-command regeneration pipeline for the AnonymousSystem
+regenerate_all.py -- single-command regeneration pipeline for the ChimangoScan
 Docker Hub measurement paper.
 
 Every table body and every figure in the paper derives, directly or through one

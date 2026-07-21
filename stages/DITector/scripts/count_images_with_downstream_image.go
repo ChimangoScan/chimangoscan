@@ -8,7 +8,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/anonymous/DITector/myutils"
+	"github.com/ChimangoScan/DITector/myutils"
 )
 
 // CountNodeWithUpstreamImages 计算存在上游镜像的镜像节点数

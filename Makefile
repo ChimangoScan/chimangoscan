@@ -1,4 +1,4 @@
-# AnonymousSystem -- reproduction Makefile.
+# ChimangoScan -- reproduction Makefile.
 #
 # Two reproduction modes (see README.md, section "Reproduction"):
 #
@@ -27,7 +27,7 @@ CRAWL_DURATION ?= 5m
 
 .PHONY: help
 help:
-	@echo "AnonymousSystem reproduction targets:"
+	@echo "ChimangoScan reproduction targets:"
 	@echo "  make precomputed   figures + table values from shipped data (no DB/network/Docker)"
 	@echo "  make full          run the real pipeline end to end (Docker; SCALE=$(SCALE))"
 	@echo "  make venv          create $(VENV) and install requirements.txt"

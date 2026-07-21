@@ -1,6 +1,6 @@
 # Reproducibility Report
 
-This report accompanies the AnonymousSystem artifact for the paper
+This report accompanies the ChimangoScan artifact for the paper
 *"Vulnerabilities, Secrets and Misconfiguration in the Highest-Exposure Docker
 Hub Images"*. The committed reference `analysis/expected/paper_values.json`
 lists every reproducible number the camera-ready paper asserts (240 checks:

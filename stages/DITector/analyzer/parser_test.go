@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/anonymous/DITector/myutils"
+	"github.com/ChimangoScan/DITector/myutils"
 )
 
 func TestParseMetadataFromAPI(t *testing.T) {

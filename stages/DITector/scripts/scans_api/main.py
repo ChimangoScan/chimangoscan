@@ -1,4 +1,4 @@
-"""localhost — read-only API over the AnonymousSystem/DITector pipeline state.
+"""localhost — read-only API over the ChimangoScan/DITector pipeline state.
 
 Runs in a Docker container with `network: host` so it can hit the
 local Mongo/Neo4j/coord without any extra tunnels:
@@ -124,7 +124,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="localhost",
-    description="Read-only API over the AnonymousSystem / DITector pipeline state.",
+    description="Read-only API over the ChimangoScan / DITector pipeline state.",
     version="0.1.5",
     lifespan=lifespan,
 )
