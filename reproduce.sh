@@ -56,45 +56,49 @@ usage() {
 reproduce_precomputed() {
   log "PRECOMPUTED reproduction -- figures + tables from analysis/data/"
 
-  # Pick a Python: an explicit $PYTHON, or the repo's own .venv.
-  PY="${PYTHON:-}"
-  if [ -z "$PY" ] && [ -x "$ROOT/.venv/bin/python" ]; then PY="$ROOT/.venv/bin/python"; fi
-
-  # Ensure matplotlib+numpy are importable. If not, provision a LOCAL .venv and
-  # install requirements into it -- never `pip install` into the system Python
-  # (that pollutes it and fails outright on PEP-668 "externally-managed" distros
-  # like recent Debian/Ubuntu). One command, no manual venv step for the reviewer.
-  deps_ok() { [ -n "$PY" ] && "$PY" -c 'import matplotlib, numpy' 2>/dev/null; }
-  if ! deps_ok; then
-    log "creating .venv and installing requirements.txt (one-time)"
-    python3 -m venv "$ROOT/.venv" 2>/dev/null || python3 -m venv --without-pip "$ROOT/.venv"
-    "$ROOT/.venv/bin/python" -m ensurepip -q 2>/dev/null || true
-    "$ROOT/.venv/bin/python" -m pip install -q --upgrade pip 2>/dev/null || \
-      { curl -sS https://bootstrap.pypa.io/get-pip.py | "$ROOT/.venv/bin/python" - -q; }
-    "$ROOT/.venv/bin/pip" install -q -r "$ROOT/requirements.txt"
-    PY="$ROOT/.venv/bin/python"
-  fi
-  deps_ok || die "could not provision matplotlib/numpy in .venv -- install python3-venv (apt install python3-venv) and retry"
-
   # Stage the precomputed inputs into a scratch run directory. regenerate_all.py
-  # writes figures into <out>/figures and table_values.json into <out>; we then
-  # surface both at the top-level figures/ directory.
+  # writes figures into <out>/figures and table_values.json into <out>; both live
+  # under the repo, so they land on the host whether we run natively or in Docker.
   WORK="$ROOT/artifacts/precomputed"
   rm -rf "$WORK"; mkdir -p "$WORK"
   cp "$DATA"/*.json "$WORK/"
   cp "$DATA"/recount_repo.log "$WORK/"   # carries the distinct-digest count
 
-  export MPLBACKEND=Agg MPLCONFIGDIR="$WORK/.mpl"
+  # Choose an execution engine with matplotlib+numpy. Prefer a working host
+  # interpreter (fast, no Docker); provision a local .venv if needed (never the
+  # system Python -- PEP-668). If the host cannot provide them (e.g. a very new
+  # host Python with no numpy wheel), fall back to the containerized runner,
+  # which ships Python 3.12 + the libs -- so the reviewer needs only Docker.
+  PY="${PYTHON:-}"
+  [ -z "$PY" ] && [ -x "$ROOT/.venv/bin/python" ] && PY="$ROOT/.venv/bin/python"
+  deps_ok() { [ -n "$PY" ] && "$PY" -c 'import matplotlib, numpy' 2>/dev/null; }
+  if ! deps_ok; then
+    log "provisioning a local .venv (one-time)"
+    rm -rf "$ROOT/.venv"
+    if python3 -m venv "$ROOT/.venv" >/dev/null 2>&1 \
+       && "$ROOT/.venv/bin/pip" install -q -r "$ROOT/requirements.txt" >/dev/null 2>&1; then
+      PY="$ROOT/.venv/bin/python"
+    else
+      rm -rf "$ROOT/.venv"; PY=""
+    fi
+  fi
 
-  # Stage 2 (figures) and stage 3 (tables) of the regeneration pipeline read
-  # only those JSONs -- they never open the database (stage 1 / analysis does).
-  log "regenerating figures (stage: figures)"
-  "$PY" "$SCRIPTS/regenerate_all.py" --stage figures --out "$WORK" --db /dev/null
+  if deps_ok; then
+    regen() { MPLBACKEND=Agg MPLCONFIGDIR="$WORK/.mpl" \
+              "$PY" "$SCRIPTS/regenerate_all.py" --stage "$1" --out "$WORK" --db /dev/null; }
+  else
+    log "host Python lacks matplotlib/numpy -- running in the container runner (Docker)"
+    # shellcheck source=orchestration/_runner.sh
+    source "$ROOT/orchestration/_runner.sh"
+    ensure_runner
+    regen() { RUNNER_WORKDIR="$ROOT" in_runner sh -c \
+              "MPLBACKEND=Agg MPLCONFIGDIR='$WORK/.mpl' python3 '$SCRIPTS/regenerate_all.py' --stage $1 --out '$WORK' --db /dev/null"; }
+  fi
 
-  log "regenerating table values (stage: tables)"
-  "$PY" "$SCRIPTS/regenerate_all.py" --stage tables --out "$WORK" --db /dev/null
+  # Stage figures + table values (they read only the shipped JSONs, never a DB).
+  log "regenerating figures";      regen figures
+  log "regenerating table values"; regen tables
 
-  # Publish results at the top-level figures/ directory.
   mkdir -p "$FIGURES"
   cp "$WORK"/figures/*.pdf "$FIGURES/"
   cp "$WORK"/table_values.json "$FIGURES/"

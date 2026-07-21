@@ -220,8 +220,10 @@ Every paper number, figure and table is regenerated from the released databases
 (re-running the full crawl/scan is not required). One command per claim.
 
 **Fast path — no database, ~1 min.** Regenerate every figure and table value from
-the shipped aggregates. One command; it creates its own `.venv` on first run
-(nothing is installed into the system Python):
+the shipped aggregates. One command, nothing installed into the system Python:
+it uses a local `.venv` when the host Python can provide matplotlib/numpy, and
+otherwise falls back to the Docker runner (so it works on any Docker host; add
+a few minutes the first time if the runner image must build):
 
 ```bash
 ./reproduce.sh precomputed
