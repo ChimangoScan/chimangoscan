@@ -37,6 +37,38 @@ results" section below in place, and exits non-zero iff any check FAILs.
    the MongoDB analysis stage now ships `analysis/scripts/crawl_stats.py`,
    which recomputes every bucket, the crawl totals and the pull-count
    median/p99/max server-side from the Stage I database.
+
+   **Snapshot verification and a pull-statistics discrepancy.** Running that
+   script against the frozen Stage I MongoDB confirms the two anchor counts of
+   the paper *exactly*: **12,716,568** repositories and **2,051,801** prefix
+   queries (`crawler_keywords`). The pull-count **buckets** reproduce to within
+   ~0.5% (e.g. ≥1B: 114 vs the paper's 113; <1k: 12,150,793 vs 12,050,759),
+   the small excess being repositories whose pull counts were filled in after
+   the paper's Table 2 was computed (the same crawl, a marginally later read of
+   the mutable pull_count field; total pulls 668.1B vs the paper's 663.8B, a
+   0.65% drift). Three **text** statistics do NOT reproduce and one is
+   internally inconsistent: the recomputed **median is 62** (paper: 198), the
+   **99th percentile is 20,781** (paper: 160,061), and the **maximum is
+   24,211,580,558**, i.e. 24.2e9 (paper: ">3.7e9"). The paper's P99 of 160,061
+   is moreover impossible given the paper's own buckets: only 57,170
+   repositories have ≥100k pulls, far fewer than the top 1% (≈127k
+   repositories), so the true P99 must lie below 100k, as the recomputation
+   (20,781) confirms. Because the pull-distribution had no committed script and
+   the mutable pull_count field drifted between the paper's computation and the
+   frozen dump, these text numbers cannot be reproduced as printed; the
+   camera-ready decision on whether to correct them is pending (the buckets and
+   the two anchor counts stand).
+
+   **MongoDB version.** The released Stage I dump was written by **MongoDB
+   8.x**; `mongo:7` refuses to open it (`exitCode 62`, invalid
+   featureCompatibilityVersion 8.2). The stage driver now defaults
+   `MONGO_IMAGE` to `mongo:8`.
+
+   **last_updated coverage.** The paper's Table 3 "last_updated coverage 95.7%"
+   is not a property of `repositories_data` (whose `last_updated` field is an
+   empty string for every document) nor of `tags_data` (100% populated); its
+   exact population is undetermined, so `crawl_stats.py` does not currently
+   reproduce that single cell.
 3. **Uncommitted input generators, now added.** The generators for
    `plan_crawl.json` (crawl-wide pull CDF), `tags_full.jsonl` and the top-60k
    corpus filter were never committed with the original analysis; the artifact

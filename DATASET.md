@@ -72,7 +72,7 @@ The dataset will be distributed via the Zenodo record above.
 ## 2. Docker Hub crawl metadata — MongoDB `dockerhub_data`
 
 Output of Stage I (crawl) and Stage II (layer-graph build). Hosted in the
-an ephemeral `mongo:7` container started by `orchestration/analysis_mongo.sh` (default port 27100).
+an ephemeral `mongo:8` container started by `orchestration/analysis_mongo.sh` (default port 27100).
 
 | collection          | documents   | description                                        |
 |---------------------|-------------|----------------------------------------------------|
