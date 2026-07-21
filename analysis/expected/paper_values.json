@@ -796,11 +796,11 @@
   "source": "tab:reach row 6 (CVE & Package & Sev. & Images & % expo.)"
  },
  "reach.row7": {
-  "value": "CVE-2026-39825 & stdlib & Med. & 12,778 & 43.2%",
+  "value": "CVE-2026-33811 & stdlib & High & 12778 & 43.2",
   "source": "tab:reach row 7 (CVE & Package & Sev. & Images & % expo.)"
  },
  "reach.row8": {
-  "value": "CVE-2026-33811 & stdlib & High & 12,778 & 43.2%",
+  "value": "CVE-2026-39825 & stdlib & Med. & 12778 & 43.2",
   "source": "tab:reach row 8 (CVE & Package & Sev. & Images & % expo.)"
  },
  "reach.top_exposure_pct": {

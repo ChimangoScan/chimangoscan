@@ -684,7 +684,7 @@ def main():
 
     total_exposure = sum(img_exposure)
     cve_n3 = []
-    for cid, exp in cve_exposure.most_common(20):
+    for cid, exp in sorted(cve_exposure.items(), key=lambda kv: (-kv[1], kv[0]))[:20]:
         cve_n3.append({
             "cve": cid, "severity": cve_sev.get(cid, "unknown"),
             "package": cve_pkg.get(cid, ""),
