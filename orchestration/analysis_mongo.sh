@@ -21,7 +21,7 @@
 # Usage: orchestration/analysis_mongo.sh --archive PATH [--out DIR] [--keep]
 #
 # Environment: MONGO_PORT (27100), MONGO_DB (dockerhub_data),
-#              MONGO_IMAGE (mongo:8; the released dump needs 8.x), MONGO_WAIT_S (120), RANKING (optional
+#              MONGO_IMAGE (mongo:7.0; the archive is version-portable), MONGO_WAIT_S (120), RANKING (optional
 #              exposure ranking jsonl for plan_crawl.json's depweight_base)
 set -euo pipefail
 
@@ -33,7 +33,7 @@ source "$ROOT/orchestration/_runner.sh"
 
 MONGO_PORT="${MONGO_PORT:-27100}"
 MONGO_DB="${MONGO_DB:-dockerhub_data}"
-MONGO_IMAGE="${MONGO_IMAGE:-mongo:8}"  # the released dump was written by MongoDB 8.x; mongo:7 fails with exit 62
+MONGO_IMAGE="${MONGO_IMAGE:-mongo:7.0}"  # mongodump archives are version-portable; 7.0 is stable across hosts (8.x SIGSEGVs on some)
 MONGO_WAIT_S="${MONGO_WAIT_S:-120}"
 CONTAINER="chimangoscan-mongo-analysis"
 VOLUME="$CONTAINER-data"
