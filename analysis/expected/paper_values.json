@@ -1,119 +1,148 @@
 {
  "pulldist.ge1b.repos": {
   "value": "113",
-  "source": "tab:pulldist row >=1B col Repos"
+  "source": "tab:pulldist row >=1B col Repos",
+  "tol": 0.02
  },
  "pulldist.ge1b.pct_pulls": {
   "value": "60.6",
-  "source": "tab:pulldist row >=1B col % pulls"
+  "source": "tab:pulldist row >=1B col % pulls",
+  "tol": 0.02
  },
  "pulldist.100m_1b.repos": {
   "value": "461",
-  "source": "tab:pulldist row 100M-1B col Repos"
+  "source": "tab:pulldist row 100M-1B col Repos",
+  "tol": 0.02
  },
  "pulldist.100m_1b.pct_pulls": {
   "value": "20.1",
-  "source": "tab:pulldist row 100M-1B col % pulls"
+  "source": "tab:pulldist row 100M-1B col % pulls",
+  "tol": 0.02
  },
  "pulldist.10m_100m.repos": {
   "value": "2,595",
-  "source": "tab:pulldist row 10M-100M col Repos"
+  "source": "tab:pulldist row 10M-100M col Repos",
+  "tol": 0.02
  },
  "pulldist.10m_100m.pct_pulls": {
   "value": "11.1",
-  "source": "tab:pulldist row 10M-100M col % pulls"
+  "source": "tab:pulldist row 10M-100M col % pulls",
+  "tol": 0.02
  },
  "pulldist.1m_10m.repos": {
   "value": "11,856",
-  "source": "tab:pulldist row 1M-10M col Repos"
+  "source": "tab:pulldist row 1M-10M col Repos",
+  "tol": 0.02
  },
  "pulldist.1m_10m.pct_pulls": {
   "value": "5.3",
-  "source": "tab:pulldist row 1M-10M col % pulls"
+  "source": "tab:pulldist row 1M-10M col % pulls",
+  "tol": 0.02
  },
  "pulldist.100k_1m.repos": {
   "value": "42,145",
-  "source": "tab:pulldist row 100k-1M col Repos"
+  "source": "tab:pulldist row 100k-1M col Repos",
+  "tol": 0.02
  },
  "pulldist.100k_1m.pct_pulls": {
   "value": "2.1",
-  "source": "tab:pulldist row 100k-1M col % pulls"
+  "source": "tab:pulldist row 100k-1M col % pulls",
+  "tol": 0.02
  },
  "pulldist.1k_100k.repos": {
   "value": "572,662",
-  "source": "tab:pulldist row 1k-100k col Repos"
+  "source": "tab:pulldist row 1k-100k col Repos",
+  "tol": 0.02
  },
  "pulldist.1k_100k.pct_pulls": {
   "value": "0.8",
-  "source": "tab:pulldist row 1k-100k col % pulls"
+  "source": "tab:pulldist row 1k-100k col % pulls",
+  "tol": 0.02
  },
  "pulldist.lt1k.repos": {
   "value": "12,050,759",
-  "source": "tab:pulldist row <1k col Repos"
+  "source": "tab:pulldist row <1k col Repos",
+  "tol": 0.02
  },
  "pulldist.lt1k.pct_pulls": {
   "value": "<0.1",
-  "source": "tab:pulldist row <1k col % pulls"
+  "source": "tab:pulldist row <1k col % pulls",
+  "tol": 0.02
  },
  "pulldist.total_repos": {
   "value": "12,680,591",
-  "source": "tab:pulldist row Total / caption"
+  "source": "tab:pulldist row Total / caption",
+  "tol": 0.02
  },
  "crawl.repositories": {
   "value": "12,716,568",
-  "source": "sec:stage1 text / tab:dataset row Repositories crawled"
+  "source": "sec:stage1 text / tab:dataset row Repositories crawled",
+  "tol": 0.02
  },
  "crawl.repositories_millions": {
   "value": "12.7",
-  "source": "abstract text (12.7 million-repository crawl)"
+  "source": "abstract text (12.7 million-repository crawl)",
+  "tol": 0.02
  },
  "crawl.total_pulls": {
   "value": "663,779,362,551",
-  "source": "sec:intro text (cumulative historical pulls)"
+  "source": "sec:intro text (cumulative historical pulls)",
+  "tol": 0.02
  },
  "crawl.total_pulls_billions": {
   "value": "663.8",
-  "source": "abstract text (663.8 billion recorded pulls)"
+  "source": "abstract text (663.8 billion recorded pulls)",
+  "tol": 0.02
  },
  "crawl.prefix_queries": {
   "value": "2,051,801",
-  "source": "sec:stage1 text / tab:dataset row Prefix queries issued"
+  "source": "sec:stage1 text / tab:dataset row Prefix queries issued",
+  "tol": 0.02
  },
  "crawl.pull_median": {
   "value": "62",
-  "source": "sec:stage1 text (median pulls, full crawl)"
+  "source": "sec:stage1 text (median pulls, full crawl)",
+  "tol": 0.02
  },
  "crawl.pull_p99": {
   "value": "20,781",
-  "source": "sec:stage1 text (99th percentile, full crawl)"
+  "source": "sec:stage1 text (99th percentile, full crawl)",
+  "tol": 0.02
  },
  "crawl.pull_max": {
   "value": "2.4e10",
-  "source": "sec:stage1 text (maximum, full crawl)"
+  "source": "sec:stage1 text (maximum, full crawl)",
+  "tol": 0.02
  },
  "crawl.top113_pct_pulls": {
   "value": "61",
-  "source": "sec:stage1 text (113 repositories drawing 61% of pulls)"
+  "source": "sec:stage1 text (113 repositories drawing 61% of pulls)",
+  "tol": 0.02
  },
  "crawl.repos_below_1k_pct": {
   "value": "95",
-  "source": "sec:stage1 text (95% pulled fewer than a thousand times)"
+  "source": "sec:stage1 text (95% pulled fewer than a thousand times)",
+  "tol": 0.02
  },
  "crawl.last_updated_coverage": {
   "value": "95.7",
-  "source": "tab:dataset row last_updated coverage (crawl)"
+  "source": "tab:dataset row last_updated coverage (crawl)",
+  "tol": 0.02
  },
  "crawl.tags_resolved": {
   "value": "6,399,608",
-  "source": "sec:stage2 text / tab:dataset row Tags resolved"
+  "source": "sec:stage2 text / tab:dataset row Tags resolved",
+  "tol": 0.02
  },
  "crawl.image_digests": {
   "value": "7,416,671",
-  "source": "sec:stage2 text / tab:dataset row Image digests resolved"
+  "source": "sec:stage2 text / tab:dataset row Image digests resolved",
+  "tol": 0.02
  },
  "crawl.drdocker_delta": {
   "value": "637,259",
-  "source": "sec:related text (637,259 fewer than our 12,716,568)"
+  "source": "sec:related text (637,259 fewer than our 12,716,568)",
+  "tol": 0.02
  },
  "graph.is_base_of_edges": {
   "value": "54,382,383",

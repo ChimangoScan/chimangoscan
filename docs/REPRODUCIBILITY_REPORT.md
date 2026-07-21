@@ -48,9 +48,20 @@ results" section below in place, and exits non-zero iff any check FAILs.
    median 198 / p99 160,061 here; those were percentiles of the exposure-ranked
    resolved head, a different and smaller population, mistakenly presented as
    full-crawl figures. The camera-ready now reports the full-crawl values,
-   consistent with Table 2.) The pull-count field is mutable and kept updating
-   after the paper's Table 2 was computed, so bucket counts reproduce within
-   ~0.5% (e.g. >=1B: 114 vs 113); the qualitative distribution is unchanged.
+   consistent with Table 2.) The Stage I crawl is a LIVE crawl that kept
+   running after the paper's numbers were frozen, and the MongoDB was not
+   snapshotted at that exact moment, so every available copy is marginally
+   later: the released dump holds 12,788,247 repositories and 2,053,459 prefix
+   queries against the paper's 12,716,568 and 2,051,801 (a ~0.6% drift), and
+   the pull-count field likewise kept updating (buckets within ~0.5%, e.g.
+   >=1B: 114 vs 113; median 61 vs 62). All crawl-derived checks therefore
+   verify within a 2% tolerance (reported DRIFT, not FAIL); the qualitative
+   distribution is unchanged. By contrast the scan-reports SQLite database WAS
+   frozen, so every scan/results number (52,895 images and all of Section 4)
+   reproduces exactly. (An earlier note here claimed the frozen dir matched the
+   paper anchors exactly; that was `estimatedDocumentCount` reading stale
+   metadata after an unclean shutdown, which coincidentally matched. The actual
+   `count_documents` is 12,788,247.)
 
    **MongoDB version.** The released Stage I dump was written by **MongoDB
    8.x**; `mongo:7` refuses to open it (`exitCode 62`, invalid
