@@ -135,14 +135,14 @@ mkdir -p "$ARTIFACTS/tmp"
 SCAN_ENV="TMPDIR=$ARTIFACTS/tmp"
 
 log "Stage III -- seeding the scan queue with the top $TOP targets"
-RUNNER_WORKDIR="$SCANNERS" in_runner sh -c "$SCAN_ENV uv run scanners -c $SCAN_CONFIG seed"
+RUNNER_WORKDIR="$SCANNERS" in_runner sh -c "$SCAN_ENV uv run scanners seed -c $SCAN_CONFIG"
 
 log "Stage III -- running the six-scanner sweep over the top $TOP"
-RUNNER_WORKDIR="$SCANNERS" in_runner sh -c "$SCAN_ENV uv run scanners -c $SCAN_CONFIG run --workers 4"
+RUNNER_WORKDIR="$SCANNERS" in_runner sh -c "$SCAN_ENV uv run scanners run -c $SCAN_CONFIG --workers 4"
 
 log "Stage III -- consolidating the corpus report"
-RUNNER_WORKDIR="$SCANNERS" in_runner sh -c "$SCAN_ENV uv run scanners -c $SCAN_CONFIG report -o $ARTIFACTS/report.html"
-RUNNER_WORKDIR="$SCANNERS" in_runner sh -c "$SCAN_ENV uv run scanners -c $SCAN_CONFIG analyze"
+RUNNER_WORKDIR="$SCANNERS" in_runner sh -c "$SCAN_ENV uv run scanners report -c $SCAN_CONFIG -o $ARTIFACTS/report.html"
+RUNNER_WORKDIR="$SCANNERS" in_runner sh -c "$SCAN_ENV uv run scanners analyze -c $SCAN_CONFIG"
 
 # ---------------------------------------------------------------------------
 # 5. Assertions -- the claim holds only if the corpus artefacts exist
