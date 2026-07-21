@@ -37,7 +37,7 @@ SCRIPTS="$ROOT/analysis/scripts"
 # shellcheck source=orchestration/_runner.sh
 source "$ROOT/orchestration/_runner.sh"
 
-NEO4J_IMAGE="${NEO4J_IMAGE:-neo4j:5.26}"  # record-format store written by 5.26 (matches docker-compose)
+NEO4J_IMAGE="${NEO4J_IMAGE:-neo4j:2026.03.1}"  # the released store was written by Neo4j 2026.03 (record format, but a CalVer kernel newer than 5.x can read)
 NEO4J_BOLT_ADDR="${NEO4J_BOLT_ADDR:-127.0.0.1:7688}"
 NEO4J_WAIT_S="${NEO4J_WAIT_S:-600}"
 NEO4J_CONTAINER="${NEO4J_CONTAINER:-chimangoscan-neo4j}"

@@ -257,7 +257,7 @@ reproduce_analysis() {
       docker rm -f chimangoscan-mongo-analysis >/dev/null 2>&1 || true
       docker volume rm chimangoscan-mongo-analysis-data >/dev/null 2>&1 || true
     }
-    trap cleanup_mongo RETURN   # safety net if a stage dies
+    trap cleanup_mongo EXIT   # on set -e exit a RETURN trap would not fire; EXIT does
     run_stage mongo             # --keep: crawl MongoDB stays up for exposure ranking
     run_stage neo4j             # --with-mongo: recomputes exposure_ranked_v3.jsonl + filter
     # Reclaim disk before the ~192 GB sqlite stage: the 24 GB crawl MongoDB and
