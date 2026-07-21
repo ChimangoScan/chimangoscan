@@ -28,6 +28,8 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SCRIPTS="$ROOT/analysis/scripts"
 [ -x "$ROOT/.venv/bin/python3" ] && PATH="$ROOT/.venv/bin:$PATH"
+# shellcheck source=orchestration/_runner.sh
+source "$ROOT/orchestration/_runner.sh"
 
 MONGO_PORT="${MONGO_PORT:-27100}"
 MONGO_DB="${MONGO_DB:-dockerhub_data}"
@@ -56,9 +58,6 @@ log() { printf '\n=== [%s] %s ===\n' "$(date +%H:%M:%S)" "$*"; }
 ARCHIVE="$(realpath "$ARCHIVE")"
 mkdir -p "$OUT"
 OUT="$(realpath "$OUT")"
-
-python3 -c "import pymongo" 2>/dev/null \
-  || { echo "pymongo missing: pip install pymongo (or run inside the runner image, docker/Dockerfile.runner)" >&2; exit 1; }
 
 mongosh() { docker exec "$CONTAINER" mongosh --quiet --eval "$1"; }
 
@@ -105,14 +104,27 @@ else
   mongosh "db.getSiblingDB('_restore_meta').flags.updateOne({_id:'restored'},{\$set:{at:new Date()}},{upsert:true})" >/dev/null
 fi
 
-export MONGO_URI="mongodb://127.0.0.1:$MONGO_PORT"
-export MONGO_DB
+# Analysis Python runs inside the runner image (has pymongo); it reaches the
+# ephemeral mongod on 127.0.0.1:$MONGO_PORT via --network host. $OUT may live
+# outside $ROOT, so mount it at the same absolute path.
+ensure_runner
+RUNNER_EXTRA_MOUNT="-v $OUT:$OUT"
+MONGO_URI="mongodb://127.0.0.1:$MONGO_PORT"
 
 log "crawl_stats.json"
-OUT="$OUT/crawl_stats.json" python3 "$SCRIPTS/crawl_stats.py"
+in_runner sh -c "MONGO_URI='$MONGO_URI' MONGO_DB='$MONGO_DB' OUT='$OUT/crawl_stats.json' \
+  python3 '$SCRIPTS/crawl_stats.py'"
+
 log "plan_crawl.json"
-OUT="$OUT/plan_crawl.json" python3 "$SCRIPTS/export_plan_crawl.py"
+# export_plan_crawl.py needs the exposure ranking (produced later by the neo4j
+# stage) and exits non-zero when it is absent; tolerate that so the mongo stage
+# still yields crawl_stats.json and tags_full.jsonl.
+in_runner sh -c "MONGO_URI='$MONGO_URI' MONGO_DB='$MONGO_DB' OUT='$OUT/plan_crawl.json' \
+  ${RANKING:+RANKING='$RANKING' }python3 '$SCRIPTS/export_plan_crawl.py'" \
+  || log "plan_crawl skipped (no exposure ranking yet)"
+
 log "tags_full.jsonl"
-OUT="$OUT/tags_full.jsonl" python3 "$SCRIPTS/export_tags.py"
+in_runner sh -c "MONGO_URI='$MONGO_URI' MONGO_DB='$MONGO_DB' OUT='$OUT/tags_full.jsonl' \
+  python3 '$SCRIPTS/export_tags.py'"
 
 log "MONGO analysis artefacts written to $OUT/"

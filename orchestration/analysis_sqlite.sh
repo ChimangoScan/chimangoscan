@@ -30,6 +30,8 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SCRIPTS="$ROOT/analysis/scripts"
 [ -x "$ROOT/.venv/bin/python3" ] && PATH="$ROOT/.venv/bin:$PATH"
+# shellcheck source=orchestration/_runner.sh
+source "$ROOT/orchestration/_runner.sh"
 SEED="$ROOT/analysis/seed-inputs"
 
 # ~150 GB decompressed; require this much free space before expanding a .zst.
@@ -118,15 +120,33 @@ if [ -n "$TAGS" ]; then
 fi
 [ -n "$SAMPLE" ] && export CHIMANGOSCAN_SAMPLE="$SAMPLE" || true
 
-regen() { python3 "$SCRIPTS/regenerate_all.py" --db "$DB" --out "$OUT" --stage "$1" \
-            ${TAGS:+--tags "$TAGS"} ${SAMPLE:+--sample "$SAMPLE"}; }
+# --- run the analysis Python inside the runner image (has matplotlib/numpy/
+# sqlite3); the host only needs Docker. The SQLite $DB usually lives outside
+# $ROOT (the reviewer's dataset dir), so mount its directory and $OUT at the
+# same absolute paths; anything under $ROOT (seed-inputs) is already mounted.
+ensure_runner
+RUNNER_EXTRA_MOUNT="-v $(dirname "$DB"):$(dirname "$DB") -v $OUT:$OUT"
+# Optional host inputs may live outside $ROOT/$OUT/$DB-dir; mount their dirs too.
+[ -n "${CHIMANGOSCAN_FILTER_RT:-}" ] && RUNNER_EXTRA_MOUNT="$RUNNER_EXTRA_MOUNT -v $(dirname "$CHIMANGOSCAN_FILTER_RT"):$(dirname "$CHIMANGOSCAN_FILTER_RT")"
+[ -n "${CHIMANGOSCAN_RANKING_V2:-}" ] && RUNNER_EXTRA_MOUNT="$RUNNER_EXTRA_MOUNT -v $(dirname "$CHIMANGOSCAN_RANKING_V2"):$(dirname "$CHIMANGOSCAN_RANKING_V2")"
+[ -n "${CHIMANGOSCAN_TAGS:-}" ] && RUNNER_EXTRA_MOUNT="$RUNNER_EXTRA_MOUNT -v $(dirname "$CHIMANGOSCAN_TAGS"):$(dirname "$CHIMANGOSCAN_TAGS")"
+
+# Environment recount_repo.py / the secret scripts read, forwarded into the runner.
+REGEN_ENV="CHIMANGOSCAN_DB='$DB'"
+[ -n "${CHIMANGOSCAN_FILTER_RT:-}" ] && REGEN_ENV="$REGEN_ENV CHIMANGOSCAN_FILTER_RT='$CHIMANGOSCAN_FILTER_RT'"
+[ -n "${CHIMANGOSCAN_RANKING_V2:-}" ] && REGEN_ENV="$REGEN_ENV CHIMANGOSCAN_RANKING_V2='$CHIMANGOSCAN_RANKING_V2'"
+[ -n "${CHIMANGOSCAN_TAGS:-}" ] && REGEN_ENV="$REGEN_ENV CHIMANGOSCAN_TAGS='$CHIMANGOSCAN_TAGS'"
+[ -n "${CHIMANGOSCAN_SAMPLE:-}" ] && REGEN_ENV="$REGEN_ENV CHIMANGOSCAN_SAMPLE='$CHIMANGOSCAN_SAMPLE'"
+
+regen() { in_runner sh -c "$REGEN_ENV python3 '$SCRIPTS/regenerate_all.py' --db '$DB' --out '$OUT' --stage '$1' \
+            ${TAGS:+--tags '$TAGS'} ${SAMPLE:+--sample '$SAMPLE'}"; }
 
 echo "=== (a) analysis -- SQLite scan over $DB ==="
 regen analysis
 
 echo "=== (b) secret sampling + validation ==="
-( cd "$OUT" && python3 "$SCRIPTS/secret_sample.py" \
-             && python3 "$SCRIPTS/validate_secrets.py" )
+in_runner sh -c "cd '$OUT' && $REGEN_ENV python3 '$SCRIPTS/secret_sample.py' \
+             && $REGEN_ENV python3 '$SCRIPTS/validate_secrets.py'"
 
 echo "=== (c) figures ==="
 regen figures
