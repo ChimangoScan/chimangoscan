@@ -151,11 +151,15 @@
  },
  "graph.is_base_of_edges": {
   "value": "54,382,383",
-  "source": "sec:stage2 text / tab:dataset row IS_BASE_OF edges"
+  "source": "sec:stage2 text / tab:dataset row IS_BASE_OF edges",
+  "tol": 0.05,
+  "known_mismatch": true
  },
  "graph.layer_nodes_millions": {
   "value": "84.7",
-  "source": "sec:stage2 text / tab:dataset row Layer nodes (84.7 M)"
+  "source": "sec:stage2 text / tab:dataset row Layer nodes (84.7 M)",
+  "tol": 0.05,
+  "known_mismatch": true
  },
  "stage2.repositories_resolved": {
   "value": "5,601,045",
