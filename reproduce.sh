@@ -182,6 +182,12 @@ reproduce_analysis() {
   [ -d "$DATASET" ] || die "analysis: dataset dir not found: $DATASET"
   mkdir -p "$OUT"
 
+  if [ -f "$DATASET/SHA256SUMS" ]; then
+    log "verifying dataset checksums (SHA256SUMS)"
+    (cd "$DATASET" && sha256sum -c --ignore-missing --quiet SHA256SUMS) \
+      || die "analysis: dataset checksum verification failed"
+  fi
+
   find_one() { find "$DATASET" -maxdepth 1 -name "$1" | sort | head -1; }
   local DB ARCHIVE DUMP EXPOSURE TAGS
   DB="$(find_one 'ditector-good.db')"; [ -n "$DB" ] || DB="$(find_one 'ditector-good.db.zst')"
@@ -202,6 +208,10 @@ reproduce_analysis() {
       sqlite)
         [ -n "$DB" ] || die "analysis: no ditector-good.db[.zst] in $DATASET"
         local FILTER="$OUT/corpus_filter.txt"
+        if [ ! -f "$FILTER" ] && [ -n "$EXPOSURE" ]; then
+          EXPOSURE_JSONL="$EXPOSURE" OUT="$FILTER" python3 "$SCRIPTS/make_corpus_filter.py" \
+            || die "analysis: corpus filter generation failed"
+        fi
         [ -f "$FILTER" ] || FILTER=""
         "$ROOT/orchestration/analysis_sqlite.sh" --db "$DB" --out "$OUT" \
           ${FILTER:+--filter "$FILTER"} \
