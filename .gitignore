@@ -20,3 +20,7 @@ __pycache__/
 .venv/
 .DS_Store
 dataset/MANIFEST.txt
+
+# intermediate/test outputs
+*test_output.json
+network_services_test_*.jsonl
