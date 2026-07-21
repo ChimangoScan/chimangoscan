@@ -22,27 +22,20 @@ vulnerability scanners find, only 2.7% are reported by all three and 66.8% by a
 single one; TruffleHog flags secrets in 76.9% of images, but hand-labeling shows
 99.7% are non-credentials. We release the pipeline and the full 283 GB dataset.
 
-The documentation follows the artifact-submission guidelines of the SBC Brazilian
-Symposium on Cybersecurity (SBSeg) Artifact Evaluation Committee (CTA).
+> **Paper:** *Vulnerabilities, Secrets and Misconfiguration in the
+> Highest-Exposure Docker Hub Images* — SBSeg 2026.
+> **Artifact evaluation (CTA):** this README follows the SBC/SBSeg 2026 minimum
+> README template; the reviewer instructions this artifact targets are at
+> [subinstrucoes](https://doc-artefatos.github.io/sbseg2026/subinstrucoes.html)
+> and [revinstrucoes](https://doc-artefatos.github.io/sbseg2026/revinstrucoes.html).
 
 ---
 
 # README structure
 
-This README is organized exactly as the CTA minimum-README requires:
-
-- **Seals considered** — the four seals requested for evaluation.
-- **Basic information** — execution environment, hardware/software requirements.
-- **Dependencies** — languages, tools, versions, and third-party access.
-- **Security concerns** — risks to reviewers and how to contain them.
-- **Installation** — clone, bring up the databases, resolve dependencies.
-- **Minimal test** — a single command that exercises the whole pipeline in
-  miniature (~20–45 min, one machine).
-- **Experiments** — the paper's claims, each in its own subsection with the exact
-  commands, flags, expected time, expected resources, and expected result.
-- **License**.
-
-The repository itself is laid out as follows:
+This README follows the CTA minimum-README order: *Seals considered → Basic
+information → Dependencies → Security concerns → Installation → Minimal test →
+Experiments → License*. The repository itself is laid out as follows:
 
 ```
 chimangoscan/
@@ -50,8 +43,8 @@ chimangoscan/
 ├── DATASET.md                    dataset schema and access (reports, crawl, graph)
 ├── LICENSE                       MIT
 ├── stages/
-│   ├── chimangoscan/             vendored — Stages I+II + exposure ranker (Go + Python)
-│   └── scanners/                 vendored — Stage III, multi-scanner scan (Python)
+│   ├── DITector/                 fork of Dr. Docker's DITector — Stages I+II (Go)
+│   └── scanners/                 Stage III, multi-scanner scan (our own, Python)
 ├── orchestration/
 │   ├── run_pipeline.sh           runs the full pipeline end to end
 │   ├── minimal_test.sh           minimal test — the reproducibility claim
@@ -70,66 +63,6 @@ chimangoscan/
 > **Not included here:** the paper `main.tex` and PDF, kept in a separate private
 > repository. This artifact contains only the code and data that produce the
 > paper's results.
-
----
-
-# Reproduction
-
-Reproduction is fully automated through a top-level `Makefile` and `reproduce.sh`,
-in **two modes**.
-
-## Precomputed (figures + tables, no database/network/credentials)
-
-```bash
-python3 -m venv .venv && . .venv/bin/activate
-pip install -r requirements.txt
-./reproduce.sh precomputed         # or:  make precomputed
-```
-
-This regenerates **every** paper figure and every table value from the small
-precomputed data shipped in `analysis/data/` — it needs **no database, no
-network access, no credentials, and no Docker**, only Python and the two
-libraries pinned in `requirements.txt`. It runs in seconds and writes:
-
-- `figures/*.pdf` — the twelve data-driven figures of the paper;
-- `figures/table_values.json` — every numeric value and pre-formatted LaTeX
-  table-row body the paper's tables use (e.g. 96.3% vulnerability prevalence,
-  66.8% single-scanner findings, 2.7% agreed by all three, 51,751 distinct
-  content digests).
-
-Internally this drives the figure scripts (`analysis/scripts/plan_figs.py`,
-`square_figs.py`, `shu_figs.py`, `panels3.py`, shared style in `figstyle.py`)
-and the table-value emitter (`apply_repo_numbers.py`), orchestrated by
-`regenerate_all.py`, over the shipped JSON inputs in `analysis/data/`. The
-283 GB scan dataset is **not** required for this path (it is released on
-acceptance); the precomputed JSONs are the small per-image aggregates those
-scripts consume.
-
-`make precomputed` is self-contained: it creates `.venv`, installs
-`requirements.txt`, and runs the precomputed reproduction in one step.
-
-## Full (the real pipeline, end to end, at a configurable scale)
-
-```bash
-./reproduce.sh full --scale 10     # or:  make full SCALE=10
-```
-
-This runs the real pipeline end to end — **Stage I** (crawl Docker Hub) →
-**Stage II** (build the layer graph) → **exposure ranker** → **Stage III**
-(six-scanner scan) → analysis — at a **configurable scale**. The host needs only
-Docker; every stage runs inside the containerized runner image
-(`docker/Dockerfile.runner`). Scale and targets come from flags
-(`--scale`, `--prefixes`, `--crawl-duration`) — there is **no hardcoded
-infrastructure**. The default scale is small (a few repositories, one
-laptop + Docker) and finishes in tens of minutes. Provide Docker Hub accounts
-in `stages/DITector/accounts.json` first (see *Security concerns*).
-
-Reproducing the paper at **full scale (52,895 images, 663.8 billion pulls)**
-requires the authors' **multi-machine setup** (distributed crawl, a large Neo4j
-layer graph, and a six-scanner sweep over hundreds of GB of images) and runs for
-**months**; `./reproduce.sh full` reproduces the *same* pipeline at the scale you
-choose. The full pipeline can also be driven directly through
-`orchestration/run_pipeline.sh` (see *Experiments*).
 
 ---
 
@@ -252,7 +185,7 @@ Third-party access:
 # Installation
 
 ```bash
-# 1. Clone the repository. The two pipeline stages (ChimangoScan and scanners)
+# 1. Clone the repository. The two pipeline stages (DITector and scanners)
 #    are vendored directly under stages/ -- no submodule init is needed.
 git clone https://github.com/ChimangoScan/chimangoscan
 cd chimangoscan
@@ -320,7 +253,20 @@ from the released artifacts. The only artifact crossing the boundary between the
 discovery/prioritization stages and the scan stage is `exposure_ranked.jsonl` —
 the pipeline's *contract*.
 
-## Claim 1 — The pipeline runs end to end (SeloF)
+**Fast path (no database, ~1 min).** Before the full claims below, a reviewer
+can regenerate **every** paper figure and table value from the small precomputed
+aggregates shipped in `analysis/data/` — no database, no Docker, no credentials:
+
+```bash
+python3 -m venv .venv && . .venv/bin/activate && pip install -r requirements.txt
+./reproduce.sh precomputed          # ~1 min; or: make precomputed
+```
+
+It writes `figures/*.pdf` (the paper's figures) and `figures/table_values.json`
+(e.g. 96.3% vulnerability prevalence, 66.8% single-scanner, 2.7% all-three,
+51,751 distinct digests). This is the reduced variant of Claim #3.
+
+## Claim #1 — The pipeline runs end to end (SeloF)
 
 *The three stages run in sequence and produce a consolidated multi-scanner
 report.* This is the Minimal test above.
@@ -333,7 +279,7 @@ report.* This is the Minimal test above.
   `summary.json`, and `analysis.md` exist; `summary.json` reports 10 scanned
   images, each with findings from the six scanners.
 
-## Claim 2 — The exposure score prioritizes the scan queue (paper contribution C1)
+## Claim #2 — The exposure score prioritizes the scan queue (paper contribution C1)
 
 *The ranker folds an image's own pull count and the pull counts of its entire
 downstream layer subtree into a single scalar `E(I)`, attributing each downstream
@@ -362,7 +308,7 @@ queue by it.* At full scale the metric places `alpine:latest` first, with
   images (`alpine`, `ubuntu`, `debian`), whose exposure is dominated by downstream
   reuse.
 
-## Claim 3 — The headline measurement reproduces from the released database (C2/C3, main SeloR claim)
+## Claim #3 — The headline measurement reproduces from the released database (C2/C3, main SeloR claim)
 
 *From the released scan database, every data-driven table and figure of the paper
 is regenerated in one read-only pass:* 96.3% of images carry a known
