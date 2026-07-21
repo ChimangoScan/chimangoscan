@@ -37,7 +37,7 @@ SCRIPTS="$ROOT/analysis/scripts"
 # shellcheck source=orchestration/_runner.sh
 source "$ROOT/orchestration/_runner.sh"
 
-NEO4J_IMAGE="${NEO4J_IMAGE:-neo4j:5}"
+NEO4J_IMAGE="${NEO4J_IMAGE:-neo4j:5.26}"  # record-format store written by 5.26 (matches docker-compose)
 NEO4J_BOLT_ADDR="${NEO4J_BOLT_ADDR:-127.0.0.1:7688}"
 NEO4J_WAIT_S="${NEO4J_WAIT_S:-600}"
 NEO4J_CONTAINER="${NEO4J_CONTAINER:-chimangoscan-neo4j}"
@@ -87,13 +87,15 @@ if [ ! -d "$DATA_ROOT" ]; then
 fi
 if [ -n "${NEO4J_DATA_SUBDIR:-}" ]; then
   DATA_DIR="$DATA_ROOT/$NEO4J_DATA_SUBDIR"
-elif [ -d "$DATA_ROOT/databases" ]; then
-  DATA_DIR="$DATA_ROOT"
-elif [ -d "$DATA_ROOT/data/databases" ]; then
-  DATA_DIR="$DATA_ROOT/data"
 else
-  echo "no databases/ found under $DATA_ROOT -- set NEO4J_DATA_SUBDIR to the data dir inside the archive" >&2
-  exit 1
+  # Locate the neo4j data dir (the one holding databases/) wherever the archive
+  # placed it: directly, under data/, or wrapped in an extra top-level folder
+  # (the released tar wraps it in neo4j_data/). Mount the PARENT of databases/.
+  DBDIR="$(find "$DATA_ROOT" -maxdepth 3 -type d -name databases 2>/dev/null | sort | head -1)"
+  [ -n "$DBDIR" ] || {
+    echo "no databases/ found under $DATA_ROOT -- set NEO4J_DATA_SUBDIR to the data dir inside the archive" >&2
+    exit 1; }
+  DATA_DIR="$(dirname "$DBDIR")"
 fi
 
 # ---------------------------------------------------------------------------

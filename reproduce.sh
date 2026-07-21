@@ -196,25 +196,38 @@ reproduce_analysis() {
   fi
 
   find_one() { find "$DATASET" -maxdepth 1 -name "$1" | sort | head -1; }
-  local DB ARCHIVE DUMP EXPOSURE TAGS
+  # The exposure ranking and tags export are DERIVED artefacts: in a full
+  # (`all`) run the mongo/neo4j stages recompute them into $OUT, so prefer that
+  # freshly-computed copy; fall back to a shipped copy in the dataset dir.
+  find_computed() { [ -f "$OUT/$1" ] && echo "$OUT/$1" || find_one "$1"; }
+  local DB ARCHIVE DUMP
   DB="$(find_one 'chimangoscan-reports.db')"; [ -n "$DB" ] || DB="$(find_one 'chimangoscan-reports.db.zst')"
   ARCHIVE="$(find_one 'dockerhub_data*.archive.gz')"
   DUMP="$(find_one 'neo4j_data*.tar.gz')"
-  EXPOSURE="$(find_one 'exposure_ranked_v3.jsonl')"
-  TAGS="$(find_one 'tags_full.jsonl')"
+
+  # In a full `all` run the mongo container is kept up so the neo4j stage can
+  # recompute the exposure ranking against the live crawl (--with-mongo); these
+  # are empty for a single-stage run, where each stage is self-contained.
+  local KEEP_MONGO="" MONGO_URI_ALL="" MONGO_PORT_ALL="${MONGO_PORT:-27100}"
 
   run_stage() {
     case "$1" in
       mongo)
         [ -n "$ARCHIVE" ] || die "analysis: no dockerhub_data*.archive.gz in $DATASET"
-        "$ROOT/orchestration/analysis_mongo.sh" --archive "$ARCHIVE" --out "$OUT" "${EXTRA[@]}" ;;
+        "$ROOT/orchestration/analysis_mongo.sh" --archive "$ARCHIVE" --out "$OUT" \
+          ${KEEP_MONGO:+--keep} "${EXTRA[@]}" ;;
       neo4j)
         [ -n "$DUMP" ] || die "analysis: no neo4j_data*.tar.gz in $DATASET"
+        # --with-mongo enables the exposure ranking + corpus filter (needs the
+        # crawl MongoDB, kept up by the mongo stage in an `all` run).
         "$ROOT/orchestration/analysis_neo4j.sh" --dump "$DUMP" --out "$OUT" \
-          ${DB:+--sqlite "$DB"} "${EXTRA[@]}" ;;
+          ${DB:+--sqlite "$DB"} ${MONGO_URI_ALL:+--with-mongo "$MONGO_URI_ALL"} "${EXTRA[@]}" ;;
       sqlite)
         [ -n "$DB" ] || die "analysis: no chimangoscan-reports.db[.zst] in $DATASET"
-        local FILTER="$OUT/corpus_filter.txt"
+        local EXPOSURE TAGS FILTER
+        EXPOSURE="$(find_computed exposure_ranked_v3.jsonl)"
+        TAGS="$(find_computed tags_full.jsonl)"
+        FILTER="$OUT/corpus_filter.txt"
         if [ ! -f "$FILTER" ] && [ -n "$EXPOSURE" ]; then
           EXPOSURE_JSONL="$EXPOSURE" OUT="$FILTER" python3 "$SCRIPTS/make_corpus_filter.py" \
             || die "analysis: corpus filter generation failed"
@@ -234,7 +247,26 @@ reproduce_analysis() {
 
   log "ANALYSIS reproduction -- dataset=$DATASET stage=$STAGE out=$OUT"
   if [ "$STAGE" = all ]; then
-    for s in mongo neo4j sqlite verify; do run_stage "$s"; done
+    # Keep the ephemeral crawl MongoDB up across the mongo->neo4j boundary so the
+    # exposure ranking can be recomputed; tear both analysis DBs down at the end
+    # (also on failure). neo4j leaves its own container up only with --keep, so
+    # only the mongo one needs an explicit sweep here.
+    KEEP_MONGO=1
+    MONGO_URI_ALL="mongodb://127.0.0.1:$MONGO_PORT_ALL"
+    cleanup_mongo() {
+      docker rm -f chimangoscan-mongo-analysis >/dev/null 2>&1 || true
+      docker volume rm chimangoscan-mongo-analysis-data >/dev/null 2>&1 || true
+    }
+    trap cleanup_mongo RETURN   # safety net if a stage dies
+    run_stage mongo             # --keep: crawl MongoDB stays up for exposure ranking
+    run_stage neo4j             # --with-mongo: recomputes exposure_ranked_v3.jsonl + filter
+    # Reclaim disk before the ~192 GB sqlite stage: the 24 GB crawl MongoDB and
+    # the ~65 GB extracted Neo4j store are no longer needed (their computed
+    # artefacts are in $OUT). This keeps peak disk to sqlite + dataset.
+    cleanup_mongo
+    rm -rf "$OUT/neo4j_data"
+    run_stage sqlite            # neo4j already tore itself down (no --keep), so only sqlite is on disk
+    run_stage verify
   else
     run_stage "$STAGE"
   fi
