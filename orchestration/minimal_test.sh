@@ -63,6 +63,21 @@ if [ ! -e "$CHIMANGOSCAN/accounts.json" ]; then
 fi
 [ -e "$CHIMANGOSCAN/config.yaml" ] || cp "$CHIMANGOSCAN/config_template.yaml" "$CHIMANGOSCAN/config.yaml"
 
+# Bring up MongoDB + Neo4j (the crawler/builder store) so the reviewer runs ONE
+# command. They publish 27017/7687 on the host; the runner reaches them over
+# --network host. Wait until both ports accept connections before crawling.
+log "starting MongoDB + Neo4j (docker compose)"
+docker compose -f "$CHIMANGOSCAN/docker-compose.yml" up -d mongodb neo4j
+wait_port() {
+  for _ in $(seq 1 60); do
+    (exec 3<>"/dev/tcp/127.0.0.1/$1") 2>/dev/null && { exec 3>&- 3<&-; return 0; }
+    sleep 2
+  done
+  fail "database on port $1 did not become reachable"
+}
+wait_port 27017
+wait_port 7687
+
 # Build the runner image once; every stage runs inside it so the host needs
 # only Docker. MongoDB and Neo4j are reached over the host network.
 ensure_runner
@@ -82,7 +97,6 @@ log "Stage II -- building the layer dependency graph"
 RUNNER_WORKDIR="$CHIMANGOSCAN" in_runner go run main.go build \
     --format mongo \
     --threshold 0 \
-    --tags 3 \
     --accounts accounts.json \
     --data_dir "$ARTIFACTS/build" \
     --config config.yaml
