@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   mongodb:
     image: mongo:7.0
@@ -8,7 +6,7 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - ./mongo_data_secure:/data/db
+      - mongo_data:/data/db
 
   neo4j:
     image: neo4j:5.26
@@ -20,7 +18,7 @@ services:
     environment:
       - NEO4J_AUTH=none
     volumes:
-      - ./neo4j_data:/data
+      - neo4j_data:/data
 
   crawler:
     image: golang:1.22
@@ -38,5 +36,8 @@ services:
     # Removed manual log redirection to prevent IO deadlocks
     command: sh -c "go build -buildvcs=false -o /tmp/chimangoscan . && /tmp/chimangoscan crawl --workers ${WORKERS:-3} --shard ${SHARD:-0} --shards ${SHARDS:-1} --accounts ${ACCOUNTS:-accounts.json} --config config.yaml"
 
-# No named Docker volumes — all data mounted to host paths so docker system
-# prune -a (with or without --volumes) cannot destroy the dataset.
+# Docker-managed named volumes: a clean, disposable store for a reviewer's run
+# (`docker compose down -v` wipes them), with no host-path permission issues.
+volumes:
+  mongo_data:
+  neo4j_data:
