@@ -30,9 +30,10 @@ done
 command -v gh >/dev/null || { echo "gh CLI required" >&2; exit 1; }
 [ -f "$CONF" ] || { echo "missing $CONF" >&2; exit 1; }
 
+# Split parts are staged NEXT TO each source file (same filesystem, guaranteed
+# space) unless DATASET_WORK overrides it. Never /tmp: a multi-GB split there
+# fills the host tmpfs. The staging dir is cleaned per file.
 SRC="${DATASET_SRC:-$ROOT/dataset}"
-WORK="$(mktemp -d)"
-trap 'rm -rf "$WORK"' EXIT
 
 if [ "$DRY" = 0 ]; then
   gh release view "$TAG" --repo "$REPO" >/dev/null 2>&1 \
@@ -48,9 +49,11 @@ while IFS='|' read -r path base role; do
   case "$path" in /*) f="$path" ;; *) f="$SRC/$path" ;; esac
   [ -f "$f" ] || { echo "publish: SKIP $base (source not found: $f)" >&2; continue; }
 
+  WORK="${DATASET_WORK:-$(dirname "$f")/.chimango_publish}"
+  mkdir -p "$WORK"
   echo "== $base ($role): hashing"
   sum="$(sha256sum "$f" | cut -d' ' -f1)"
-  echo "   splitting into $PART_SIZE parts"
+  echo "   splitting into $PART_SIZE parts under $WORK"
   split -b "$PART_SIZE" -d -a 3 "$f" "$WORK/$base.part"
   parts=("$WORK/$base.part"*)
   echo "$base|$sum|${#parts[@]}|$PART_SIZE|$role" >> "$MANIFEST"
@@ -62,6 +65,7 @@ while IFS='|' read -r path base role; do
   else
     echo "   [dry-run] ${#parts[@]} parts, whole-file sha256 $sum"
   fi
+  rm -f "$WORK/$base.part"* "$WORK/$base.sha256"; rmdir "$WORK" 2>/dev/null || true
 done < "$CONF"
 
 [ "$DRY" = 0 ] && gh release upload "$TAG" --repo "$REPO" --clobber "$MANIFEST"
