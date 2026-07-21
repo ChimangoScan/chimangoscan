@@ -220,10 +220,11 @@ Every paper number, figure and table is regenerated from the released databases
 (re-running the full crawl/scan is not required). One command per claim.
 
 **Fast path — no database, ~1 min.** Regenerate every figure and table value from
-the shipped aggregates:
+the shipped aggregates. One command; it creates its own `.venv` on first run
+(nothing is installed into the system Python):
 
 ```bash
-pip install -r requirements.txt && ./reproduce.sh precomputed
+./reproduce.sh precomputed
 ```
 
 Writes `figures/*.pdf` and `figures/table_values.json` (96.3% prevalence, 66.8%

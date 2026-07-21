@@ -56,32 +56,25 @@ usage() {
 reproduce_precomputed() {
   log "PRECOMPUTED reproduction -- figures + tables from analysis/data/"
 
-  # Pick a Python: prefer an explicit venv, then $PYTHON, then python3.
+  # Pick a Python: an explicit $PYTHON, or the repo's own .venv.
   PY="${PYTHON:-}"
   if [ -z "$PY" ] && [ -x "$ROOT/.venv/bin/python" ]; then PY="$ROOT/.venv/bin/python"; fi
-  if [ -z "$PY" ]; then PY="python3"; fi
-  command -v "$PY" >/dev/null 2>&1 || die "python not found (set \$PYTHON or create .venv)"
 
-  # Verify the two required libraries are importable; point the reviewer at
-  # requirements.txt if they are not (we do NOT install silently).
-  if ! "$PY" - <<'PYEOF' 2>/dev/null
-import matplotlib, numpy  # noqa: F401
-PYEOF
-  then
-    cat >&2 <<EOF
-reproduce.sh: matplotlib / numpy not importable with: $PY
-
-Install the pinned dependencies first, e.g.:
-
-    python3 -m venv .venv
-    . .venv/bin/activate
-    pip install -r requirements.txt
-    ./reproduce.sh precomputed
-
-(or set \$PYTHON to an interpreter that already has them).
-EOF
-    exit 1
+  # Ensure matplotlib+numpy are importable. If not, provision a LOCAL .venv and
+  # install requirements into it -- never `pip install` into the system Python
+  # (that pollutes it and fails outright on PEP-668 "externally-managed" distros
+  # like recent Debian/Ubuntu). One command, no manual venv step for the reviewer.
+  deps_ok() { [ -n "$PY" ] && "$PY" -c 'import matplotlib, numpy' 2>/dev/null; }
+  if ! deps_ok; then
+    log "creating .venv and installing requirements.txt (one-time)"
+    python3 -m venv "$ROOT/.venv" 2>/dev/null || python3 -m venv --without-pip "$ROOT/.venv"
+    "$ROOT/.venv/bin/python" -m ensurepip -q 2>/dev/null || true
+    "$ROOT/.venv/bin/python" -m pip install -q --upgrade pip 2>/dev/null || \
+      { curl -sS https://bootstrap.pypa.io/get-pip.py | "$ROOT/.venv/bin/python" - -q; }
+    "$ROOT/.venv/bin/pip" install -q -r "$ROOT/requirements.txt"
+    PY="$ROOT/.venv/bin/python"
   fi
+  deps_ok || die "could not provision matplotlib/numpy in .venv -- install python3-venv (apt install python3-venv) and retry"
 
   # Stage the precomputed inputs into a scratch run directory. regenerate_all.py
   # writes figures into <out>/figures and table_values.json into <out>; we then
