@@ -134,14 +134,12 @@
  "crawl.tags_resolved": {
   "value": "6,399,608",
   "source": "sec:stage2 text / tab:dataset row Tags resolved",
-  "tol": 0.05,
-  "known_mismatch": true
+  "tol": 0.05
  },
  "crawl.image_digests": {
   "value": "7,416,671",
   "source": "sec:stage2 text / tab:dataset row Image digests resolved",
-  "tol": 0.05,
-  "known_mismatch": true
+  "tol": 0.05
  },
  "crawl.drdocker_delta": {
   "value": "637,259",
