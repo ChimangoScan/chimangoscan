@@ -61,7 +61,12 @@ results" section below in place, and exits non-zero iff any check FAILs.
    reproduces exactly. (An earlier note here claimed the frozen dir matched the
    paper anchors exactly; that was `estimatedDocumentCount` reading stale
    metadata after an unclean shutdown, which coincidentally matched. The actual
-   `count_documents` is 12,788,247.)
+   `count_documents` is 12,788,247.) The Neo4j layer graph is the same kind of
+   live-pipeline snapshot: reproducing `graph_stats.json` on the released dump
+   gives 56,160,876 `IS_BASE_OF` edges and 87,485,665 nodes against the paper's
+   54,382,383 and 84.7 M (+3.3%), so `graph.*` checks also verify within the 5%
+   tolerance (DRIFT). Only the scan-reports SQLite database was frozen; it
+   reproduces exactly.
 
    **MongoDB version.** The released Stage I dump was written by **MongoDB
    8.x**; `mongo:7` refuses to open it (`exitCode 62`, invalid
