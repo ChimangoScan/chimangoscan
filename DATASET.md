@@ -12,6 +12,24 @@ described below with its schema, row counts, on-disk size, and how to read it.
 > content digests. Reports for **64,595** images are included (the 52,895 plus
 > earlier scans retained for completeness).
 
+## Download
+
+The three databases are published as split, checksummed assets on the GitHub
+release [`dataset-v1`](https://github.com/ChimangoScan/chimangoscan/releases/tag/dataset-v1)
+(each part is under GitHub's 2 GB limit). Fetch, rejoin and verify all of them
+with one script — no manual concatenation:
+
+```bash
+./scripts/fetch_dataset.sh --out ./dataset      # downloads + rejoins + sha256-verifies
+```
+
+This writes `chimangoscan-reports.db.zst`, `dockerhub_data.freeze.archive.gz`
+and `neo4j_data.freeze.tar.gz` into `./dataset`. Pass `--only sqlite-scan-reports`
+(or `mongodb-crawl` / `neo4j-layer-graph`) to fetch just one. The analysis
+driver can fetch automatically: `./reproduce.sh analysis --dataset ./dataset
+--fetch --stage all`. (A Zenodo mirror with a citable DOI is planned; the
+GitHub release is the current source.)
+
 ---
 
 ## 1. Scan reports — `chimangoscan-reports.db` (SQLite, 192 GB)
@@ -65,7 +83,7 @@ for image, rj in con.execute("SELECT image, report_json FROM reports"):
     vulns = [f for f in findings if f["category"] == "pkg-vuln"]
 ```
 
-The dataset will be distributed via the Zenodo record above.
+The dataset is published on the GitHub release `dataset-v1` (see the Download section above); fetch it with `./scripts/fetch_dataset.sh --out ./dataset`.
 
 ---
 
@@ -90,8 +108,8 @@ Key fields of `repositories_data`:
   resolved every repo with `pull_count >= 72` (5,601,045 repos, 44.05% of the
   crawl — a clean cut: `pull_count >= 1000` is 100% resolved).
 
-Export: `mongodump --db dockerhub_data`. A backup archive is kept on the
-external drive.
+Export: `mongodump --db dockerhub_data`. Published as
+`dockerhub_data.freeze.archive.gz` on the `dataset-v1` release.
 
 ---
 
@@ -109,8 +127,8 @@ layer nodes; the substrate for the exposure score and per-CVE propagation.
 - **`IS_BASE_OF` edges**: 54,382,383 (43.7 M after forest resolution — collapsing
   generic shared/metadata layers that appear under multiple parents).
 
-Export: `neo4j-admin database dump`. A backup archive is kept on the external
-drive.
+Export: `neo4j-admin database dump`. Published as
+`neo4j_data.freeze.tar.gz` on the `dataset-v1` release.
 
 ---
 

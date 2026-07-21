@@ -3,7 +3,7 @@
 #
 # Runs the two stages of the Docker Hub security measurement in order:
 #
-#   Stage I+II + ranker  (stages/chimangoscan)  -> exposure_ranked.jsonl
+#   Stage I+II + ranker  (stages/DITector)  -> exposure_ranked.jsonl
 #   Stage III scan       (stages/scanners)  -> out/_corpus/{report.html,analysis.md}
 #
 # The single artefact that crosses the stage boundary is exposure_ranked.jsonl:
@@ -17,11 +17,11 @@
 #                                 [--threshold N] [--workers N] [--skip-crawl]
 #
 # Prerequisites (see README.md): Go 1.21+, Python 3.10+, Docker, MongoDB and
-# Neo4j reachable, and Docker Hub accounts.json placed in stages/chimangoscan/.
+# Neo4j reachable, and Docker Hub accounts.json placed in stages/DITector/.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-CHIMANGOSCAN="$ROOT/stages/chimangoscan"
+CHIMANGOSCAN="$ROOT/stages/DITector"
 SCANNERS="$ROOT/stages/scanners"
 ARTIFACTS="$ROOT/artifacts"
 RANKED="$ARTIFACTS/exposure_ranked.jsonl"

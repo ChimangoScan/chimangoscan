@@ -138,7 +138,7 @@ reproduce_full() {
 This runs the real pipeline end to end inside the containerized runner:
   Stage I  (crawl)   -> Stage II (layer graph) -> exposure ranker -> Stage III (scan)
 The host needs only Docker; provide Docker Hub accounts in
-stages/chimangoscan/accounts.json (see README.md, "Security concerns").
+stages/DITector/accounts.json (see README.md, "Security concerns").
 
 Reproducing the paper at full scale (52,895 images) needs the authors'
 multi-machine setup and runs for months. This command reproduces the SAME

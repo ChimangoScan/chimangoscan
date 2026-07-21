@@ -25,7 +25,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-CHIMANGOSCAN="$ROOT/stages/chimangoscan"
+CHIMANGOSCAN="$ROOT/stages/DITector"
 SCANNERS="$ROOT/stages/scanners"
 ARTIFACTS="$ROOT/artifacts"
 RANKED="$ARTIFACTS/exposure_ranked.jsonl"
@@ -52,7 +52,7 @@ fail() { echo "MINIMAL TEST FAILED: $*" >&2; exit 1; }
 mkdir -p "$ARTIFACTS"
 
 [ -e "$CHIMANGOSCAN/main.go" ] || fail "submodules not initialised -- run: git submodule update --init --recursive"
-[ -e "$CHIMANGOSCAN/accounts.json" ] || fail "stages/chimangoscan/accounts.json missing (Docker Hub accounts needed for the crawl)"
+[ -e "$CHIMANGOSCAN/accounts.json" ] || fail "stages/DITector/accounts.json missing (Docker Hub accounts needed for the crawl)"
 
 # Build the runner image once; every stage runs inside it so the host needs
 # only Docker. MongoDB and Neo4j are reached over the host network.
