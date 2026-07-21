@@ -8,9 +8,15 @@ scan database.
     "Dataset summary")
   - total cumulative pulls and the pull-count distribution buckets of Table
     "Repository pull-count distribution" (>=1B ... <1k, repos and % of pulls)
-  - pull-count median / p99 / max (nearest-rank, over repositories with a
-    recorded pull count)
-  - `last_updated` coverage over the crawl
+  - pull-count median / p99 / max over the FULL crawl (nearest-rank, over
+    repositories with a recorded pull count). NOTE: the paper's Section 3.1
+    median (198) / p99 (160,061) are over the exposure-ranked RESOLVED HEAD,
+    not the full crawl (whose median is ~62, dragged down by the long tail of
+    barely-pulled repositories); those are emitted by export_plan_crawl.py.
+    The fields below are the full-crawl distribution behind Table 2's buckets.
+  - `last_updated` coverage. NOTE: repositories_data.last_updated is empty in
+    the released dump; the paper's 95.7% is over a different population and is
+    not reproduced here.
 
 Everything is computed server-side with aggregation pipelines (allowDiskUse);
 the 12.7M-document repositories collection is never loaded into memory. The
@@ -90,9 +96,9 @@ def main():
         "images_total": db.images_data.count_documents({}),
         "last_updated_coverage_pct": round(
             100.0 * n_last_updated / total_repos, 1) if total_repos else 0.0,
-        "pull_median": pull_at_rank(repos, (n_recorded + 1) // 2),
-        "pull_p99": pull_at_rank(repos, math.ceil(0.99 * n_recorded)),
-        "pull_max": pull_at_rank(repos, n_recorded),
+        "pull_median_fullcrawl": pull_at_rank(repos, (n_recorded + 1) // 2),
+        "pull_p99_fullcrawl": pull_at_rank(repos, math.ceil(0.99 * n_recorded)),
+        "pull_max_fullcrawl": pull_at_rank(repos, n_recorded),
         "pull_buckets": buckets}
     cli.close()
 

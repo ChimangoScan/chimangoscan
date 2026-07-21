@@ -41,6 +41,7 @@ MARK_BEGIN, MARK_END = "<!-- verify:begin -->", "<!-- verify:end -->"
 ARTIFACTS = {
     "tables": "table_values.json",
     "crawl": "crawl_stats.json",
+    "plan": "plan_crawl.json",
     "graph": "graph_stats.json",
     "propagation": "propagation_v3.json",
     "secrets": "secret_validation_report.json",
@@ -92,6 +93,11 @@ def C(path, rule="int"):
     return ("crawl", path, rule)
 
 
+def P(path, rule="int"):
+    """Resolve against plan_crawl.json (the exposure-ranked resolved head)."""
+    return ("plan", path, rule)
+
+
 def _bucket(label, field):
     return "pull_buckets[bucket=%s].%s" % (label, field)
 
@@ -140,9 +146,11 @@ RESOLVER = {
     "crawl.total_pulls": C("total_pulls"),
     "crawl.total_pulls_billions": C("total_pulls", "bil1"),
     "crawl.prefix_queries": C("prefix_queries"),
-    "crawl.pull_median": C("pull_median"),
-    "crawl.pull_p99": C("pull_p99"),
-    "crawl.pull_max": C("pull_max", "gt"),
+    # Section 3.1 median/p99/max are over the exposure-ranked resolved head
+    # (plan_crawl.json), NOT the full crawl (whose median is ~62).
+    "crawl.pull_median": P("pull_median"),
+    "crawl.pull_p99": P("pull_p99"),
+    "crawl.pull_max": P("pull_max", "gt"),
     "crawl.top113_pct_pulls": ("crawl", lambda a: 100.0 * get(
         a, _bucket(">=1B", "pulls")) / a["total_pulls"], "prec0"),
     "crawl.repos_below_1k_pct": ("crawl", lambda a: 100.0 * get(

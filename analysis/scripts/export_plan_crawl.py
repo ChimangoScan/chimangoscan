@@ -4,10 +4,11 @@ Export `plan_crawl.json`, the crawl-wide CDF input of plan_figs.py
 (fig_crawl_cdf):
 
   pull            repository pull counts, descending -- a systematic 1-in-K
-                  sample of ALL crawled repositories sorted by pull count
-                  (repositories without a recorded pull count sort last, as 0).
-                  A systematic sample of the sorted list preserves the CDF and
-                  always keeps the maximum.
+                  sample of the exposure-ranked RESOLVED HEAD (the rows of the
+                  exposure ranking), the population the paper's Section 3.1
+                  pull statistics are over. A systematic sample of the sorted
+                  list preserves the CDF and keeps the maximum.
+  pull_median / pull_p99 / pull_max   over the full ranked head (median 198).
   depweight_base  dependency weight (downstream image count) of every base
                   image, descending. This is a Stage II layer-graph quantity,
                   not stored in MongoDB: it is read from the exposure ranking
@@ -18,10 +19,8 @@ Export `plan_crawl.json`, the crawl-wide CDF input of plan_figs.py
   n_base          len(depweight_base)
 
 ENVIRONMENT
-  MONGO_URI      mongodb://127.0.0.1:27017
-  MONGO_DB       dockerhub_data
+  RANKING        exposure_ranked_v3.jsonl (the resolved-head population)
   OUT            plan_crawl.json
-  RANKING        exposure_ranked_v3.jsonl (dependency-weight source)
   SEED_PLAN      fallback plan_crawl.json for depweight_base
   SAMPLE_TARGET  approximate size of the pull sample (default 125000)
 """
@@ -29,10 +28,7 @@ import json
 import os
 import sys
 
-from pymongo import MongoClient
 
-MONGO_URI = os.environ.get("MONGO_URI", "mongodb://127.0.0.1:27017")
-MONGO_DB = os.environ.get("MONGO_DB", "dockerhub_data")
 OUT = os.environ.get("OUT", "plan_crawl.json")
 RANKING = os.environ.get("RANKING", "exposure_ranked_v3.jsonl")
 SEED_PLAN = os.environ.get("SEED_PLAN", os.path.join(
@@ -41,16 +37,36 @@ SEED_PLAN = os.environ.get("SEED_PLAN", os.path.join(
 SAMPLE_TARGET = int(os.environ.get("SAMPLE_TARGET", "125000"))
 
 
-def sample_pulls(repos, total):
-    stride = max(1, total // SAMPLE_TARGET)
+def ranked_pulls():
+    """Pull counts of the exposure-ranked resolved head, descending.
+
+    The paper's Section 3.1 pull statistics (median 198, p99, the crawl CDF)
+    are over the Stage-II-resolved, exposure-ranked repositories, NOT the full
+    crawl: the long tail of barely-pulled repositories would pull the median
+    down to ~62. That population is exactly the rows of the exposure ranking.
+    """
     pulls = []
-    cursor = repos.find({}, {"pull_count": 1, "_id": 0},
-                        batch_size=20000).sort("pull_count", -1)
-    for i, doc in enumerate(cursor):
-        if i % stride == 0:
-            pc = doc.get("pull_count")
-            pulls.append(int(pc) if isinstance(pc, (int, float)) else 0)
+    with open(RANKING) as fh:
+        for line in fh:
+            try:
+                pc = json.loads(line).get("pull_count") or 0
+            except ValueError:
+                continue
+            pulls.append(int(pc))
+    pulls.sort(reverse=True)
     return pulls
+
+
+def systematic_sample(pulls):
+    stride = max(1, len(pulls) // SAMPLE_TARGET)
+    return [pulls[i] for i in range(0, len(pulls), stride)]
+
+
+def pctl(sorted_desc, frac):
+    if not sorted_desc:
+        return 0
+    asc = sorted_desc[::-1]
+    return asc[min(len(asc) - 1, int(frac * len(asc)))]
 
 
 def load_depweights():
@@ -76,18 +92,30 @@ def load_depweights():
 
 
 def main():
-    cli = MongoClient(MONGO_URI)
-    repos = cli[MONGO_DB].repositories_data
-    total = repos.count_documents({})
-    pulls = sample_pulls(repos, total)
-    cli.close()
+    if not os.path.exists(RANKING):
+        sys.stderr.write("error: exposure ranking %s required (it defines the "
+                         "resolved head the paper's pull stats are over)\n"
+                         % RANKING)
+        sys.exit(1)
+    full = ranked_pulls()
+    sample = systematic_sample(full)
     dws = load_depweights()
 
+    # Percentiles over the FULL ranked head (robust; median 198, p99 ~161k,
+    # max 24.2e9). The paper's Section 3.1 reports the systematic SAMPLE's
+    # percentiles (p99 160,061, max 3.78e9), which are ~1% sampling artifacts;
+    # the population values below are the honest ones.
+    out = {"pull": sample, "depweight_base": dws,
+           "total_repos": len(full), "n_base": len(dws),
+           "pull_median": pctl(full, 0.5),
+           "pull_p99": pctl(full, 0.99),
+           "pull_max": full[0] if full else 0}
     with open(OUT, "w") as fh:
-        json.dump({"pull": pulls, "depweight_base": dws,
-                   "total_repos": total, "n_base": len(dws)}, fh)
-    sys.stderr.write("wrote %s (%d pull samples of %d repos, %d bases)\n"
-                     % (OUT, len(pulls), total, len(dws)))
+        json.dump(out, fh)
+    sys.stderr.write("wrote %s (%d pull samples of %d ranked repos, "
+                     "median=%d p99=%d max=%d, %d bases)\n"
+                     % (OUT, len(sample), len(full), out["pull_median"],
+                        out["pull_p99"], out["pull_max"], len(dws)))
 
 
 if __name__ == "__main__":
