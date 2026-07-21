@@ -31,8 +31,10 @@ import json
 import math
 import os
 import sys
+import time
 
 from pymongo import MongoClient
+from pymongo.errors import AutoReconnect
 
 MONGO_URI = os.environ.get("MONGO_URI", "mongodb://127.0.0.1:27017")
 MONGO_DB = os.environ.get("MONGO_DB", "dockerhub_data")
@@ -45,17 +47,31 @@ LABELS = ["<1k", "1k-100k", "100k-1M", "1M-10M", "10M-100M", "100M-1B",
           ">=1B"]
 
 
-def pull_at_rank(repos, rank):
-    """pull_count of the ascending rank-th repository (1-based), by index skip."""
+def pull_at_rank(repos, rank, _tries=4):
+    """pull_count of the ascending rank-th repository (1-based), by index skip.
+
+    The skip walks the pull_count index (created by the mongo stage before this
+    runs), so it stays cheap and low-memory even at rank ~6M. A flaky mongod can
+    still drop the socket mid-walk; retry a few times on AutoReconnect."""
     if rank < 1:
         return None
-    doc = next(repos.find(RECORDED, {"pull_count": 1, "_id": 0})
-               .sort("pull_count", 1).skip(rank - 1).limit(1), None)
-    return int(doc["pull_count"]) if doc else None
+    for attempt in range(_tries):
+        try:
+            doc = next(repos.find(RECORDED, {"pull_count": 1, "_id": 0})
+                       .sort("pull_count", 1).skip(rank - 1).limit(1), None)
+            return int(doc["pull_count"]) if doc else None
+        except AutoReconnect:
+            if attempt == _tries - 1:
+                raise
+            time.sleep(3)
 
 
 def main():
-    cli = MongoClient(MONGO_URI)
+    # socketTimeoutMS=0: the median/p99 index-skips can run for minutes on a
+    # 12.7M-doc crawl; do not let the client abort a slow-but-live query.
+    # retryReads lets a dropped read reconnect once on its own.
+    cli = MongoClient(MONGO_URI, serverSelectionTimeoutMS=120000,
+                      socketTimeoutMS=0, retryReads=True)
     db = cli[MONGO_DB]
     repos = db.repositories_data
 

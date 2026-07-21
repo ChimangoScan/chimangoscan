@@ -81,11 +81,13 @@ else
     exit 1
   fi
   log "starting $MONGO_IMAGE as $CONTAINER on 127.0.0.1:$MONGO_PORT"
+  # Bound the WiredTiger cache: the default (~50% of RAM) is needless here and
+  # keeps mongod's footprint predictable across evaluator machines.
   docker run -d --name "$CONTAINER" \
     -p "127.0.0.1:$MONGO_PORT:27017" \
     -v "$VOLUME:/data/db" \
     -v "$ARCHIVE:/restore.archive.gz:ro" \
-    "$MONGO_IMAGE" >/dev/null
+    "$MONGO_IMAGE" --wiredTigerCacheSizeGB "${MONGO_CACHE_GB:-4}" >/dev/null
 fi
 
 log "waiting for mongod (up to ${MONGO_WAIT_S}s)"
@@ -103,6 +105,13 @@ else
     --archive=/restore.archive.gz --nsInclude "$MONGO_DB.*"
   mongosh "db.getSiblingDB('_restore_meta').flags.updateOne({_id:'restored'},{\$set:{at:new Date()}},{upsert:true})" >/dev/null
 fi
+
+# The median/p99/max are index-skips on pull_count (crawl_stats.py). Ensure the
+# index exists so those queries walk the index instead of doing a 12.7M-doc
+# in-memory sort -- fast, low-memory, and far kinder to a loaded mongod.
+log "ensuring pull_count index on $MONGO_DB.repositories_data"
+mongosh "db.getSiblingDB('$MONGO_DB').repositories_data.createIndex({pull_count:1})" >/dev/null 2>&1 \
+  || log "index create skipped (already present or transient)"
 
 # Analysis Python runs inside the runner image (has pymongo); it reaches the
 # ephemeral mongod on 127.0.0.1:$MONGO_PORT via --network host. $OUT may live
