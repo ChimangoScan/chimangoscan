@@ -80,16 +80,16 @@
   "source": "sec:stage1 text / tab:dataset row Prefix queries issued"
  },
  "crawl.pull_median": {
-  "value": "198",
-  "source": "sec:stage1 text (median pulls)"
+  "value": "62",
+  "source": "sec:stage1 text (median pulls, full crawl)"
  },
  "crawl.pull_p99": {
-  "value": "160,061",
-  "source": "sec:stage1 text (99th percentile)"
+  "value": "20,781",
+  "source": "sec:stage1 text (99th percentile, full crawl)"
  },
  "crawl.pull_max": {
-  "value": ">3,700,000,000",
-  "source": "sec:stage1 text (maximum above 3.7e9)"
+  "value": "2.4e10",
+  "source": "sec:stage1 text (maximum, full crawl)"
  },
  "crawl.top113_pct_pulls": {
   "value": "61",

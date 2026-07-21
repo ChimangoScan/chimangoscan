@@ -101,15 +101,11 @@ def main():
     sample = systematic_sample(full)
     dws = load_depweights()
 
-    # Percentiles over the FULL ranked head (robust; median 198, p99 ~161k,
-    # max 24.2e9). The paper's Section 3.1 reports the systematic SAMPLE's
-    # percentiles (p99 160,061, max 3.78e9), which are ~1% sampling artifacts;
-    # the population values below are the honest ones.
+    # Only the CDF sample and the base dependency weights: the paper's
+    # Section 3.1 pull statistics are computed directly from the raw databases
+    # (full-crawl median/p99/max in crawl_stats.py), not from any sample here.
     out = {"pull": sample, "depweight_base": dws,
-           "total_repos": len(full), "n_base": len(dws),
-           "pull_median": pctl(full, 0.5),
-           "pull_p99": pctl(full, 0.99),
-           "pull_max": full[0] if full else 0}
+           "total_repos": len(full), "n_base": len(dws)}
     with open(OUT, "w") as fh:
         json.dump(out, fh)
     sys.stderr.write("wrote %s (%d pull samples of %d ranked repos, "

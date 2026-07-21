@@ -38,21 +38,19 @@ results" section below in place, and exits non-zero iff any check FAILs.
    which recomputes every bucket, the crawl totals and the pull-count
    median/p99/max server-side from the Stage I database.
 
-   **Snapshot verification (all numbers reproduce).** Running that script
-   against the frozen Stage I MongoDB confirms the two anchor counts of the
-   paper *exactly*: **12,716,568** repositories and **2,051,801** prefix
-   queries (`crawler_keywords`). Table 2's pull-count **buckets** are over the
-   full crawl (12,680,591 repositories with a recorded pull count) and
-   reproduce there. The three pull statistics in the **Section 3.1 text**
-   (median **198**, 99th percentile **160,061**, maximum **3.78e9**) are over a
-   *different* population: the exposure-ranked resolved head of the crawl
-   (3,871,691 repositories, sampled in `plan_crawl.json`), NOT the full crawl.
-   Recomputing over that ranked set reproduces all three exactly
-   (median 198, p99 160,061, max 3,782,648,951). A median over ALL crawled
-   repositories is only 62, because the long tail of barely-pulled repositories
-   pulls it down; the paper's text describes the ranked head, its Table 2 the
-   full crawl. Both are correct; the two populations should ideally be named
-   explicitly in the prose, but no number is wrong.
+   **Snapshot verification.** Running that script against the frozen Stage I
+   MongoDB confirms the two anchor counts of the paper *exactly*: **12,716,568**
+   repositories and **2,051,801** prefix queries (`crawler_keywords`). The
+   pull-count buckets of Table 2 and the Section 3.1 pull statistics are all
+   over the full crawl: `crawl_stats.py` recomputes the buckets, and the
+   median (**62**), 99th percentile (**20,781**) and maximum (**2.4e10**)
+   directly from the raw MongoDB, with no sampling. (An earlier draft reported
+   median 198 / p99 160,061 here; those were percentiles of the exposure-ranked
+   resolved head, a different and smaller population, mistakenly presented as
+   full-crawl figures. The camera-ready now reports the full-crawl values,
+   consistent with Table 2.) The pull-count field is mutable and kept updating
+   after the paper's Table 2 was computed, so bucket counts reproduce within
+   ~0.5% (e.g. >=1B: 114 vs 113); the qualitative distribution is unchanged.
 
    **MongoDB version.** The released Stage I dump was written by **MongoDB
    8.x**; `mongo:7` refuses to open it (`exitCode 62`, invalid

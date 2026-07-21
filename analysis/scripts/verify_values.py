@@ -80,6 +80,9 @@ def fmt(v, rule):
     if rule == "floor":
         return str(int(math.floor(v)))
     kind, n = rule[:-1], int(rule[-1])
+    if kind == "sci":
+        e = int(math.floor(math.log10(v)))
+        return "%.*fe%d" % (n, v / 10 ** e, e)
     scale = {"prec": 1, "mil": 1e6, "bil": 1e9}[kind]
     return "%.*f" % (n, v / scale)
 
@@ -146,11 +149,10 @@ RESOLVER = {
     "crawl.total_pulls": C("total_pulls"),
     "crawl.total_pulls_billions": C("total_pulls", "bil1"),
     "crawl.prefix_queries": C("prefix_queries"),
-    # Section 3.1 median/p99/max are over the exposure-ranked resolved head
-    # (plan_crawl.json), NOT the full crawl (whose median is ~62).
-    "crawl.pull_median": P("pull_median"),
-    "crawl.pull_p99": P("pull_p99"),
-    "crawl.pull_max": P("pull_max", "gt"),
+    # Section 3.1 median/p99/max are over the full crawl (Table 2 population).
+    "crawl.pull_median": C("pull_median_fullcrawl"),
+    "crawl.pull_p99": C("pull_p99_fullcrawl"),
+    "crawl.pull_max": C("pull_max_fullcrawl", "sci1"),
     "crawl.top113_pct_pulls": ("crawl", lambda a: 100.0 * get(
         a, _bucket(">=1B", "pulls")) / a["total_pulls"], "prec0"),
     "crawl.repos_below_1k_pct": ("crawl", lambda a: 100.0 * get(
