@@ -34,7 +34,7 @@ TOPN="$ARTIFACTS/exposure_ranked.top.jsonl"
 source "$ROOT/orchestration/_runner.sh"
 
 PREFIXES="a,b,c"
-CRAWL_DURATION="5m"
+CRAWL_DURATION="2m"
 TOP=10
 
 while [ $# -gt 0 ]; do

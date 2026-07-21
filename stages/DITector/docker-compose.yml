@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   mongodb:
-    image: mongo:latest
+    image: mongo:7.0
     container_name: chimangoscan_mongo
     profiles: [db]
     ports:
@@ -11,7 +11,7 @@ services:
       - ./mongo_data_secure:/data/db
 
   neo4j:
-    image: neo4j:latest
+    image: neo4j:5.26
     container_name: chimangoscan_neo4j
     profiles: [db]
     ports:
