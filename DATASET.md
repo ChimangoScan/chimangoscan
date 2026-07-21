@@ -27,8 +27,7 @@ This writes `chimangoscan-reports.db.zst`, `dockerhub_data.freeze.archive.gz`
 and `neo4j_data.freeze.tar.gz` into `./dataset`. Pass `--only sqlite-scan-reports`
 (or `mongodb-crawl` / `neo4j-layer-graph`) to fetch just one. The analysis
 driver can fetch automatically: `./reproduce.sh analysis --dataset ./dataset
---fetch --stage all`. (A Zenodo mirror with a citable DOI is planned; the
-GitHub release is the current source.)
+--fetch --stage all`.
 
 ---
 
@@ -90,7 +89,7 @@ The dataset is published on the GitHub release `dataset-v1` (see the Download se
 ## 2. Docker Hub crawl metadata — MongoDB `dockerhub_data`
 
 Output of Stage I (crawl) and Stage II (layer-graph build). Hosted in the
-an ephemeral `mongo:8` container started by `orchestration/analysis_mongo.sh` (default port 27100).
+an ephemeral `mongo:8` container started by [`orchestration/analysis_mongo.sh`](orchestration/analysis_mongo.sh) (default port 27100).
 
 | collection          | documents   | description                                        |
 |---------------------|-------------|----------------------------------------------------|
@@ -136,16 +135,16 @@ Export: `neo4j-admin database dump`. Published as
 
 - **`exposure_ranked_v3.jsonl`** — the exposure ranking, one image per line:
   `{repo, tag, pull_count, exposure, dependency_weight, owner}`. Produced by
-  `analysis/scripts/compute_exposure_ranking.py` from the layer graph. Sorted by
+  [`analysis/scripts/compute_exposure_ranking.py`](analysis/scripts/compute_exposure_ranking.py) from the layer graph. Sorted by
   exposure descending; the scan queue is its head.
 - **Secret-validation ground truth** — `secret_sample.json` (1,100 randomly
   sampled TruffleHog detections, seed 42), `secret_classification.csv` (each
   hand-labeled TP/FP), `secret_validation_report.json` (99.7% false-positive
-  rate, Wilson 95% CI 99.2–99.9%). Produced by `secret_sample.py` +
-  `validate_secrets.py`.
+  rate, Wilson 95% CI 99.2–99.9%). Produced by [`secret_sample.py`](analysis/scripts/secret_sample.py) +
+  [`validate_secrets.py`](analysis/scripts/validate_secrets.py).
 - **Per-CVE propagation** — `cve_digests_v3.json` (CVE → affected digests) and
   `propagation_v3.json` (downstream blast radius per CVE), via
-  `extract_cve_digests.py` + `propagation_compute.py`.
+  [`extract_cve_digests.py`](analysis/scripts/extract_cve_digests.py) + [`propagation_compute.py`](analysis/scripts/propagation_compute.py).
 
 ---
 
@@ -153,7 +152,7 @@ Export: `neo4j-admin database dump`. Published as
 
 - Crawl window: several months in 2026; scan campaign: 2026.
 - Architecture: all images scanned for `linux/amd64`.
-- Scanners (pinned versions in `orchestration/`): Syft, Trivy, Grype,
+- Scanners (pinned versions in [`orchestration/`](orchestration/)): Syft, Trivy, Grype,
   OSV-Scanner, Dockle, TruffleHog.
 - `SHA256SUMS` accompanies each published archive; verify with
   `sha256sum -c SHA256SUMS`.

@@ -60,10 +60,6 @@ chimangoscan/
                                   propagation_compute.py)
 ```
 
-> **Not included here:** the paper `main.tex` and PDF, kept in a separate private
-> repository. This artifact contains only the code and data that produce the
-> paper's results.
-
 ---
 
 # Seals considered
@@ -71,12 +67,12 @@ chimangoscan/
 The seals requested for evaluation are: **Available (SeloD), Functional (SeloF),
 Sustainable (SeloS), and Reproducible (SeloR)**.
 
-| Seal | Code | Justification |
-|------|------|---------------|
-| Available    | **SeloD** | Code is publicly versioned in this repository (the two pipeline stages are vendored under `stages/`); the full dataset is published as split assets on the GitHub release `dataset-v1` (fetch with `scripts/fetch_dataset.sh`; see DATASET.md). A Zenodo DOI mirror is planned. |
-| Functional   | **SeloF** | The pipeline runs; the *Minimal test* below validates end-to-end operation on a single machine. |
-| Sustainable  | **SeloS** | The code is modular and documented: Stages I/II are a distributed Go service, Stage III is a Python scan system with one adapter per scanner and a single `Finding` schema, and every analysis script carries a module docstring. The "Experiments" section maps each paper claim to the exact file and command that produces it. |
-| Reproducible | **SeloR** | `orchestration/run_analysis.sh` regenerates *every* number, figure, and table of the paper from the released scan database in one read-only pass. |
+| Seal | Why |
+|------|-----|
+| **SeloD** | Code public in this repo; dataset on the GitHub release `dataset-v1`. |
+| **SeloF** | The *Minimal test* runs the pipeline end to end on one machine. |
+| **SeloS** | Modular, documented: Go crawler/builder, one Python adapter per scanner, a docstring per analysis script. |
+| **SeloR** | `Claim #3` regenerates every paper number, figure and table from the released databases. |
 
 ---
 
@@ -142,11 +138,11 @@ installed on the host.
 |-------------------------|-------|------|
 | MongoDB | `mongo:latest` (compose) | repositories and tags (Stage I/II) |
 | Neo4j | `neo4j:latest` (compose) | layer graph (Stage II) |
-| **Runner** | built from `docker/Dockerfile.runner` — Go 1.22, Python 3, uv, matplotlib, numpy, Docker CLI | runs Stages I/II (Go), the exposure ranker, Stage III orchestration, and the analysis |
+| **Runner** | built from [`docker/Dockerfile.runner`](docker/Dockerfile.runner) — Go 1.22, Python 3, uv, matplotlib, numpy, Docker CLI | runs Stages I/II (Go), the exposure ranker, Stage III orchestration, and the analysis |
 | Six scanners | Syft, Trivy, Grype, OSV-Scanner, Dockle, TruffleHog — official images **pinned by digest** | Stage III scanning, launched by the runner through the host Docker socket |
 
 The runner image is built **automatically on first use** by any
-`orchestration/*.sh` script (via `orchestration/_runner.sh`; a few minutes, one
+`orchestration/*.sh` script (via [`orchestration/_runner.sh`](orchestration/_runner.sh); a few minutes, one
 time). Stages run inside it with the repository bind-mounted at the same absolute
 path and the host Docker socket mounted, so the scanner containers it starts are
 siblings on the host daemon. No Go, Python, uv, or plotting library is ever
@@ -156,9 +152,9 @@ Third-party access:
 
 - **Docker Hub accounts** (free accounts suffice) are required by the Stage I
   crawler, supplied in `stages/DITector/accounts.json` (never committed; covered
-  by `.gitignore`).
+  by [`.gitignore`](.gitignore)).
 - **The released dataset** (192 GB of per-image reports, the 12.7-million-repo
-  crawl metadata, and the layer graph) is published on the GitHub release `dataset-v1`; see `DATASET.md`
+  crawl metadata, and the layer graph) is published on the GitHub release `dataset-v1`; see [`DATASET.md`](DATASET.md)
   for the DOI and schema. The analysis experiments below need only the scan
   database, `chimangoscan-reports.db`.
 
@@ -168,7 +164,7 @@ Third-party access:
 
 - The Stage I crawler requires Docker Hub accounts in
   `stages/DITector/accounts.json`. **This file must never be committed** — it is
-  already covered by `.gitignore`.
+  already covered by [`.gitignore`](.gitignore).
 - Stage III **downloads and runs third-party container images**. The static
   scanners analyze the image artifact only; the (disabled-by-default) dynamic
   scanners would start the target container. Run the scan on an
@@ -206,7 +202,7 @@ That's the whole host-side setup — **no Go, Python, uv, or pip install**. The
 runner image (Go + Python + uv + matplotlib/numpy + Docker CLI) is built
 automatically the first time you run any `orchestration/*.sh` script, and every
 stage executes inside it. For the analysis experiments, download
-the dataset with `./scripts/fetch_dataset.sh --out ./dataset` (see `DATASET.md`); no other setup is
+the dataset with `./scripts/fetch_dataset.sh --out ./dataset` (see [`DATASET.md`](DATASET.md)); no other setup is
 required.
 
 ---
@@ -218,7 +214,7 @@ The minimal test is the artifact's reproducibility **claim**:
 > *The ChimangoScan pipeline runs end to end — Docker Hub discovery,
 > prioritization, and multi-scanner scanning — producing a consolidated report.*
 
-`orchestration/minimal_test.sh` validates this claim **without** scanning all of
+[`orchestration/minimal_test.sh`](orchestration/minimal_test.sh) validates this claim **without** scanning all of
 Docker Hub. It:
 
 1. **crawls** Docker Hub briefly, restricted to a few namespace prefixes
@@ -245,139 +241,59 @@ orchestration/minimal_test.sh
 
 # Experiments
 
-Every table value and every data-driven figure in the paper derives from the
-released SQLite scan database `chimangoscan-reports.db`. Re-running the full at-scale
-crawl and scan is **not** feasible in a review window (days, 13 machines), so —
-as the CTA allows — the experiments below reproduce the paper's **main claims**
-from the released artifacts. The only artifact crossing the boundary between the
-discovery/prioritization stages and the scan stage is `exposure_ranked.jsonl` —
-the pipeline's *contract*.
+Every paper number, figure and table is regenerated from the released databases
+(re-running the full crawl/scan is not required). One command per claim.
 
-**Fast path (no database, ~1 min).** Before the full claims below, a reviewer
-can regenerate **every** paper figure and table value from the small precomputed
-aggregates shipped in `analysis/data/` — no database, no Docker, no credentials:
+**Fast path — no database, ~1 min.** Regenerate every figure and table value from
+the shipped aggregates:
 
 ```bash
-python3 -m venv .venv && . .venv/bin/activate && pip install -r requirements.txt
-./reproduce.sh precomputed          # ~1 min; or: make precomputed
+pip install -r requirements.txt && ./reproduce.sh precomputed
 ```
 
-It writes `figures/*.pdf` (the paper's figures) and `figures/table_values.json`
-(e.g. 96.3% vulnerability prevalence, 66.8% single-scanner, 2.7% all-three,
-51,751 distinct digests). This is the reduced variant of Claim #3.
+Writes `figures/*.pdf` and `figures/table_values.json` (96.3% prevalence, 66.8%
+single-scanner, 2.7% all-three). Reduced variant of Claim #3.
 
-## Claim #1 — The pipeline runs end to end (SeloF)
+## Claim #1 — Pipeline runs end to end (SeloF)
 
-*The three stages run in sequence and produce a consolidated multi-scanner
-report.* This is the Minimal test above.
+```bash
+orchestration/minimal_test.sh --top 10
+```
 
-- **Command:** `orchestration/minimal_test.sh --prefixes a,b,c --crawl-duration 5m --top 10`
-- **Config:** Docker Hub accounts in `stages/DITector/accounts.json`; databases up
-  (`docker compose up -d mongodb neo4j`).
-- **Expected time / resources:** ~20–45 min; 4 cores, 8 GB RAM, 20 GB disk.
-- **Expected result:** `MINIMAL TEST PASSED`; `artifacts/report.html`,
-  `summary.json`, and `analysis.md` exist; `summary.json` reports 10 scanned
-  images, each with findings from the six scanners.
+~20–45 min (4 cores / 8 GB / 20 GB). Prints `MINIMAL TEST PASSED` and writes a
+consolidated report for 10 scanned images under `artifacts/`.
 
-## Claim #2 — The exposure score prioritizes the scan queue (paper contribution C1)
+## Claim #2 — Exposure ranking prioritizes the scan queue (C1)
 
-*The ranker folds an image's own pull count and the pull counts of its entire
-downstream layer subtree into a single scalar `E(I)`, attributing each downstream
-pull to a single owner (the most-pulled base in its lineage), and orders the scan
-queue by it.* At full scale the metric places `alpine:latest` first, with
-`E ≈ 8.3 × 10^10`.
+```bash
+python3 analysis/scripts/compute_exposure_ranking.py
+```
 
-- **File:** `analysis/scripts/compute_exposure_ranking.py` (implements Eq. (1) of
-  the paper: single-owner downstream attribution over the `IS_BASE_OF` forest).
-- **Command (on the released layer graph):**
-  ```bash
-  NEO4J_URI=bolt://127.0.0.1:7687 \
-  MONGO_URI=mongodb://127.0.0.1:27017 \
-  python3 analysis/scripts/compute_exposure_ranking.py
-  ```
-  On the mini-graph produced by the Minimal test, the same script runs in seconds
-  and orders that small corpus.
-- **Flags / env:** `NEO4J_URI`, `MONGO_URI`, `OUT_PATH`, `RANKER_SHARDS`
-  (parallel Neo4j streaming shards).
-- **Expected time / resources:** seconds on the minimal-test graph; tens of
-  minutes on the full released graph (Neo4j loaded, several GB RAM).
-- **Expected result:** `exposure_ranked.jsonl`, one JSON object per repository
-  (`repository_namespace`, `repository_name`, `tag_name`, `pull_count`,
-  `dependency_weight`, `downstream_pull_sum`, `exposure`), sorted by `exposure`
-  descending. On the full graph the head of the file is the general-purpose base
-  images (`alpine`, `ubuntu`, `debian`), whose exposure is dominated by downstream
-  reuse.
+Writes `exposure_ranked.jsonl` sorted by exposure; the head is the base images
+(`alpine`, `ubuntu`, `debian`). Seconds on the minimal-test graph.
 
-## Claim #3 — The headline measurement reproduces from the released database (C2/C3, main SeloR claim)
+## Claim #3 — Headline measurement reproduces from the dataset (C2/C3, main SeloR)
 
-*From the released scan database, every data-driven table and figure of the paper
-is regenerated in one read-only pass:* 96.3% of images carry a known
-vulnerability; the three vulnerability scanners agree on only 2.7% of distinct
-findings while 66.8% are single-scanner (a 1.55× volume spread); and 99.7% of a
-hand-labeled secret sample are non-credentials.
+```bash
+./reproduce.sh analysis --dataset ./dataset --fetch --stage all
+```
 
-- **File:** `orchestration/run_analysis.sh` → `analysis/scripts/regenerate_all.py`
-  (drives `recount_repo.py` for the analysis JSONs, the figure scripts, and
-  `apply_repo_numbers.py` for `table_values.json`).
-- **Command (full):**
-  ```bash
-  orchestration/run_analysis.sh --db /path/to/chimangoscan-reports.db
-  # individual stages: --stage analysis | figures | tables
-  ```
-- **Command (quick sampled validation):**
-  ```bash
-  orchestration/run_analysis.sh --db /path/to/chimangoscan-reports.db --sample 100000
-  ```
-- **Flags:** `--db` (database path), `--stage` (run one of analysis/figures/tables/all),
-  `--sample N` (cap the scan to N report rows — sampled validation only, not for
-  production numbers).
-- **Expected time / resources:** ~45–50 min full pass over the 64,595-report
-  database; minutes with `--sample`. Needs the ~192 GB `chimangoscan-reports.db` on disk
-  and several GB RAM. The database is opened **read-only**; the step is idempotent
-  and never edits the paper.
-- **Expected result:** the analysis JSONs (e.g., `dedup_analysis.json` reporting
-  **52,895** distinct images, **51,751** distinct content digests, 96.3%
-  vulnerability prevalence), the regenerated `figures/*.pdf`, and
-  `table_values.json` holding every table value — matching the numbers reported in
-  the paper.
+Fetches the three databases from the release, recomputes every number/figure/table
+and verifies them against the paper ([`analysis/expected/paper_values.json`](analysis/expected/paper_values.json), 240
+checks), writing the verdict to [`docs/REPRODUCIBILITY_REPORT.md`](docs/REPRODUCIBILITY_REPORT.md). ~1 h plus the
+download; several GB RAM. Add `--stage sqlite|mongo|neo4j|verify` to run one at a time.
 
-- **Command (full released dataset — all three databases + verification):**
-  ```bash
-  ./reproduce.sh analysis --dataset /path/to/dataset --stage all
-  ```
-  Runs, one database at a time, the MongoDB crawl stage (`--stage mongo`,
-  ephemeral container + restore of `dockerhub_data_*.archive.gz`), the Neo4j
-  layer-graph stage (`--stage neo4j`, ephemeral container over
-  `neo4j_data_*.tar.gz`: graph stats, exposure ranking, per-CVE propagation)
-  and the SQLite stage (`--stage sqlite`, the full report scan above plus the
-  secrets validation and all figures/tables), then `--stage verify` compares
-  every recomputed value against `analysis/expected/paper_values.json`
-  (240 checks extracted from the paper; exact match required) and writes the
-  verdict into `docs/REPRODUCIBILITY_REPORT.md`. Stages are independent, so
-  the ~300 GB dataset can be validated incrementally; `verify` skips checks
-  whose stage has not run yet.
-
-> **Full at-scale measurement (optional, not required for any seal).** To
-> reproduce the crawl and scan themselves:
-> ```bash
-> orchestration/run_pipeline.sh --seed a --crawl-duration 24h --threshold 1000 --workers 20
-> ```
-> This runs Stage I (`go run main.go crawl`), Stage II (`go run main.go build`),
-> the ranker (`exposure_ranked.jsonl`), and Stage III (`scanners seed`/`run`/
-> `report`). In production this runs distributed over days.
-
----
 
 # License
 
 The original code of this artifact — the exposure ranker, the six-scanner
-Stage III orchestration (`stages/scanners/`), and the analysis scripts — is
+Stage III orchestration ([`stages/scanners/`](stages/scanners/)), and the analysis scripts — is
 distributed under the MIT License (see [`LICENSE`](LICENSE)). The released
-dataset is licensed CC BY 4.0 (see `DATASET.md`).
+dataset is licensed CC BY 4.0 (see [`DATASET.md`](DATASET.md)).
 
-`stages/DITector/` is a **fork of Dr. Docker's DITector**
+[`stages/DITector/`](stages/DITector/) is a **fork of Dr. Docker's DITector**
 (`github.com/NSSL-SJTU/DITector`, WWW '25): the Stage I crawler (an
 unimplemented stub upstream) and the distributed re-engineering of the Stage II
 graph builder are ours; the graph-builder and analyzer baseline are theirs and
-are credited throughout `stages/DITector/` (see its `CHANGELOG.md`). The
+are credited throughout [`stages/DITector/`](stages/DITector/) (see its [`CHANGELOG.md`](stages/DITector/CHANGELOG.md)). The
 upstream carries no license and is included here with attribution.
