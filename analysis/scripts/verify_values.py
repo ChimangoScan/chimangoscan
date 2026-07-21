@@ -399,10 +399,11 @@ def run_checks(expected, artifacts):
             comp = fmt(raw, rule)
             ok = norm(comp) == norm(exp)
         tol = entry.get("tol")
-        if not ok and tol:
+        if not ok and tol and rule not in ("gt", "lt"):
             try:
-                e = float(norm(str(exp)).lstrip("<>"))
-                ok = abs(float(raw) - e) <= tol * e
+                e = float(norm(str(exp)))
+                c = float(norm(str(comp)))
+                ok = e != 0 and abs(c - e) <= tol * abs(e)
                 status_tol = ok
             except ValueError:
                 status_tol = False
