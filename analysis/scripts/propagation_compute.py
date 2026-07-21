@@ -11,14 +11,14 @@ Inputs : cve_digests_v3.json (from extract_cve_digests.py),
 Output : propagation_v3.json  {top10:[...], range_min, range_max, zlib_value,
          factor_min, factor_max}
 """
-import gzip, json, array, sys
+import gzip, json, array, sys, os
 from collections import deque
 
-WORK = "/data/cache/exposure_work"
+WORK = os.environ.get("WORKDIR", "/data/cache/exposure_work")
 EDGES = WORK + "/edges.tsv.gz"
 TOPL = WORK + "/toplayers.jsonl.gz"
-CVE = "./cve_digests_v3.json"
-OUT = "./propagation_v3.json"
+CVE = os.environ.get("CVE_JSON", "./cve_digests_v3.json")
+OUT = os.environ.get("OUT_PATH", "./propagation_v3.json")
 
 
 def log(*a):

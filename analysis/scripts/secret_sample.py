@@ -3,11 +3,11 @@
 detections from the scanned corpus, plus full distribution by detector and
 file location. Output: secret_dist.json (population stats) and
 secret_sample.json (the random sample, for ground-truth classification)."""
-import sqlite3, json, re, random
+import sqlite3, json, re, random, os
 from collections import Counter
 
 random.seed(42)
-DB = "/data/ditector-good.db"
+DB = os.environ.get("DITECTOR_DB", "/data/ditector-good.db")
 K = 1100                                  # 95% CI, +-3% on a proportion
 con = sqlite3.connect(DB)
 
@@ -23,7 +23,10 @@ def locpat(l):
     if re.search(r'\.(md|txt|rst|html?)$', l, re.I): return "doc/text file"
     return "other"
 
-for (img, rj) in con.execute("SELECT image, report_json FROM reports"):
+_sql = "SELECT image, report_json FROM reports"
+if os.environ.get("DITECTOR_SAMPLE"):
+    _sql += " LIMIT %d" % int(os.environ["DITECTOR_SAMPLE"])
+for (img, rj) in con.execute(_sql):
     try: j = json.loads(rj)
     except Exception: continue
     secs = [f for f in (j.get("findings") or []) if f.get("category") == "secret"]

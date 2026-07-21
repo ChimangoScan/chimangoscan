@@ -12,6 +12,15 @@
 #       reviewer runs in a few seconds to confirm the paper's plots and table
 #       numbers come straight out of the shipped data.
 #
+#   ./reproduce.sh analysis --dataset DIR [--stage mongo|neo4j|sqlite|verify|all]
+#       Recompute EVERY paper number and figure from the released dataset
+#       (the real databases: SQLite scan reports, MongoDB crawl, Neo4j layer
+#       graph), one database at a time, then verify the recomputed values
+#       against the paper's published numbers (exact match required). Each
+#       stage runs standalone so the ~300 GB dataset can be validated
+#       incrementally; results and the verification report land in
+#       artifacts/analysis/ and docs/REPRODUCIBILITY_REPORT.md.
+#
 #   ./reproduce.sh full [--scale N] [options...]
 #       Run the REAL pipeline end to end at a configurable scale -- Stage I
 #       (crawl Docker Hub) -> Stage II (layer graph) -> exposure ranker ->
@@ -147,10 +156,79 @@ EOF
 }
 
 # ---------------------------------------------------------------------------
+# ANALYSIS -- recompute every paper number and figure from the released dataset
+# ---------------------------------------------------------------------------
+# ./reproduce.sh analysis --dataset DIR [--stage mongo|neo4j|sqlite|verify|all]
+#                         [--out DIR] [-- extra args passed to the stage driver]
+#
+# DIR must hold the released dataset files (any subset; each stage names what
+# it needs): ditector-good.db[.zst], dockerhub_data_*.archive.gz,
+# neo4j_data_*.tar.gz, exposure_ranked_v3.jsonl, tags_full.jsonl. Stages are
+# independent so the ~300 GB dataset can be validated one database at a time;
+# verify checks whatever stage outputs exist in --out and skips the rest.
+reproduce_analysis() {
+  local DATASET="" STAGE="all" OUT="$ROOT/artifacts/analysis"
+  local -a EXTRA=()
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --dataset) DATASET="$2"; shift 2 ;;
+      --stage)   STAGE="$2"; shift 2 ;;
+      --out)     OUT="$2"; shift 2 ;;
+      --)        shift; EXTRA=("$@"); break ;;
+      *) die "analysis: unknown option '$1'" ;;
+    esac
+  done
+  [ -n "$DATASET" ] || die "analysis: --dataset DIR is required"
+  [ -d "$DATASET" ] || die "analysis: dataset dir not found: $DATASET"
+  mkdir -p "$OUT"
+
+  find_one() { find "$DATASET" -maxdepth 1 -name "$1" | sort | head -1; }
+  local DB ARCHIVE DUMP EXPOSURE TAGS
+  DB="$(find_one 'ditector-good.db')"; [ -n "$DB" ] || DB="$(find_one 'ditector-good.db.zst')"
+  ARCHIVE="$(find_one 'dockerhub_data*.archive.gz')"
+  DUMP="$(find_one 'neo4j_data*.tar.gz')"
+  EXPOSURE="$(find_one 'exposure_ranked_v3.jsonl')"
+  TAGS="$(find_one 'tags_full.jsonl')"
+
+  run_stage() {
+    case "$1" in
+      mongo)
+        [ -n "$ARCHIVE" ] || die "analysis: no dockerhub_data*.archive.gz in $DATASET"
+        "$ROOT/orchestration/analysis_mongo.sh" --archive "$ARCHIVE" --out "$OUT" "${EXTRA[@]}" ;;
+      neo4j)
+        [ -n "$DUMP" ] || die "analysis: no neo4j_data*.tar.gz in $DATASET"
+        "$ROOT/orchestration/analysis_neo4j.sh" --dump "$DUMP" --out "$OUT" \
+          ${DB:+--sqlite "$DB"} "${EXTRA[@]}" ;;
+      sqlite)
+        [ -n "$DB" ] || die "analysis: no ditector-good.db[.zst] in $DATASET"
+        local FILTER="$OUT/corpus_filter.txt"
+        [ -f "$FILTER" ] || FILTER=""
+        "$ROOT/orchestration/analysis_sqlite.sh" --db "$DB" --out "$OUT" \
+          ${FILTER:+--filter "$FILTER"} \
+          ${EXPOSURE:+--exposure "$EXPOSURE"} ${TAGS:+--tags "$TAGS"} "${EXTRA[@]}" ;;
+      verify)
+        "$ROOT/.venv/bin/python" "$SCRIPTS/verify_values.py" --results "$OUT" \
+          --report "$ROOT/docs/REPRODUCIBILITY_REPORT.md" 2>/dev/null \
+          || python3 "$SCRIPTS/verify_values.py" --results "$OUT" \
+               --report "$ROOT/docs/REPRODUCIBILITY_REPORT.md" ;;
+      *) die "analysis: unknown stage '$1' (mongo|neo4j|sqlite|verify|all)" ;;
+    esac
+  }
+
+  log "ANALYSIS reproduction -- dataset=$DATASET stage=$STAGE out=$OUT"
+  if [ "$STAGE" = all ]; then
+    for s in mongo neo4j sqlite verify; do run_stage "$s"; done
+  else
+    run_stage "$STAGE"
+  fi
+}
+
+# ---------------------------------------------------------------------------
 MODE="${1:-}"
 case "$MODE" in
   precomputed) shift; reproduce_precomputed "$@" ;;
+  analysis)    shift; reproduce_analysis "$@" ;;
   full)        shift; reproduce_full "$@" ;;
   ""|-h|--help|help) usage ;;
-  *) die "unknown mode '$MODE' (expected: precomputed | full | help)" ;;
+  *) die "unknown mode '$MODE' (expected: precomputed | analysis | full | help)" ;;
 esac

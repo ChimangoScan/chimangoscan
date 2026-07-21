@@ -14,7 +14,7 @@ described below with its schema, row counts, on-disk size, and how to read it.
 
 ---
 
-## 1. Scan reports — `ditector-good.db` (SQLite, ~179 GB)
+## 1. Scan reports — `ditector-good.db` (SQLite, 192 GB)
 
 One row per scanned image; the full multi-scanner output is stored as JSON.
 

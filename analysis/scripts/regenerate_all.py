@@ -34,6 +34,7 @@ This script does that in one command, in the correct order:
                                       fig_panel_offcomm
                        shu_figs.py    fig_shu_panel
                        panels3.py     fig_venn, fig_timeline
+                       repro_figs.py  fig_repro_panel (Section 4.8)
                      (fig_pipeline, fig_crawl and fig_inherit are hand-drawn
                      TikZ inside main.tex and carry no data, so nothing to do.)
 
@@ -96,7 +97,8 @@ PAPER_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Loose scripts the pipeline drives, in execution order.
 ANALYSIS_SCRIPT = "recount_repo.py"
-FIGURE_SCRIPTS = ["plan_figs.py", "square_figs.py", "shu_figs.py", "panels3.py"]
+FIGURE_SCRIPTS = ["plan_figs.py", "square_figs.py", "shu_figs.py", "panels3.py",
+                  "repro_figs.py"]
 SUPPORT_MODULE = "figstyle.py"          # imported by the figure scripts
 TABLE_SCRIPT = "apply_repo_numbers.py"  # value-building logic reused for tables
 
@@ -116,7 +118,8 @@ EXPECTED_FIGURES = ["fig_pull_vs_vuln.pdf", "fig_allvsdistinct.pdf",
                     "fig_marginal_scanner.pdf", "fig_panel_divergence.pdf",
                     "fig_panel_results.pdf", "fig_panel_inventory.pdf",
                     "fig_panel_offcomm.pdf", "fig_shu_panel.pdf",
-                    "fig_venn.pdf", "fig_timeline.pdf"]
+                    "fig_venn.pdf", "fig_timeline.pdf",
+                    "fig_repro_panel.pdf"]
 
 
 def log(msg):

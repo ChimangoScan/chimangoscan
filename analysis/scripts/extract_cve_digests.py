@@ -4,12 +4,13 @@ image digests that carry it (pkg-vuln). Dedup by digest (each digest once).
 Writes cve_digests_v3.json with the top-30 CVEs by distinct-digest count:
 {cve: {package, severity, n_direct, digests:[...]}}. Used to recompute Table 10
 (downstream propagation) by Neo4j union."""
-import sqlite3, json, sys
+import sqlite3, json, sys, os
 from collections import Counter, defaultdict
 
-DB = "/data/ditector-good.db"
-FRT = set(l.strip() for l in open("/tmp/top60k_rt_v3.txt") if l.strip())
-OUT = "./cve_digests_v3.json"
+DB = os.environ.get("DITECTOR_DB", "/data/ditector-good.db")
+FRT_PATH = os.environ.get("DITECTOR_FILTER_RT", "/tmp/top60k_rt_v3.txt")
+FRT = set(l.strip() for l in open(FRT_PATH) if l.strip())
+OUT = os.environ.get("OUT_PATH", "./cve_digests_v3.json")
 
 cve_digests = defaultdict(set)   # cve -> {digest}
 cve_sev = {}

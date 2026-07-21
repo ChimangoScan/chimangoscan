@@ -1,0 +1,962 @@
+{
+ "pulldist.ge1b.repos": {
+  "value": "113",
+  "source": "tab:pulldist row >=1B col Repos"
+ },
+ "pulldist.ge1b.pct_pulls": {
+  "value": "60.6",
+  "source": "tab:pulldist row >=1B col % pulls"
+ },
+ "pulldist.100m_1b.repos": {
+  "value": "461",
+  "source": "tab:pulldist row 100M-1B col Repos"
+ },
+ "pulldist.100m_1b.pct_pulls": {
+  "value": "20.1",
+  "source": "tab:pulldist row 100M-1B col % pulls"
+ },
+ "pulldist.10m_100m.repos": {
+  "value": "2,595",
+  "source": "tab:pulldist row 10M-100M col Repos"
+ },
+ "pulldist.10m_100m.pct_pulls": {
+  "value": "11.1",
+  "source": "tab:pulldist row 10M-100M col % pulls"
+ },
+ "pulldist.1m_10m.repos": {
+  "value": "11,856",
+  "source": "tab:pulldist row 1M-10M col Repos"
+ },
+ "pulldist.1m_10m.pct_pulls": {
+  "value": "5.3",
+  "source": "tab:pulldist row 1M-10M col % pulls"
+ },
+ "pulldist.100k_1m.repos": {
+  "value": "42,145",
+  "source": "tab:pulldist row 100k-1M col Repos"
+ },
+ "pulldist.100k_1m.pct_pulls": {
+  "value": "2.1",
+  "source": "tab:pulldist row 100k-1M col % pulls"
+ },
+ "pulldist.1k_100k.repos": {
+  "value": "572,662",
+  "source": "tab:pulldist row 1k-100k col Repos"
+ },
+ "pulldist.1k_100k.pct_pulls": {
+  "value": "0.8",
+  "source": "tab:pulldist row 1k-100k col % pulls"
+ },
+ "pulldist.lt1k.repos": {
+  "value": "12,050,759",
+  "source": "tab:pulldist row <1k col Repos"
+ },
+ "pulldist.lt1k.pct_pulls": {
+  "value": "<0.1",
+  "source": "tab:pulldist row <1k col % pulls"
+ },
+ "pulldist.total_repos": {
+  "value": "12,680,591",
+  "source": "tab:pulldist row Total / caption"
+ },
+ "crawl.repositories": {
+  "value": "12,716,568",
+  "source": "sec:stage1 text / tab:dataset row Repositories crawled"
+ },
+ "crawl.repositories_millions": {
+  "value": "12.7",
+  "source": "abstract text (12.7 million-repository crawl)"
+ },
+ "crawl.total_pulls": {
+  "value": "663,779,362,551",
+  "source": "sec:intro text (cumulative historical pulls)"
+ },
+ "crawl.total_pulls_billions": {
+  "value": "663.8",
+  "source": "abstract text (663.8 billion recorded pulls)"
+ },
+ "crawl.prefix_queries": {
+  "value": "2,051,801",
+  "source": "sec:stage1 text / tab:dataset row Prefix queries issued"
+ },
+ "crawl.pull_median": {
+  "value": "198",
+  "source": "sec:stage1 text (median pulls)"
+ },
+ "crawl.pull_p99": {
+  "value": "160,061",
+  "source": "sec:stage1 text (99th percentile)"
+ },
+ "crawl.pull_max": {
+  "value": ">3,700,000,000",
+  "source": "sec:stage1 text (maximum above 3.7e9)"
+ },
+ "crawl.top113_pct_pulls": {
+  "value": "61",
+  "source": "sec:stage1 text (113 repositories drawing 61% of pulls)"
+ },
+ "crawl.repos_below_1k_pct": {
+  "value": "95",
+  "source": "sec:stage1 text (95% pulled fewer than a thousand times)"
+ },
+ "crawl.last_updated_coverage": {
+  "value": "95.7",
+  "source": "tab:dataset row last_updated coverage (crawl)"
+ },
+ "crawl.tags_resolved": {
+  "value": "6,399,608",
+  "source": "sec:stage2 text / tab:dataset row Tags resolved"
+ },
+ "crawl.image_digests": {
+  "value": "7,416,671",
+  "source": "sec:stage2 text / tab:dataset row Image digests resolved"
+ },
+ "crawl.drdocker_delta": {
+  "value": "637,259",
+  "source": "sec:related text (637,259 fewer than our 12,716,568)"
+ },
+ "graph.is_base_of_edges": {
+  "value": "54,382,383",
+  "source": "sec:stage2 text / tab:dataset row IS_BASE_OF edges"
+ },
+ "graph.layer_nodes_millions": {
+  "value": "84.7",
+  "source": "sec:stage2 text / tab:dataset row Layer nodes (84.7 M)"
+ },
+ "stage2.repositories_resolved": {
+  "value": "5,601,045",
+  "source": "sec:stage2 text / tab:dataset row Repositories Stage II-resolved"
+ },
+ "stage2.resolved_pct": {
+  "value": "44.05",
+  "source": "sec:pipeline Terminology / sec:stage2 text (44.05% of the crawl)"
+ },
+ "dataset.scan_queue_millions": {
+  "value": "6.7",
+  "source": "tab:dataset row Images in scan queue"
+ },
+ "dataset.scanned_pull_coverage_pct": {
+  "value": "84.7",
+  "source": "abstract / sec:dataset text (84.7% of all recorded pulls)"
+ },
+ "dataset.scanners_per_image": {
+  "value": "6",
+  "source": "tab:dataset row Scanners per image"
+ },
+ "dataset.worker_machines": {
+  "value": "13",
+  "source": "tab:dataset row Worker machines"
+ },
+ "dataset.median_scan_time_s": {
+  "value": "117",
+  "source": "tab:dataset row Median scan time / sec:res-perscanner text"
+ },
+ "dataset.reports_gb": {
+  "value": "192",
+  "source": "tab:dataset row Per-image reports (DB)"
+ },
+ "dataset.mongo_gb": {
+  "value": "24.9",
+  "source": "tab:dataset row MongoDB crawl"
+ },
+ "dataset.neo4j_gb": {
+  "value": "65.9",
+  "source": "tab:dataset row Neo4j layer graph"
+ },
+ "dataset.total_gb": {
+  "value": "283",
+  "source": "tab:dataset row Total dataset"
+ },
+ "dataset.repositories_scanned": {
+  "value": "52,895",
+  "source": "abstract / tab:dataset row Repositories scanned"
+ },
+ "dataset.distinct_images": {
+  "value": "51,751",
+  "source": "tab:dataset row Distinct images by content"
+ },
+ "dataset.distinct_cves": {
+  "value": "52,624",
+  "source": "tab:dataset row Distinct CVEs detected"
+ },
+ "dataset.total_findings": {
+  "value": "170,373,044",
+  "source": "tab:dataset merged findings total"
+ },
+ "dataset.total_findings_millions": {
+  "value": "170.4",
+  "source": "abstract text (170.4 million findings)"
+ },
+ "dataset.pkg.findings": {
+  "value": "141,683,960",
+  "source": "tab:dataset row Package vulnerabilities col Findings"
+ },
+ "dataset.pkg.share": {
+  "value": "83.2",
+  "source": "tab:dataset row Package vulnerabilities col Share"
+ },
+ "dataset.pkg.img_ge1": {
+  "value": "96.3",
+  "source": "tab:dataset row Package vulnerabilities col Img. >=1"
+ },
+ "dataset.sbom.findings": {
+  "value": "23,151,449",
+  "source": "tab:dataset row Software-inventory components col Findings"
+ },
+ "dataset.sbom.share": {
+  "value": "13.6",
+  "source": "tab:dataset row Software-inventory components col Share"
+ },
+ "dataset.sbom.img_ge1": {
+  "value": "96.3",
+  "source": "tab:dataset row Software-inventory components col Img. >=1"
+ },
+ "dataset.secrets.findings": {
+  "value": "4,955,892",
+  "source": "tab:dataset row Embedded secrets col Findings"
+ },
+ "dataset.secrets.share": {
+  "value": "2.9",
+  "source": "tab:dataset row Embedded secrets col Share"
+ },
+ "dataset.secrets.img_ge1": {
+  "value": "76.9",
+  "source": "tab:dataset row Embedded secrets col Img. >=1"
+ },
+ "dataset.misconfig.findings": {
+  "value": "581,743",
+  "source": "tab:dataset row Misconfigurations col Findings"
+ },
+ "dataset.misconfig.share": {
+  "value": "0.3",
+  "source": "tab:dataset row Misconfigurations col Share"
+ },
+ "dataset.misconfig.img_ge1": {
+  "value": "98.0",
+  "source": "tab:dataset row Misconfigurations col Img. >=1"
+ },
+ "severity.critical.findings": {
+  "value": "7,377,355",
+  "source": "tab:severity col Critical row Findings"
+ },
+ "severity.critical.pct_findings": {
+  "value": "5.2",
+  "source": "tab:severity col Critical row % of findings"
+ },
+ "severity.critical.images": {
+  "value": "49,392",
+  "source": "tab:severity col Critical row Images >=1"
+ },
+ "severity.critical.pct_images": {
+  "value": "93.4",
+  "source": "tab:severity col Critical row % of images"
+ },
+ "severity.high.findings": {
+  "value": "35,740,343",
+  "source": "tab:severity col High row Findings"
+ },
+ "severity.high.pct_findings": {
+  "value": "25.2",
+  "source": "tab:severity col High row % of findings"
+ },
+ "severity.high.images": {
+  "value": "50,534",
+  "source": "tab:severity col High row Images >=1"
+ },
+ "severity.high.pct_images": {
+  "value": "95.5",
+  "source": "tab:severity col High row % of images"
+ },
+ "severity.medium.findings": {
+  "value": "65,727,713",
+  "source": "tab:severity col Medium row Findings"
+ },
+ "severity.medium.pct_findings": {
+  "value": "46.4",
+  "source": "tab:severity col Medium row % of findings"
+ },
+ "severity.medium.images": {
+  "value": "50,872",
+  "source": "tab:severity col Medium row Images >=1"
+ },
+ "severity.medium.pct_images": {
+  "value": "96.2",
+  "source": "tab:severity col Medium row % of images"
+ },
+ "severity.low.findings": {
+  "value": "19,418,002",
+  "source": "tab:severity col Low row Findings"
+ },
+ "severity.low.pct_findings": {
+  "value": "13.7",
+  "source": "tab:severity col Low row % of findings"
+ },
+ "severity.low.images": {
+  "value": "49,951",
+  "source": "tab:severity col Low row Images >=1"
+ },
+ "severity.low.pct_images": {
+  "value": "94.4",
+  "source": "tab:severity col Low row % of images"
+ },
+ "severity.info.findings": {
+  "value": "9,927,589",
+  "source": "tab:severity col Info. row Findings"
+ },
+ "severity.info.pct_findings": {
+  "value": "7.0",
+  "source": "tab:severity col Info. row % of findings"
+ },
+ "severity.info.images": {
+  "value": "33,708",
+  "source": "tab:severity col Info. row Images >=1"
+ },
+ "severity.info.pct_images": {
+  "value": "63.7",
+  "source": "tab:severity col Info. row % of images"
+ },
+ "severity.unrated.findings": {
+  "value": "3,492,958",
+  "source": "tab:severity col Unrated row Findings"
+ },
+ "severity.unrated.pct_findings": {
+  "value": "2.5",
+  "source": "tab:severity col Unrated row % of findings"
+ },
+ "severity.unrated.images": {
+  "value": "37,393",
+  "source": "tab:severity col Unrated row Images >=1"
+ },
+ "severity.unrated.pct_images": {
+  "value": "70.7",
+  "source": "tab:severity col Unrated row % of images"
+ },
+ "severity.total.findings": {
+  "value": "141,683,960",
+  "source": "tab:severity col Total row Findings"
+ },
+ "severity.total.images": {
+  "value": "50,957",
+  "source": "tab:severity col Total row Images >=1"
+ },
+ "severity.total.pct_images": {
+  "value": "96.3",
+  "source": "tab:severity col Total row % of images"
+ },
+ "prevalence.vuln_pct": {
+  "value": "96.3",
+  "source": "abstract / sec:res-prevalence text (known package vulnerability)"
+ },
+ "prevalence.clean_pct": {
+  "value": "3.7",
+  "source": "sec:res-prevalence text (clean images)"
+ },
+ "prevalence.critical_pct": {
+  "value": "93.4",
+  "source": "abstract / sec:res-prevalence text (critical-severity)"
+ },
+ "prevalence.high_pct": {
+  "value": "95.5",
+  "source": "sec:res-prevalence text (high-severity)"
+ },
+ "prevalence.median": {
+  "value": "885",
+  "source": "sec:res-prevalence text (median merged findings)"
+ },
+ "prevalence.mean": {
+  "value": "2,679",
+  "source": "sec:res-prevalence text (mean merged findings)"
+ },
+ "prevalence.p99": {
+  "value": "20,109",
+  "source": "sec:res-prevalence text (99th percentile)"
+ },
+ "prevalence.max": {
+  "value": "113,166",
+  "source": "sec:res-prevalence text (maximum)"
+ },
+ "prevalence.pkg_findings_millions": {
+  "value": "141.7",
+  "source": "sec:res-prevalence text (141.7 million pkg-vuln findings)"
+ },
+ "prevalence.crit_high_millions": {
+  "value": "43.1",
+  "source": "sec:res-prevalence / sec:res-repro text (43.1 million severe)"
+ },
+ "perscanner.syft.findings": {
+  "value": "23,151,449",
+  "source": "tab:perscanner row Syft col Findings"
+ },
+ "perscanner.syft.run_ok": {
+  "value": "97.7",
+  "source": "tab:perscanner row Syft col Run OK"
+ },
+ "perscanner.trivy.findings": {
+  "value": "44,957,561",
+  "source": "tab:perscanner row Trivy col Findings"
+ },
+ "perscanner.trivy.critical": {
+  "value": "1,478,679",
+  "source": "tab:perscanner row Trivy col Critical"
+ },
+ "perscanner.trivy.high": {
+  "value": "9,813,224",
+  "source": "tab:perscanner row Trivy col High"
+ },
+ "perscanner.trivy.medium": {
+  "value": "25,275,077",
+  "source": "tab:perscanner row Trivy col Medium"
+ },
+ "perscanner.trivy.low": {
+  "value": "8,069,525",
+  "source": "tab:perscanner row Trivy col Low"
+ },
+ "perscanner.trivy.run_ok": {
+  "value": "79.9",
+  "source": "tab:perscanner row Trivy col Run OK"
+ },
+ "perscanner.grype.findings": {
+  "value": "59,061,336",
+  "source": "tab:perscanner row Grype col Findings"
+ },
+ "perscanner.grype.critical": {
+  "value": "2,163,552",
+  "source": "tab:perscanner row Grype col Critical"
+ },
+ "perscanner.grype.high": {
+  "value": "11,733,733",
+  "source": "tab:perscanner row Grype col High"
+ },
+ "perscanner.grype.medium": {
+  "value": "25,802,146",
+  "source": "tab:perscanner row Grype col Medium"
+ },
+ "perscanner.grype.low": {
+  "value": "9,354,135",
+  "source": "tab:perscanner row Grype col Low"
+ },
+ "perscanner.grype.run_ok": {
+  "value": "96.4",
+  "source": "tab:perscanner row Grype col Run OK"
+ },
+ "perscanner.osv.findings": {
+  "value": "38,046,373",
+  "source": "tab:perscanner row OSV col Findings"
+ },
+ "perscanner.osv.critical": {
+  "value": "3,741,595",
+  "source": "tab:perscanner row OSV col Critical"
+ },
+ "perscanner.osv.high": {
+  "value": "14,304,383",
+  "source": "tab:perscanner row OSV col High"
+ },
+ "perscanner.osv.medium": {
+  "value": "14,738,700",
+  "source": "tab:perscanner row OSV col Medium"
+ },
+ "perscanner.osv.low": {
+  "value": "2,169,974",
+  "source": "tab:perscanner row OSV col Low"
+ },
+ "perscanner.osv.run_ok": {
+  "value": "94.6",
+  "source": "tab:perscanner row OSV col Run OK"
+ },
+ "perscanner.dockle.findings": {
+  "value": "235,029",
+  "source": "tab:perscanner row Dockle col Findings"
+ },
+ "perscanner.dockle.critical": {
+  "value": "45,411",
+  "source": "tab:perscanner row Dockle col Critical"
+ },
+ "perscanner.dockle.medium": {
+  "value": "42,587",
+  "source": "tab:perscanner row Dockle col Medium"
+ },
+ "perscanner.dockle.low": {
+  "value": "147,031",
+  "source": "tab:perscanner row Dockle col Low"
+ },
+ "perscanner.dockle.run_ok": {
+  "value": "98.0",
+  "source": "tab:perscanner row Dockle col Run OK"
+ },
+ "perscanner.trufflehog.findings": {
+  "value": "4,921,296",
+  "source": "tab:perscanner row TruffleHog col Findings"
+ },
+ "perscanner.trufflehog.critical": {
+  "value": "2,209",
+  "source": "tab:perscanner row TruffleHog col Critical"
+ },
+ "perscanner.trufflehog.high": {
+  "value": "0",
+  "source": "tab:perscanner row TruffleHog col High"
+ },
+ "perscanner.trufflehog.medium": {
+  "value": "4,919,087",
+  "source": "tab:perscanner row TruffleHog col Medium"
+ },
+ "perscanner.trufflehog.low": {
+  "value": "0",
+  "source": "tab:perscanner row TruffleHog col Low"
+ },
+ "perscanner.trufflehog.run_ok": {
+  "value": "98.8",
+  "source": "tab:perscanner row TruffleHog col Run OK"
+ },
+ "perscanner.trivy_errors": {
+  "value": "10,614",
+  "source": "sec:res-perscanner text (Trivy errored invocations)"
+ },
+ "perscanner.grype_millions": {
+  "value": "59.1",
+  "source": "sec:res-perscanner text (Grype 59.1 M)"
+ },
+ "perscanner.trivy_millions": {
+  "value": "45.0",
+  "source": "sec:res-perscanner text (Trivy 45.0 M)"
+ },
+ "perscanner.osv_millions": {
+  "value": "38.0",
+  "source": "sec:res-perscanner text (OSV-Scanner 38.0 M)"
+ },
+ "perscanner.syft_millions": {
+  "value": "23.2",
+  "source": "sec:res-perscanner text (Syft 23.2 M components)"
+ },
+ "perscanner.trufflehog_millions": {
+  "value": "4.9",
+  "source": "sec:res-perscanner text (TruffleHog 4.9 M)"
+ },
+ "perscanner.dockle_millions": {
+  "value": "0.24",
+  "source": "sec:res-perscanner text (Dockle 0.24 M)"
+ },
+ "perscanner.grype_time_s": {
+  "value": "35.1",
+  "source": "sec:res-perscanner text (Grype slowest, 35.1 s/image)"
+ },
+ "scan.mean_time_s": {
+  "value": "197",
+  "source": "sec:res-perscanner text (mean scan time)"
+ },
+ "scan.max_time_s": {
+  "value": "9,433",
+  "source": "sec:res-perscanner text (tail reaching 9,433 s)"
+ },
+ "inventory.median": {
+  "value": "205",
+  "source": "sec:res-perscanner text (Syft median components)"
+ },
+ "inventory.mean": {
+  "value": "438",
+  "source": "sec:res-perscanner text (Syft mean components)"
+ },
+ "inventory.max": {
+  "value": "51,021",
+  "source": "sec:res-perscanner text (Syft max components)"
+ },
+ "inventory.npm_pct": {
+  "value": "33.7",
+  "source": "sec:res-perscanner text (npm share)"
+ },
+ "inventory.deb_pct": {
+  "value": "28.2",
+  "source": "sec:res-perscanner text (deb share)"
+ },
+ "divergence.groups_millions": {
+  "value": "80.7",
+  "source": "sec:res-divergence text (distinct groups)"
+ },
+ "divergence.single_pct": {
+  "value": "66.8",
+  "source": "abstract / sec:res-divergence text (one scanner only)"
+ },
+ "divergence.three_pct": {
+  "value": "2.7",
+  "source": "abstract / sec:res-divergence text (all three scanners)"
+ },
+ "divergence.grype_trivy_millions": {
+  "value": "22.2",
+  "source": "sec:res-divergence text (Grype-Trivy co-detected)"
+ },
+ "divergence.spread": {
+  "value": "1.55",
+  "source": "sec:res-divergence text (finding-volume spread)"
+ },
+ "divergence.best_single_pct": {
+  "value": "66.9",
+  "source": "sec:res-divergence / sec:conclusion text (best single scanner)"
+ },
+ "misconfig.images_pct": {
+  "value": "98.0",
+  "source": "abstract / sec:res-secrets text (misconfiguration prevalence)"
+ },
+ "misconfig.images": {
+  "value": "51,853",
+  "source": "sec:res-secrets text (images with a misconfiguration)"
+ },
+ "misconfig.fatal_findings": {
+  "value": "45,411",
+  "source": "sec:res-secrets text (Dockle FATAL findings)"
+ },
+ "misconfig.credential_images": {
+  "value": "10,303",
+  "source": "sec:res-secrets text (CIS-DI-0010 images)"
+ },
+ "misconfig.cis_di_0005.images": {
+  "value": "51,847",
+  "source": "tab:misconfig row Content-trust off (CIS-DI-0005) col Images"
+ },
+ "misconfig.cis_di_0005.pct": {
+  "value": "98.0",
+  "source": "tab:misconfig row Content-trust off (CIS-DI-0005) col %"
+ },
+ "misconfig.cis_di_0006.images": {
+  "value": "49,792",
+  "source": "tab:misconfig row No HEALTHCHECK (CIS-DI-0006) col Images"
+ },
+ "misconfig.cis_di_0006.pct": {
+  "value": "94.1",
+  "source": "tab:misconfig row No HEALTHCHECK (CIS-DI-0006) col %"
+ },
+ "misconfig.cis_di_0001.images": {
+  "value": "41,863",
+  "source": "tab:misconfig row No dedicated user (CIS-DI-0001) col Images"
+ },
+ "misconfig.cis_di_0001.pct": {
+  "value": "79.1",
+  "source": "tab:misconfig row No dedicated user (CIS-DI-0001) col %"
+ },
+ "misconfig.cis_di_0008.images": {
+  "value": "31,785",
+  "source": "tab:misconfig row setuid/setgid files (CIS-DI-0008) col Images"
+ },
+ "misconfig.cis_di_0008.pct": {
+  "value": "60.1",
+  "source": "tab:misconfig row setuid/setgid files (CIS-DI-0008) col %"
+ },
+ "misconfig.cis_di_0010.images": {
+  "value": "10,303",
+  "source": "tab:misconfig row Credential in env/file (CIS-DI-0010) col Images"
+ },
+ "misconfig.cis_di_0010.pct": {
+  "value": "19.5",
+  "source": "tab:misconfig row Credential in env/file (CIS-DI-0010) col %"
+ },
+ "misconfig.dkl_li_0001.images": {
+  "value": "4,867",
+  "source": "tab:misconfig row Empty user password (DKL-LI-0001) col Images"
+ },
+ "misconfig.dkl_li_0001.pct": {
+  "value": "9.2",
+  "source": "tab:misconfig row Empty user password (DKL-LI-0001) col %"
+ },
+ "misconfig.dkl_di_0001.images": {
+  "value": "4,168",
+  "source": "tab:misconfig row sudo present (DKL-DI-0001) col Images"
+ },
+ "misconfig.dkl_di_0001.pct": {
+  "value": "7.9",
+  "source": "tab:misconfig row sudo present (DKL-DI-0001) col %"
+ },
+ "secrets.images_pct": {
+  "value": "76.9",
+  "source": "abstract / sec:res-secrets text (TruffleHog prevalence)"
+ },
+ "secrets.images": {
+  "value": "40,667",
+  "source": "sec:res-secrets text (images with a secret)"
+ },
+ "secrets.sample_size": {
+  "value": "1,100",
+  "source": "sec:res-secrets text (hand-labeled sample)"
+ },
+ "secrets.true_positives": {
+  "value": "3",
+  "source": "sec:res-secrets text (plausible live credentials)"
+ },
+ "secrets.false_positives": {
+  "value": "1,097",
+  "source": "sec:res-secrets text (non-credentials)"
+ },
+ "secrets.fp_rate_pct": {
+  "value": "99.7",
+  "source": "abstract / sec:res-secrets text (false-positive rate)"
+ },
+ "secrets.fp_wilson_lo": {
+  "value": "99.2",
+  "source": "sec:res-secrets text (Wilson 95% CI lower)"
+ },
+ "secrets.fp_wilson_hi": {
+  "value": "99.9",
+  "source": "sec:res-secrets text (Wilson 95% CI upper)"
+ },
+ "secrets.tp_rate_pct": {
+  "value": "0.3",
+  "source": "sec:res-secrets text (about 0.3% plausible credentials)"
+ },
+ "secrets.median": {
+  "value": "13",
+  "source": "sec:res-secrets text (median detector hits per image)"
+ },
+ "secrets.p99": {
+  "value": "1,230",
+  "source": "sec:res-secrets text (99th percentile)"
+ },
+ "secrets.max": {
+  "value": "19,856",
+  "source": "sec:res-secrets text (most hits in one image)"
+ },
+ "secrets.official_max": {
+  "value": "1,251",
+  "source": "sec:res-secrets text (official per-image maximum)"
+ },
+ "official.count": {
+  "value": "130",
+  "source": "sec:res-official text (official images)"
+ },
+ "community.count": {
+  "value": "52,765",
+  "source": "sec:res-official text (community images)"
+ },
+ "official.median": {
+  "value": "455",
+  "source": "sec:res-official text (official median findings)"
+ },
+ "community.median": {
+  "value": "886",
+  "source": "sec:res-official text (community median findings)"
+ },
+ "official.mean": {
+  "value": "1,046",
+  "source": "sec:res-official text (official mean)"
+ },
+ "community.mean": {
+  "value": "2,683",
+  "source": "sec:res-official text (community mean)"
+ },
+ "community.above_median_pct": {
+  "value": "50.0",
+  "source": "sec:res-official text (community above corpus median)"
+ },
+ "official.above_median_pct": {
+  "value": "32.3",
+  "source": "sec:res-official text (official above corpus median)"
+ },
+ "official.secret_pct": {
+  "value": "86.9",
+  "source": "sec:res-official text (official secret prevalence)"
+ },
+ "community.secret_pct": {
+  "value": "76.9",
+  "source": "sec:res-official text (community secret prevalence)"
+ },
+ "exposure.rho_pull": {
+  "value": "-0.01",
+  "source": "sec:res-exposure text (Spearman pull vs vuln)"
+ },
+ "exposure.rho_exposure": {
+  "value": "-0.02",
+  "source": "sec:res-exposure text (Spearman exposure vs vuln)"
+ },
+ "exposure.rho_exposure_critical": {
+  "value": "-0.04",
+  "source": "sec:res-exposure text (Spearman exposure vs critical)"
+ },
+ "exposure.top_decile_median": {
+  "value": "369",
+  "source": "sec:res-exposure text (highest-exposure decile median)"
+ },
+ "reach.row1": {
+  "value": "CVE-2026-27171 & zlib & High & 23,726 & 47.3%",
+  "source": "tab:reach row 1 (CVE & Package & Sev. & Images & % expo.)"
+ },
+ "reach.row2": {
+  "value": "CVE-2026-4046 & glibc & High & 18,774 & 46.5%",
+  "source": "tab:reach row 2 (CVE & Package & Sev. & Images & % expo.)"
+ },
+ "reach.row3": {
+  "value": "CVE-2026-5928 & glibc & High & 18,599 & 46.2%",
+  "source": "tab:reach row 3 (CVE & Package & Sev. & Images & % expo.)"
+ },
+ "reach.row4": {
+  "value": "CVE-2026-5435 & glibc & Crit. & 18,549 & 46.1%",
+  "source": "tab:reach row 4 (CVE & Package & Sev. & Images & % expo.)"
+ },
+ "reach.row5": {
+  "value": "CVE-2026-5450 & glibc & Crit. & 18,086 & 45.6%",
+  "source": "tab:reach row 5 (CVE & Package & Sev. & Images & % expo.)"
+ },
+ "reach.row6": {
+  "value": "CVE-2026-33814 & stdlib & High & 12,873 & 44.6%",
+  "source": "tab:reach row 6 (CVE & Package & Sev. & Images & % expo.)"
+ },
+ "reach.row7": {
+  "value": "CVE-2026-39825 & stdlib & Med. & 12,778 & 43.2%",
+  "source": "tab:reach row 7 (CVE & Package & Sev. & Images & % expo.)"
+ },
+ "reach.row8": {
+  "value": "CVE-2026-33811 & stdlib & High & 12,778 & 43.2%",
+  "source": "tab:reach row 8 (CVE & Package & Sev. & Images & % expo.)"
+ },
+ "reach.top_exposure_pct": {
+  "value": "47.3",
+  "source": "sec:res-reach text (highest-reach CVE exposure share)"
+ },
+ "reach.top_image_pct": {
+  "value": "44.9",
+  "source": "sec:res-reach text (present in 44.9% of images)"
+ },
+ "propagation.row1": {
+  "value": "CVE-2026-28388 & libcrypto3 & 28,343 & 1,144,010 & 40.4",
+  "source": "tab:propagation row 1 (CVE & Package & Direct & Distinct downstr. & Factor)"
+ },
+ "propagation.row2": {
+  "value": "CVE-2026-28390 & libcrypto3 & 27,768 & 1,134,329 & 40.9",
+  "source": "tab:propagation row 2 (CVE & Package & Direct & Distinct downstr. & Factor)"
+ },
+ "propagation.row3": {
+  "value": "CVE-2026-28389 & libcrypto3 & 27,758 & 1,134,319 & 40.9",
+  "source": "tab:propagation row 3 (CVE & Package & Direct & Distinct downstr. & Factor)"
+ },
+ "propagation.row4": {
+  "value": "CVE-2026-27171 & zlib & 23,013 & 1,129,391 & 49.1",
+  "source": "tab:propagation row 4 (CVE & Package & Direct & Distinct downstr. & Factor)"
+ },
+ "propagation.row5": {
+  "value": "CVE-2026-28387 & libcrypto3 & 23,819 & 1,096,284 & 46.0",
+  "source": "tab:propagation row 5 (CVE & Package & Direct & Distinct downstr. & Factor)"
+ },
+ "propagation.row6": {
+  "value": "CVE-2026-22796 & libcrypto3 & 26,279 & 1,033,461 & 39.3",
+  "source": "tab:propagation row 6 (CVE & Package & Direct & Distinct downstr. & Factor)"
+ },
+ "propagation.row7": {
+  "value": "CVE-2025-68160 & libcrypto3 & 26,279 & 1,033,461 & 39.3",
+  "source": "tab:propagation row 7 (CVE & Package & Direct & Distinct downstr. & Factor)"
+ },
+ "propagation.row8": {
+  "value": "CVE-2025-69421 & libcrypto3 & 26,278 & 1,033,459 & 39.3",
+  "source": "tab:propagation row 8 (CVE & Package & Direct & Distinct downstr. & Factor)"
+ },
+ "propagation.zlib_downstream": {
+  "value": "1,129,391",
+  "source": "sec:res-reach text (single zlib flaw reaching)"
+ },
+ "propagation.min_downstream_millions": {
+  "value": "1.0",
+  "source": "sec:res-reach text (1.0 to 1.14 million, lower)"
+ },
+ "propagation.max_downstream_millions": {
+  "value": "1.14",
+  "source": "sec:res-reach text (1.0 to 1.14 million, upper)"
+ },
+ "propagation.factor_min": {
+  "value": "39",
+  "source": "sec:res-reach text (propagation factor of 39 to 49, lower)"
+ },
+ "propagation.factor_max": {
+  "value": "49",
+  "source": "sec:res-reach text (propagation factor of 39 to 49, upper)"
+ },
+ "toppkg.row1": {
+  "value": "zlib & 44,574 & 84.3% & 177,503 & 15 & 28,695",
+  "source": "tab:toppkg row 1 (Package & Vuln. img. & % corpus & Findings & CVEs & Img. w/ crit.)"
+ },
+ "toppkg.row2": {
+  "value": "openssl & 39,209 & 74.1% & 2,597,921 & 290 & 27,479",
+  "source": "tab:toppkg row 2 (Package & Vuln. img. & % corpus & Findings & CVEs & Img. w/ crit.)"
+ },
+ "toppkg.row3": {
+  "value": "tar & 32,031 & 60.6% & 499,294 & 27 & 0",
+  "source": "tab:toppkg row 3 (Package & Vuln. img. & % corpus & Findings & CVEs & Img. w/ crit.)"
+ },
+ "toppkg.row4": {
+  "value": "util-linux & 28,555 & 54.0% & 785,349 & 21 & 14",
+  "source": "tab:toppkg row 4 (Package & Vuln. img. & % corpus & Findings & CVEs & Img. w/ crit.)"
+ },
+ "toppkg.row5": {
+  "value": "curl & 28,516 & 53.9% & 2,836,304 & 187 & 18,309",
+  "source": "tab:toppkg row 5 (Package & Vuln. img. & % corpus & Findings & CVEs & Img. w/ crit.)"
+ },
+ "toppkg.row6": {
+  "value": "coreutils & 27,896 & 52.7% & 142,134 & 33 & 0",
+  "source": "tab:toppkg row 6 (Package & Vuln. img. & % corpus & Findings & CVEs & Img. w/ crit.)"
+ },
+ "toppkg.row7": {
+  "value": "ncurses-base & 27,671 & 52.3% & 372,917 & 30 & 1,440",
+  "source": "tab:toppkg row 7 (Package & Vuln. img. & % corpus & Findings & CVEs & Img. w/ crit.)"
+ },
+ "toppkg.row8": {
+  "value": "systemd & 27,343 & 51.7% & 1,121,059 & 57 & 3,476",
+  "source": "tab:toppkg row 8 (Package & Vuln. img. & % corpus & Findings & CVEs & Img. w/ crit.)"
+ },
+ "toppkg.row9": {
+  "value": "expat & 25,886 & 48.9% & 649,552 & 47 & 16,282",
+  "source": "tab:toppkg row 9 (Package & Vuln. img. & % corpus & Findings & CVEs & Img. w/ crit.)"
+ },
+ "toppkg.row10": {
+  "value": "bash & 25,857 & 48.9% & 85,097 & 15 & 19",
+  "source": "tab:toppkg row 10 (Package & Vuln. img. & % corpus & Findings & CVEs & Img. w/ crit.)"
+ },
+ "repro.shu.critical_modal_pct": {
+  "value": "93.4",
+  "source": "tab:repro row shu2017dockerhub col This corpus (critical modal)"
+ },
+ "repro.liu.official_pct": {
+  "value": "93.8",
+  "source": "tab:repro row liu2020understanding col This corpus (official)"
+ },
+ "repro.liu.community_pct": {
+  "value": "95.6",
+  "source": "tab:repro row liu2020understanding col This corpus (community)"
+ },
+ "repro.wist.os_pct": {
+  "value": "76.9",
+  "source": "tab:repro row wist2021vulnerability col This corpus (OS)"
+ },
+ "repro.wist.lang_pct": {
+  "value": "21.7",
+  "source": "tab:repro row wist2021vulnerability col This corpus (language)"
+ },
+ "repro.mills.median_recent": {
+  "value": "414",
+  "source": "tab:repro row mills2023longitudinal col This corpus (recent median)"
+ },
+ "repro.mills.median_old": {
+  "value": "1,085",
+  "source": "tab:repro row mills2023longitudinal col This corpus (old median)"
+ },
+ "repro.cves_2020_or_later_pct": {
+  "value": "68.4",
+  "source": "sec:res-repro text (68.4% of CVEs 2020-or-later)"
+ },
+ "repro.zlib_images": {
+  "value": "44,574",
+  "source": "sec:res-repro text (zlib vulnerable images)"
+ },
+ "repro.openssl_images": {
+  "value": "39,209",
+  "source": "sec:res-repro text (openssl vulnerable images)"
+ },
+ "repro.wist.go_millions": {
+  "value": "5.3",
+  "source": "sec:res-repro text (Go severe findings, millions)"
+ },
+ "repro.wist.npm_millions": {
+  "value": "1.3",
+  "source": "sec:res-repro text (npm severe findings, millions)"
+ },
+ "repro.wist.python_millions": {
+  "value": "1.0",
+  "source": "sec:res-repro text (Python severe findings, millions)"
+ },
+ "repro.dahlmanns.private_key_pct": {
+  "value": "40.2",
+  "source": "sec:res-repro text (private-key pattern prevalence)"
+ }
+}

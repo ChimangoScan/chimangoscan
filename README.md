@@ -20,7 +20,7 @@ open-source scanners, collecting **170.4 million** findings. The measured postur
 is strongly tool-dependent: of the distinct vulnerabilities the three
 vulnerability scanners find, only 2.7% are reported by all three and 66.8% by a
 single one; TruffleHog flags secrets in 76.9% of images, but hand-labeling shows
-99.7% are non-credentials. We release the pipeline and the full 146 GB dataset.
+99.7% are non-credentials. We release the pipeline and the full 283 GB dataset.
 
 The documentation follows the artifact-submission guidelines of the SBC Brazilian
 Symposium on Cybersecurity (SBSeg) Artifact Evaluation Committee (CTA).
@@ -170,7 +170,7 @@ re-crawling or re-scanning.
 |----------|-------------|
 | CPU | 4+ cores |
 | Memory | 8+ GB |
-| Disk | ~180 GB for the released `ditector-good.db` (or use `--sample` for a quick partial run) |
+| Disk | ~192 GB for the released `ditector-good.db` (or use `--sample` for a quick partial run) |
 | Time | ~45–50 min full pass; minutes with `--sample` |
 
 **Full measurement** — reproduces the paper's at-scale crawl and scan. Designed
@@ -224,7 +224,7 @@ Third-party access:
 - **Docker Hub accounts** (free accounts suffice) are required by the Stage I
   crawler, supplied in `stages/DITector/accounts.json` (never committed; covered
   by `.gitignore`).
-- **The released dataset** (146 GB of per-image reports, the 12.7-million-repo
+- **The released dataset** (192 GB of per-image reports, the 12.7-million-repo
   crawl metadata, and the layer graph) is published on Zenodo; see `DATASET.md`
   for the DOI and schema. The analysis experiments below need only the scan
   database, `ditector-good.db`.
@@ -386,7 +386,7 @@ hand-labeled secret sample are non-credentials.
   `--sample N` (cap the scan to N report rows — sampled validation only, not for
   production numbers).
 - **Expected time / resources:** ~45–50 min full pass over the 64,595-report
-  database; minutes with `--sample`. Needs the ~180 GB `ditector-good.db` on disk
+  database; minutes with `--sample`. Needs the ~192 GB `ditector-good.db` on disk
   and several GB RAM. The database is opened **read-only**; the step is idempotent
   and never edits the paper.
 - **Expected result:** the analysis JSONs (e.g., `dedup_analysis.json` reporting
@@ -394,6 +394,22 @@ hand-labeled secret sample are non-credentials.
   vulnerability prevalence), the regenerated `figures/*.pdf`, and
   `table_values.json` holding every table value — matching the numbers reported in
   the paper.
+
+- **Command (full released dataset — all three databases + verification):**
+  ```bash
+  ./reproduce.sh analysis --dataset /path/to/dataset --stage all
+  ```
+  Runs, one database at a time, the MongoDB crawl stage (`--stage mongo`,
+  ephemeral container + restore of `dockerhub_data_*.archive.gz`), the Neo4j
+  layer-graph stage (`--stage neo4j`, ephemeral container over
+  `neo4j_data_*.tar.gz`: graph stats, exposure ranking, per-CVE propagation)
+  and the SQLite stage (`--stage sqlite`, the full report scan above plus the
+  secrets validation and all figures/tables), then `--stage verify` compares
+  every recomputed value against `analysis/expected/paper_values.json`
+  (240 checks extracted from the paper; exact match required) and writes the
+  verdict into `docs/REPRODUCIBILITY_REPORT.md`. Stages are independent, so
+  the ~300 GB dataset can be validated incrementally; `verify` skips checks
+  whose stage has not run yet.
 
 > **Full at-scale measurement (optional, not required for any seal).** To
 > reproduce the crawl and scan themselves:
