@@ -91,12 +91,15 @@ RUNNER_WORKDIR="$CHIMANGOSCAN" in_runner sh -c \
   || true   # the timeout ending the crawl is expected
 
 # ---------------------------------------------------------------------------
-# 2. Stage II -- build the layer graph for everything discovered (threshold 0)
+# 2. Stage II -- build the layer graph. A broad crawl discovers tens of
+# thousands of repositories; for this smoke test we build only the popular head
+# (default pull_count >= 100M, a few dozen repos) so it finishes in minutes.
+# Override with MINTEST_BUILD_THRESHOLD=0 to build everything discovered.
 # ---------------------------------------------------------------------------
-log "Stage II -- building the layer dependency graph"
+log "Stage II -- building the layer dependency graph (threshold ${MINTEST_BUILD_THRESHOLD:-100000000})"
 RUNNER_WORKDIR="$CHIMANGOSCAN" in_runner go run main.go build \
     --format mongo \
-    --threshold 0 \
+    --threshold "${MINTEST_BUILD_THRESHOLD:-100000000}" \
     --accounts accounts.json \
     --data_dir "$ARTIFACTS/build" \
     --config config.yaml
