@@ -167,19 +167,24 @@ EOF
 # independent so the ~300 GB dataset can be validated one database at a time;
 # verify checks whatever stage outputs exist in --out and skips the rest.
 reproduce_analysis() {
-  local DATASET="" STAGE="all" OUT="$ROOT/artifacts/analysis"
+  local DATASET="" STAGE="all" OUT="$ROOT/artifacts/analysis" FETCH=0
   local -a EXTRA=()
   while [ $# -gt 0 ]; do
     case "$1" in
       --dataset) DATASET="$2"; shift 2 ;;
       --stage)   STAGE="$2"; shift 2 ;;
       --out)     OUT="$2"; shift 2 ;;
+      --fetch)   FETCH=1; shift ;;
       --)        shift; EXTRA=("$@"); break ;;
       *) die "analysis: unknown option '$1'" ;;
     esac
   done
   [ -n "$DATASET" ] || die "analysis: --dataset DIR is required"
-  [ -d "$DATASET" ] || die "analysis: dataset dir not found: $DATASET"
+  if [ "$FETCH" = 1 ]; then
+    log "fetching dataset into $DATASET (GitHub release, split assets)"
+    "$ROOT/scripts/fetch_dataset.sh" --out "$DATASET" || die "analysis: dataset fetch failed"
+  fi
+  [ -d "$DATASET" ] || die "analysis: dataset dir not found: $DATASET (use --fetch to download it)"
   mkdir -p "$OUT"
 
   if [ -f "$DATASET/SHA256SUMS" ]; then
