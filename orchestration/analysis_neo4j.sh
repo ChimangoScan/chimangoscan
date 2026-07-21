@@ -16,7 +16,7 @@
 # Usage: orchestration/analysis_neo4j.sh --dump PATH --out DIR
 #          [--with-mongo URI] [--sqlite PATH] [--keep]
 #
-#   --dump PATH       tar.gz of the Neo4j data/ directory (release archive)
+#   --dump PATH       tar.gz or tar.zst of the Neo4j data/ directory
 #   --out DIR         working/output directory (extraction, dumps, results)
 #   --with-mongo URI  MongoDB with the crawl (dockerhub_data); enables the
 #                     exposure ranking and everything derived from it
@@ -82,7 +82,7 @@ if [ ! -d "$DATA_ROOT" ]; then
   log "extracting $DUMP -> $DATA_ROOT"
   rm -rf "$DATA_ROOT.tmp"
   mkdir -p "$DATA_ROOT.tmp"
-  tar -xzf "$DUMP" -C "$DATA_ROOT.tmp"
+  tar -xf "$DUMP" -C "$DATA_ROOT.tmp"
   mv "$DATA_ROOT.tmp" "$DATA_ROOT"
 fi
 if [ -n "${NEO4J_DATA_SUBDIR:-}" ]; then
