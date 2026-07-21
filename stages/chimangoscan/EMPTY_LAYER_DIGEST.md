@@ -6,7 +6,7 @@
 
 ## Overview
 
-In the IDEA graph (Neo4j), it is expected and correct for multiple `Layer` nodes with
+In the layer graph (Neo4j), it is expected and correct for multiple `Layer` nodes with
 different `instruction` values to share the same `digest`:
 
 ```

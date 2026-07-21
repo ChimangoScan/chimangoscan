@@ -8,11 +8,11 @@
 >
 > - **Stage I — Crawler** (Go): distributed crawl of Docker Hub to
 >   discover repositories and their *pull counts*.
-> - **Stage II — Layer graph** (Go): parallel construction of the IDEA
+> - **Stage II — Layer graph** (Go): parallel parallel construction of the layer
 >   inheritance graph between images in Neo4j.
 > - **Exposure ranker** (`scripts/compute_exposure_ranking.py`, Python):
 >   computes the exposure of each repository (its own pull count + the sum of the
->   pull counts of the downstream subtree) over the IDEA graph.
+>   pull counts of the downstream subtree) over the layer graph.
 >
 > The crawler (`crawler/`) and the graph builder (`buildgraph/`, `myutils/neo4j.go`)
 > are the **authors' original implementation** in this fork — the *Dr. Docker* paper
@@ -39,7 +39,7 @@
 5. [Prerequisites and Configuration](#5-prerequisites-and-configuration)
 6. [`config.yaml` Configuration](#6-configyaml-configuration)
 7. [Stage I — Crawling (Discovery)](#7-stage-i--crawling-discovery)
-8. [Stage II — Build (IDEA Graph)](#8-stage-ii--build-idea-graph)
+8. [Stage II — Build (layer graph)](#8-stage-ii--build-layer-graph)
 9. [Exposure Ranker (Prioritization)](#9-exposure-ranker-prioritization)
 10. [Output and handoff to Stage III](#10-output-and-handoff-to-stage-iii)
 11. [Pipeline Automation](#11-pipeline-automation)
@@ -89,12 +89,12 @@ The scientific basis is the paper **"Dr. Docker: A Large-Scale Security Measurem
   │  Tag+Image API   │────────────────▶│     BUILD            │
   │  (JWT authn,     │                 │  Atomic claim +      │
   │   HubClient,     │                 │  HubClient + cache   │
-  │   MongoDB cache) │                 │  + Neo4j IDEA        │
+  │   MongoDB cache) │                 │  + Neo4j layer graph        │
   └──────────────────┘                 └──────────┬───────────┘
                                                   │
                                        ┌──────────▼───────────┐
                                        │     Neo4j            │
-                                       │  (Layer IDEA graph)  │
+                                       │  (layer graph)  │
                                        │  IS_BASE_OF edges    │
                                        │  ./neo4j_data/       │
                                        └──────────┬───────────┘
@@ -139,7 +139,7 @@ If count(keyword) >= 10,000 → go deeper: enqueue keyword+"a", keyword+"b", ...
 If count(keyword) < 10,000  → scrape: fetch all available pages
 ```
 
-### 3.2 Building the IDEA Graph (Image DEpendency grAph)
+### 3.2 Building the layer graph (built with Dr. Docker's IDEA layer-ID hashing)
 
 The graph models inheritance between images through **Layer nodes**. Each node represents a layer from the standpoint of the dependency chain.
 
@@ -262,7 +262,7 @@ jobChan
     ▼ graphWorker × max(NumCPU*2, 8)   ← DB bound: Neo4j writes
     │
     ▼
-Neo4j (IDEA graph) + MongoDB (graph_built_at)
+Neo4j (layer graph) + MongoDB (graph_built_at)
 
 checkpointWriter (single-writer goroutine)
     ▼
@@ -358,7 +358,7 @@ Complete infrastructure to run the pipeline:
 | Service | Image | Port | Purpose |
 |---------|--------|-------|-----------|
 | `chimangoscan_mongo` | `mongo:latest` | 27017 | Persistence of repos, tags, images |
-| `chimangoscan_neo4j` | `neo4j:latest` | 7474/7687 | IDEA dependency graph |
+| `chimangoscan_neo4j` | `neo4j:latest` | 7474/7687 | layer dependency graph |
 | `chimangoscan_crawler` | `golang:1.22` | — | Runs the crawl with a configurable seed |
 
 The `SEED` environment variable lets you run multiple crawler instances with different seeds (meet-in-the-middle strategy):
@@ -601,7 +601,7 @@ With 1 machine and 20 workers running for 24h, you can expect to discover betwee
 
 ---
 
-## 8. Stage II — Build (IDEA Graph)
+## 8. Stage II — Build (layer graph)
 
 ### What it does
 
@@ -611,7 +611,7 @@ For each repository in MongoDB with `pull_count >= threshold`, Stage II:
 2. Queries the MongoDB tag cache; falls back to the Docker Hub API with JWT authentication (HubClient) only when the cache does not contain the data
 3. For each tag, queries the MongoDB image cache; accesses the API to obtain layers (digest, instruction, size) when needed
 4. Filters out Windows images
-5. Inserts the IDEA graph into Neo4j using the layer-ID hashing algorithm (section 3.2 of the paper)
+5. Inserts the layer graph into Neo4j using the layer-ID hashing algorithm (section 3.2 of the paper)
 6. Marks the repository as complete via `MarkRepoGraphBuilt` (the `graph_built_at` field) — executed via `defer`, therefore guaranteed even for repositories with 0 tags
 
 Stage II can be run on multiple machines simultaneously. The atomic claim eliminates duplicate reprocessing without any additional coordination between nodes.
@@ -688,7 +688,7 @@ Neo4j persists to `./neo4j_data/` (an explicit host path). This folder is create
 
 ### What it does
 
-The exposure ranker (`scripts/compute_exposure_ranking.py`) reads the IDEA graph
+The exposure ranker (`scripts/compute_exposure_ranking.py`) reads the layer graph
 from Neo4j built in Stage II and produces the final prioritization consumed by
 Stage III. It is the authors' original implementation in this fork.
 
@@ -735,7 +735,7 @@ python3 scripts/compute_exposure_ranking.py
 
 | Environment variable | Default | Description |
 |----------------------|--------|-----------|
-| `NEO4J_URI` | `bolt://127.0.0.1:7687` | IDEA graph built in Stage II |
+| `NEO4J_URI` | `bolt://127.0.0.1:7687` | layer graph built in Stage II |
 | `MONGO_URI` | `mongodb://127.0.0.1:27017` | Repository pull counts (Stage I) |
 | `WORKDIR` | `~/scanners/data/exposure_work` | Intermediate gzip dumps (resumable) |
 | `OUT_PATH` | `~/scanners/data/chimangoscan_exposure_ranked.jsonl` | Output file |
@@ -765,7 +765,7 @@ scanning**, implemented in the
 ChimangoScan (this repo)                       scanners (Stage III)
 ┌─────────────────────────┐                ┌──────────────────────────┐
 │ Stage I  — crawler       │                │ scanners seed            │
-│ Stage II — IDEA graph    │  exposure_     │   → work queue           │
+│ Stage II — layer graph    │  exposure_     │   → work queue           │
 │ exposure ranker          │─ranked.jsonl──▶│ scanners run             │
 │                          │   (contract)   │   → 6 scanners per target│
 └─────────────────────────┘                │ scanners report/analyze  │
@@ -880,7 +880,7 @@ tail -f *.log | grep "Inserted into Neo4j" | wc -l
 
 ```
 docker-scan crawl      — Phase I: repository discovery
-docker-scan build      — Phase II: IDEA graph construction
+docker-scan build      — Phase II: layer graph construction
 docker-scan analyze    — Security analysis of a specific image
 docker-scan execute    — Runs batch processing scripts
 docker-scan calculate  — Computes the node ID of an image from its digest

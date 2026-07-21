@@ -6,7 +6,7 @@
 
 ## 1. Pipeline Overview
 
-The original upstream (the upstream DITector framework, Dr. Docker) is written entirely in Go and implements stages II and III (IDEA graph construction and ranking). Stage I was declared as the `crawl` subcommand in `cmd/cmd.go` — with the description "crawl metadata of repositories and images from Docker Hub" — but with no `Run` field: the command was registered without an implementation. This version implements the complete body of Stage I and re-engineers Stage II for large-scale parallel operation.
+The original upstream (the upstream DITector framework, Dr. Docker) is written entirely in Go and implements stages II and III (layer graph construction and ranking). Stage I was declared as the `crawl` subcommand in `cmd/cmd.go` — with the description "crawl metadata of repositories and images from Docker Hub" — but with no `Run` field: the command was registered without an implementation. This version implements the complete body of Stage I and re-engineers Stage II for large-scale parallel operation.
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -24,7 +24,7 @@ The original upstream (the upstream DITector framework, Dr. Docker) is written e
          │               │                        │
          ▼               ▼                        ▼
       MongoDB          Neo4j              final_prioritized_
-  (repositories_    (IDEA graph:           dataset.json
+  (repositories_    (layer graph:           dataset.json
       data)          Layer nodes +          (JSONL)
                      IS_BASE_OF edges)
 ```
@@ -514,7 +514,7 @@ MongoDB already used `./mongo_data_secure:/data/db` (host path) since version 2.
 
 **Stage II checkpoint:** the `checkpointWriter` goroutine persists one JSONL line per processed repository to `dataDir/build_checkpoint.jsonl`. The single-writer pattern eliminates the need for a mutex when writing the file.
 
-### 3.6. IDEA Algorithm and Neo4j Insertion
+### 3.6. Layer-ID hashing (Dr. Docker IDEA) and Neo4j Insertion
 
 #### 3.6.1. Layer ID Hashing
 

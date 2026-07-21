@@ -92,7 +92,7 @@ RECOS_START = '<section id="recos">'
 RECOS_END = '</section>\n\n<!-- ── Scanner catalog'
 RECOS_NEW = """
   <h2>Recommended stacks for the paper</h2>
-  <p class="lead">Decisions mapped to the ChimangoScan pipeline. Phases I (crawl) and II (IDEA graph) are already defined; these scanners feed phase III (analysis).</p>
+  <p class="lead">Decisions mapped to the ChimangoScan pipeline. Phases I (crawl) and II (layer graph) are already defined; these scanners feed phase III (analysis).</p>
   <div class="recos">
     <div class="reco">
       <h4>📦 Phase III-A — Static</h4>

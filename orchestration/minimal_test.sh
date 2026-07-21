@@ -9,7 +9,7 @@
 #
 #   1. crawls Docker Hub for a SHORT time, restricted to a few namespace
 #      prefixes (default: a,b,c) -- Stage I, but tiny;
-#   2. builds the IDEA layer graph for the repositories discovered  -- Stage II;
+#   2. builds the layer graph for the repositories discovered  -- Stage II;
 #   3. runs the exposure ranker, which sorts every repository by pull count and
 #      supply-chain exposure                                        -- ranker;
 #   4. seeds the scan queue with ONLY the top 10 most-pulled repositories and
@@ -67,9 +67,9 @@ RUNNER_WORKDIR="$CHIMANGOSCAN" in_runner sh -c \
   || true   # the timeout ending the crawl is expected
 
 # ---------------------------------------------------------------------------
-# 2. Stage II -- build the IDEA graph for everything discovered (threshold 0)
+# 2. Stage II -- build the layer graph for everything discovered (threshold 0)
 # ---------------------------------------------------------------------------
-log "Stage II -- building the IDEA dependency graph"
+log "Stage II -- building the layer dependency graph"
 RUNNER_WORKDIR="$CHIMANGOSCAN" in_runner go run main.go build \
     --format mongo \
     --threshold 0 \

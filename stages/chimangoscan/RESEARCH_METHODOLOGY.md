@@ -9,7 +9,7 @@
 This methodology aims at the qualified selection of Docker Hub containers for submission to dynamic network scans. The selection is driven by two systemic-impact criteria:
 
 - **Pull Count:** an indicator of popularity and breadth of deployment. Vulnerabilities in high-pull-count images directly affect a wide base of infrastructure.
-- **Dependency Weight (Out-Degree in the IDEA graph):** the number of downstream images that inherit layers from this image. A vulnerability in a base image propagates through the supply chain to all derived images — the impact is multiplied by the dependency weight.
+- **Dependency Weight (Out-Degree in the layer graph):** the number of downstream images that inherit layers from this image. A vulnerability in a base image propagates through the supply chain to all derived images — the impact is multiplied by the dependency weight.
 
 The goal is not the exhaustive enumeration of Docker Hub, but the identification of the containers with the greatest potential security impact for prioritizing scans.
 
@@ -70,15 +70,15 @@ MongoDB, `repositories_data` collection: one document per repository with `names
 
 ---
 
-## 3. Phase II — Building the IDEA Graph
+## 3. Phase II — Building the layer graph
 
 ### 3.1. Processing Scope
 
-Phase II processes **all repositories** with `pull_count ≥ threshold`, with no heuristic filter by name. The goal is complete coverage of the Docker Hub ecosystem for dependency analysis: repositories that do not expose network ports are equally relevant as base (upstream) images in the IDEA graph.
+Phase II processes **all repositories** with `pull_count ≥ threshold`, with no heuristic filter by name. The goal is complete coverage of the Docker Hub ecosystem for dependency analysis: repositories that do not expose network ports are equally relevant as base (upstream) images in the layer graph.
 
 The security-relevance filter is applied afterward, in Phase III, via Dependency Weight: repositories that nothing depends on and that do not expose relevant ports get a low score and are naturally deprioritized in the final dataset.
 
-### 3.2. Building the IDEA Graph (Image DEpendency grAph)
+### 3.2. Building the layer graph (built with Dr. Docker's IDEA layer-ID hashing)
 
 For each repository, the system queries the Docker Hub API to obtain the most recently updated tag and the `latest` tag (if different), and for each tag the image metadata (the list of layers with digest, instruction, and size) for all available platforms.
 
@@ -110,7 +110,7 @@ Neo4j with `Layer` nodes, `RawLayer` nodes, and `IS_BASE_OF` edges (inheritance 
 
 ### 4.1. Dependency Weight (Out-Degree)
 
-The **Dependency Weight** of an image is the Out-Degree of the `Layer` node corresponding to its last layer in the IDEA graph — i.e. the number of child images that inherit directly from this image. Images with a high Out-Degree are widely used base images; vulnerabilities in them propagate through the supply chain.
+The **Dependency Weight** of an image is the Out-Degree of the `Layer` node corresponding to its last layer in the layer graph — i.e. the number of child images that inherit directly from this image. Images with a high Out-Degree are widely used base images; vulnerabilities in them propagate through the supply chain.
 
 The Dr. Docker paper defines two sets of high-impact images:
 

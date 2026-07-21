@@ -115,7 +115,7 @@ scripts consume.
 ```
 
 This runs the real pipeline end to end — **Stage I** (crawl Docker Hub) →
-**Stage II** (build the IDEA layer graph) → **exposure ranker** → **Stage III**
+**Stage II** (build the layer graph) → **exposure ranker** → **Stage III**
 (six-scanner scan) → analysis — at a **configurable scale**. The host needs only
 Docker; every stage runs inside the containerized runner image
 (`docker/Dockerfile.runner`). Scale and targets come from flags
@@ -208,7 +208,7 @@ installed on the host.
 | Provided as a container | Image | Role |
 |-------------------------|-------|------|
 | MongoDB | `mongo:latest` (compose) | repositories and tags (Stage I/II) |
-| Neo4j | `neo4j:latest` (compose) | IDEA layer graph (Stage II) |
+| Neo4j | `neo4j:latest` (compose) | layer graph (Stage II) |
 | **Runner** | built from `docker/Dockerfile.runner` — Go 1.22, Python 3, uv, matplotlib, numpy, Docker CLI | runs Stages I/II (Go), the exposure ranker, Stage III orchestration, and the analysis |
 | Six scanners | Syft, Trivy, Grype, OSV-Scanner, Dockle, TruffleHog — official images **pinned by digest** | Stage III scanning, launched by the runner through the host Docker socket |
 
@@ -290,7 +290,7 @@ Docker Hub. It:
 
 1. **crawls** Docker Hub briefly, restricted to a few namespace prefixes
    (default `a,b,c`) — Stage I, in miniature;
-2. **builds** the IDEA layer graph for the discovered repositories — Stage II;
+2. **builds** the layer graph for the discovered repositories — Stage II;
 3. runs the **ranker**, ordering all discovered repositories by pull count and
    supply-chain exposure;
 4. selects the **top 10** most-exposed repositories and runs the six default

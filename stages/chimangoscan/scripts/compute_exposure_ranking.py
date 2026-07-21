@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compute Docker-image supply-chain exposure ranking from the ChimangoScan IDEA graph.
+"""Compute Docker-image supply-chain exposure ranking from the ChimangoScan layer graph.
 
 Strategy (justified by the graph construction in myutils/neo4j.go):
   - IS_BASE_OF builds a *forest of out-trees*: a Layer's id = sha256(parent.id + sha256(layer.digest)),

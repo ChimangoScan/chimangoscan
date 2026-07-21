@@ -71,9 +71,9 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-# Stage II -- build the IDEA layer graph
+# Stage II -- build the layer graph
 # ---------------------------------------------------------------------------
-log "Stage II -- building the IDEA dependency graph (threshold=$THRESHOLD)"
+log "Stage II -- building the layer dependency graph (threshold=$THRESHOLD)"
 RUNNER_WORKDIR="$CHIMANGOSCAN" in_runner go run main.go build \
     --format mongo \
     --threshold "$THRESHOLD" \
