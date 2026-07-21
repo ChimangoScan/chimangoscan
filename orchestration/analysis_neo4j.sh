@@ -33,6 +33,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SCRIPTS="$ROOT/analysis/scripts"
+[ -x "$ROOT/.venv/bin/python3" ] && PATH="$ROOT/.venv/bin:$PATH"
 # shellcheck source=orchestration/_runner.sh
 source "$ROOT/orchestration/_runner.sh"
 

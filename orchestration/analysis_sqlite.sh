@@ -29,6 +29,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SCRIPTS="$ROOT/analysis/scripts"
+[ -x "$ROOT/.venv/bin/python3" ] && PATH="$ROOT/.venv/bin:$PATH"
 SEED="$ROOT/analysis/seed-inputs"
 
 # ~150 GB decompressed; require this much free space before expanding a .zst.
