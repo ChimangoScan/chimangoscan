@@ -28,9 +28,11 @@ Produces, per-repository:
 
 Old (with-duplicate) JSONs are backed up to *.bak.dup once.
 """
-import sqlite3, json, sys, time, math, re, shutil, os, itertools
+import sqlite3, json, sys, time, math, re, shutil, os, itertools, faulthandler
 from collections import Counter, defaultdict
 from datetime import datetime, timezone
+
+faulthandler.enable()  # dump a C-level traceback if this long pass ever crashes
 
 DB = "/data/chimangoscan-reports.db"
 OUT = "."
@@ -1027,6 +1029,15 @@ def main():
     print("pkg-vuln findings     : %d" % pkgvuln_total)
     print("distinct groups       : %d" % total_groups)
     print("distinct CVEs         : %d" % master["n_distinct_cves"])
+
+    # Every output and the summary above are written and flushed here. The
+    # accumulators built during the 60k-report pass hold tens of millions of
+    # objects; CPython's interpreter-shutdown teardown can SIGSEGV freeing that
+    # graph (a spurious -11 AFTER the real work is done). Flush and _exit now to
+    # skip the fragile teardown entirely.
+    sys.stdout.flush()
+    sys.stderr.flush()
+    os._exit(0)
 
 
 if __name__ == "__main__":
