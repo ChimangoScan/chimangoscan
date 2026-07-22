@@ -259,13 +259,27 @@ reproduce_analysis() {
     }
     trap cleanup_mongo EXIT   # on set -e exit a RETURN trap would not fire; EXIT does
     run_stage mongo             # --keep: crawl MongoDB stays up for exposure ranking
-    run_stage neo4j             # --with-mongo: recomputes exposure_ranked_v3.jsonl + filter
-    # Reclaim disk before the ~192 GB sqlite stage: the 24 GB crawl MongoDB and
-    # the ~65 GB extracted Neo4j store are no longer needed (their computed
-    # artefacts are in $OUT). This keeps peak disk to sqlite + dataset.
+    # Decompress the scan DB ONCE, before neo4j: its per-CVE step
+    # (extract_cve_digests) opens the SQLite file directly and cannot read a
+    # .zst, and the sqlite stage then reuses the same decompressed .db (so it is
+    # expanded once, not twice). Decompress to $OUT/db -- exactly where the
+    # sqlite stage would expand it -- so passing this .db path skips re-expansion.
+    if [ -n "$DB" ] && [ "${DB%.zst}" != "$DB" ]; then
+      local DECOMP="$OUT/db/$(basename "${DB%.zst}")"
+      if [ ! -s "$DECOMP" ]; then
+        command -v zstd >/dev/null || die "analysis: zstd required to decompress $DB"
+        mkdir -p "$OUT/db"
+        log "decompressing scan DB once -> $DECOMP (~150 GB, a few minutes)"
+        zstd -d --long=31 -f -o "$DECOMP" "$DB" || die "analysis: scan DB decompression failed"
+      fi
+      DB="$DECOMP"                # neo4j --sqlite and sqlite --db both get the .db
+    fi
+    run_stage neo4j             # --with-mongo: exposure ranking + corpus filter + per-CVE digests
+    # Reclaim disk before the long sqlite pass: the crawl MongoDB and the
+    # extracted Neo4j store are no longer needed (their artefacts are in $OUT).
     cleanup_mongo
     rm -rf "$OUT/neo4j_data"
-    run_stage sqlite            # neo4j already tore itself down (no --keep), so only sqlite is on disk
+    run_stage sqlite            # $DB is already the decompressed .db; no second expansion
     run_stage verify
   else
     run_stage "$STAGE"
