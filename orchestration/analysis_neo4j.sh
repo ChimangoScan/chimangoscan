@@ -127,18 +127,30 @@ docker run -d --name "$NEO4J_CONTAINER" \
   -v "$DATA_DIR:/data" \
   "$NEO4J_IMAGE" >/dev/null
 
-log "waiting for Neo4j (max ${NEO4J_WAIT_S}s)"
-deadline=$(( $(date +%s) + NEO4J_WAIT_S ))
-until docker exec "$NEO4J_CONTAINER" cypher-shell -a bolt://127.0.0.1:7687 "RETURN 1;" >/dev/null 2>&1; do
-  if ! docker ps -q --filter "name=^${NEO4J_CONTAINER}$" | grep -q .; then
-    docker logs --tail 20 "$NEO4J_CONTAINER" >&2 || true
-    echo "Neo4j container exited -- the data dir likely requires a different NEO4J_IMAGE major version" >&2
-    exit 1
-  fi
-  [ "$(date +%s)" -lt "$deadline" ] || \
-    { echo "Neo4j not ready after ${NEO4J_WAIT_S}s -- raise NEO4J_WAIT_S (large stores recover slowly)" >&2; exit 1; }
-  sleep 3
-done
+wait_neo4j() {
+  log "waiting for Neo4j (max ${NEO4J_WAIT_S}s)"
+  local deadline=$(( $(date +%s) + NEO4J_WAIT_S ))
+  until docker exec "$NEO4J_CONTAINER" cypher-shell -a bolt://127.0.0.1:7687 "RETURN 1;" >/dev/null 2>&1; do
+    if ! docker ps -q --filter "name=^${NEO4J_CONTAINER}$" | grep -q .; then
+      docker logs --tail 20 "$NEO4J_CONTAINER" >&2 || true
+      echo "Neo4j container exited -- the data dir likely requires a different NEO4J_IMAGE major version" >&2
+      exit 1
+    fi
+    [ "$(date +%s)" -lt "$deadline" ] || \
+      { echo "Neo4j not ready after ${NEO4J_WAIT_S}s -- raise NEO4J_WAIT_S (large stores recover slowly)" >&2; exit 1; }
+    sleep 3
+  done
+}
+wait_neo4j
+
+# The released store ships crash-consistent transaction logs; Neo4j replays them
+# on the FIRST mount, but the heavy relationship traversal (exposure ranking) run
+# before that recovery has fully settled hits transient store inconsistencies
+# ("NOT PART OF CHAIN!"). The first mount persists the recovered store to disk, so
+# one restart makes every query run against the already-recovered store.
+log "restarting Neo4j once so log recovery settles before the traversal queries"
+docker restart "$NEO4J_CONTAINER" >/dev/null
+wait_neo4j
 
 # ---------------------------------------------------------------------------
 # Analysis chain (inside the runner image; Neo4j/Mongo reached via host net)
