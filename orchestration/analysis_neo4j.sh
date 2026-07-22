@@ -41,6 +41,13 @@ NEO4J_IMAGE="${NEO4J_IMAGE:-neo4j:2026.03.1}"  # the released store was written 
 NEO4J_BOLT_ADDR="${NEO4J_BOLT_ADDR:-127.0.0.1:7688}"
 NEO4J_WAIT_S="${NEO4J_WAIT_S:-600}"
 NEO4J_CONTAINER="${NEO4J_CONTAINER:-chimangoscan-neo4j}"
+# Bound Neo4j's memory: unset, Neo4j 2026 grabs ~half of RAM as heap + a large
+# page cache, starving the runner that parses the scan reports later in this
+# stage (Python SIGSEGVs under the resulting memory pressure). The graph queries
+# here are light (counts + a one-pass edge export), so a modest footprint is
+# plenty and it leaves the host RAM the per-CVE step needs.
+NEO4J_HEAP="${NEO4J_HEAP:-6G}"
+NEO4J_PAGECACHE="${NEO4J_PAGECACHE:-8G}"
 TOP_N="${TOP_N:-60000}"
 
 DUMP=""
