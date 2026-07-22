@@ -159,50 +159,6 @@
   "tol": 0.05,
   "known_mismatch": true
  },
- "stage2.repositories_resolved": {
-  "value": "5,601,045",
-  "source": "sec:stage2 text / tab:dataset row Repositories Stage II-resolved"
- },
- "stage2.resolved_pct": {
-  "value": "44.05",
-  "source": "sec:pipeline Terminology / sec:stage2 text (44.05% of the crawl)"
- },
- "dataset.scan_queue_millions": {
-  "value": "6.7",
-  "source": "tab:dataset row Images in scan queue"
- },
- "dataset.scanned_pull_coverage_pct": {
-  "value": "84.7",
-  "source": "abstract / sec:dataset text (84.7% of all recorded pulls)"
- },
- "dataset.scanners_per_image": {
-  "value": "6",
-  "source": "tab:dataset row Scanners per image"
- },
- "dataset.worker_machines": {
-  "value": "13",
-  "source": "tab:dataset row Worker machines"
- },
- "dataset.median_scan_time_s": {
-  "value": "117",
-  "source": "tab:dataset row Median scan time / sec:res-perscanner text"
- },
- "dataset.reports_gb": {
-  "value": "192",
-  "source": "tab:dataset row Per-image reports (DB)"
- },
- "dataset.mongo_gb": {
-  "value": "24.9",
-  "source": "tab:dataset row MongoDB crawl"
- },
- "dataset.neo4j_gb": {
-  "value": "65.9",
-  "source": "tab:dataset row Neo4j layer graph"
- },
- "dataset.total_gb": {
-  "value": "283",
-  "source": "tab:dataset row Total dataset"
- },
  "dataset.repositories_scanned": {
   "value": "52,895",
   "source": "abstract / tab:dataset row Repositories scanned"
@@ -570,18 +526,6 @@
  "perscanner.dockle_millions": {
   "value": "0.24",
   "source": "sec:res-perscanner text (Dockle 0.24 M)"
- },
- "perscanner.grype_time_s": {
-  "value": "35.1",
-  "source": "sec:res-perscanner text (Grype slowest, 35.1 s/image)"
- },
- "scan.mean_time_s": {
-  "value": "197",
-  "source": "sec:res-perscanner text (mean scan time)"
- },
- "scan.max_time_s": {
-  "value": "9,433",
-  "source": "sec:res-perscanner text (tail reaching 9,433 s)"
  },
  "inventory.median": {
   "value": "205",
