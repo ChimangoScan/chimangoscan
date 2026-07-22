@@ -278,7 +278,10 @@ reproduce_analysis() {
     # Reclaim disk before the long sqlite pass: the crawl MongoDB and the
     # extracted Neo4j store are no longer needed (their artefacts are in $OUT).
     cleanup_mongo
-    rm -rf "$OUT/neo4j_data"
+    # Neo4j wrote its store as root inside the container, so this user cannot rm
+    # it; reclaim the ~62 GB via a root helper container (fall back to a plain rm).
+    docker run --rm -v "$OUT:$OUT" alpine rm -rf "$OUT/neo4j_data" 2>/dev/null \
+      || rm -rf "$OUT/neo4j_data" || true
     run_stage sqlite            # $DB is already the decompressed .db; no second expansion
     run_stage verify
   else
