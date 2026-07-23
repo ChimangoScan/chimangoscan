@@ -204,6 +204,26 @@ reproduce_analysis() {
   DB="$(find_one 'chimangoscan-reports.db')"; [ -n "$DB" ] || DB="$(find_one 'chimangoscan-reports.db.zst')"
   ARCHIVE="$(find_one 'dockerhub_data*.archive.gz')"
   DUMP="$(find_one 'neo4j_data*.tar.gz')"
+  local DUMPS_TAR; DUMPS_TAR="$(find_one 'exposure_work*.tar')"
+
+  # Stage-II analysis (exposure ranking + downstream propagation) reproduces from
+  # the FROZEN 2026-05-18 layer-graph dumps, NOT from a live Neo4j/Mongo snapshot.
+  # The layer graph keeps growing after the paper freeze -- images keep attaching
+  # to layers over time -- so a restored post-freeze Neo4j inflates the downstream
+  # propagation table by ~50% (image-bearing nodes 4.48M at freeze vs ~6.3M later).
+  # Seeding the frozen edges/toplayers/repo_pull/tags dumps into $OUT/exposure_work
+  # makes compute_exposure_ranking.py and propagation_compute.py use them (their
+  # dump steps skip when the files are already present), so the ranking and the
+  # propagation table reproduce the paper EXACTLY. (graph_stats' raw node/edge
+  # counts are still read live from the shipped Neo4j and drift a few %: there is
+  # no frozen Neo4j store to restore, only these analysis dumps.)
+  if { [ "$STAGE" = neo4j ] || [ "$STAGE" = all ]; } && [ -n "$DUMPS_TAR" ] \
+       && [ ! -s "$OUT/exposure_work/edges.tsv.gz" ]; then
+    log "seeding frozen Stage-II dumps: $(basename "$DUMPS_TAR") -> $OUT/exposure_work"
+    mkdir -p "$OUT/exposure_work"
+    tar -xf "$DUMPS_TAR" -C "$OUT/exposure_work" \
+      || die "analysis: failed to extract frozen dumps from $DUMPS_TAR"
+  fi
 
   # In a full `all` run the mongo container is kept up so the neo4j stage can
   # recompute the exposure ranking against the live crawl (--with-mongo); these

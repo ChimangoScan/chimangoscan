@@ -793,81 +793,55 @@
  },
  "propagation.row1": {
   "value": "CVE-2026-28388 & libcrypto3 & 28,343 & 1,144,010 & 40.4",
-  "source": "tab:propagation row 1 (CVE & Package & Direct & Distinct downstr. & Factor)",
-  "known_mismatch": true,
-  "note": "released graph is a slightly later crawl snapshot; downstream propagation is a transitive closure that amplifies the ~0.1% node drift to ~50% (direct counts still match)"
+  "source": "tab:propagation row 1 (CVE & Package & Direct & Distinct downstr. & Factor)"
  },
  "propagation.row2": {
   "value": "CVE-2026-28390 & libcrypto3 & 27,768 & 1,134,329 & 40.9",
-  "source": "tab:propagation row 2 (CVE & Package & Direct & Distinct downstr. & Factor)",
-  "known_mismatch": true,
-  "note": "released graph is a slightly later crawl snapshot; downstream propagation is a transitive closure that amplifies the ~0.1% node drift to ~50% (direct counts still match)"
+  "source": "tab:propagation row 2 (CVE & Package & Direct & Distinct downstr. & Factor)"
  },
  "propagation.row3": {
   "value": "CVE-2026-28389 & libcrypto3 & 27,758 & 1,134,319 & 40.9",
-  "source": "tab:propagation row 3 (CVE & Package & Direct & Distinct downstr. & Factor)",
-  "known_mismatch": true,
-  "note": "released graph is a slightly later crawl snapshot; downstream propagation is a transitive closure that amplifies the ~0.1% node drift to ~50% (direct counts still match)"
+  "source": "tab:propagation row 3 (CVE & Package & Direct & Distinct downstr. & Factor)"
  },
  "propagation.row4": {
   "value": "CVE-2026-27171 & zlib & 23,013 & 1,129,391 & 49.1",
-  "source": "tab:propagation row 4 (CVE & Package & Direct & Distinct downstr. & Factor)",
-  "known_mismatch": true,
-  "note": "released graph is a slightly later crawl snapshot; downstream propagation is a transitive closure that amplifies the ~0.1% node drift to ~50% (direct counts still match)"
+  "source": "tab:propagation row 4 (CVE & Package & Direct & Distinct downstr. & Factor)"
  },
  "propagation.row5": {
   "value": "CVE-2026-28387 & libcrypto3 & 23,819 & 1,096,284 & 46.0",
-  "source": "tab:propagation row 5 (CVE & Package & Direct & Distinct downstr. & Factor)",
-  "known_mismatch": true,
-  "note": "released graph is a slightly later crawl snapshot; downstream propagation is a transitive closure that amplifies the ~0.1% node drift to ~50% (direct counts still match)"
+  "source": "tab:propagation row 5 (CVE & Package & Direct & Distinct downstr. & Factor)"
  },
  "propagation.row6": {
   "value": "CVE-2026-22796 & libcrypto3 & 26,279 & 1,033,461 & 39.3",
-  "source": "tab:propagation row 6 (CVE & Package & Direct & Distinct downstr. & Factor)",
-  "known_mismatch": true,
-  "note": "released graph is a slightly later crawl snapshot; downstream propagation is a transitive closure that amplifies the ~0.1% node drift to ~50% (direct counts still match)"
+  "source": "tab:propagation row 6 (CVE & Package & Direct & Distinct downstr. & Factor)"
  },
  "propagation.row7": {
   "value": "CVE-2025-68160 & libcrypto3 & 26,279 & 1,033,461 & 39.3",
-  "source": "tab:propagation row 7 (CVE & Package & Direct & Distinct downstr. & Factor)",
-  "known_mismatch": true,
-  "note": "released graph is a slightly later crawl snapshot; downstream propagation is a transitive closure that amplifies the ~0.1% node drift to ~50% (direct counts still match)"
+  "source": "tab:propagation row 7 (CVE & Package & Direct & Distinct downstr. & Factor)"
  },
  "propagation.row8": {
   "value": "CVE-2025-69421 & libcrypto3 & 26,278 & 1,033,459 & 39.3",
-  "source": "tab:propagation row 8 (CVE & Package & Direct & Distinct downstr. & Factor)",
-  "known_mismatch": true,
-  "note": "released graph is a slightly later crawl snapshot; downstream propagation is a transitive closure that amplifies the ~0.1% node drift to ~50% (direct counts still match)"
+  "source": "tab:propagation row 8 (CVE & Package & Direct & Distinct downstr. & Factor)"
  },
  "propagation.zlib_downstream": {
   "value": "1,129,391",
-  "source": "sec:res-reach text (single zlib flaw reaching)",
-  "known_mismatch": true,
-  "note": "released graph is a slightly later crawl snapshot; downstream propagation is a transitive closure that amplifies the ~0.1% node drift to ~50% (direct counts still match)"
+  "source": "sec:res-reach text (single zlib flaw reaching)"
  },
  "propagation.min_downstream_millions": {
   "value": "1.0",
-  "source": "sec:res-reach text (1.0 to 1.14 million, lower)",
-  "known_mismatch": true,
-  "note": "released graph is a slightly later crawl snapshot; downstream propagation is a transitive closure that amplifies the ~0.1% node drift to ~50% (direct counts still match)"
+  "source": "sec:res-reach text (1.0 to 1.14 million, lower)"
  },
  "propagation.max_downstream_millions": {
   "value": "1.14",
-  "source": "sec:res-reach text (1.0 to 1.14 million, upper)",
-  "known_mismatch": true,
-  "note": "released graph is a slightly later crawl snapshot; downstream propagation is a transitive closure that amplifies the ~0.1% node drift to ~50% (direct counts still match)"
+  "source": "sec:res-reach text (1.0 to 1.14 million, upper)"
  },
  "propagation.factor_min": {
   "value": "39",
-  "source": "sec:res-reach text (propagation factor of 39 to 49, lower)",
-  "known_mismatch": true,
-  "note": "released graph is a slightly later crawl snapshot; downstream propagation is a transitive closure that amplifies the ~0.1% node drift to ~50% (direct counts still match)"
+  "source": "sec:res-reach text (propagation factor of 39 to 49, lower)"
  },
  "propagation.factor_max": {
   "value": "49",
-  "source": "sec:res-reach text (propagation factor of 39 to 49, upper)",
-  "known_mismatch": true,
-  "note": "released graph is a slightly later crawl snapshot; downstream propagation is a transitive closure that amplifies the ~0.1% node drift to ~50% (direct counts still match)"
+  "source": "sec:res-reach text (propagation factor of 39 to 49, upper)"
  },
  "toppkg.row1": {
   "value": "zlib & 44,574 & 84.3% & 177,503 & 15 & 28,695",

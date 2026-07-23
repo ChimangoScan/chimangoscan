@@ -23,11 +23,17 @@ with one script — no manual concatenation:
 ./scripts/fetch_dataset.sh --out ./dataset      # downloads + rejoins + sha256-verifies
 ```
 
-This writes `chimangoscan-reports.db.zst`, `dockerhub_data.freeze.archive.gz`
-and `neo4j_data.freeze.tar.gz` into `./dataset`. Pass `--only sqlite-scan-reports`
-(or `mongodb-crawl` / `neo4j-layer-graph`) to fetch just one. The analysis
-driver can fetch automatically: `./reproduce.sh analysis --dataset ./dataset
---fetch --stage all`.
+This writes `chimangoscan-reports.db.zst`, `dockerhub_data.freeze.archive.gz`,
+`neo4j_data.freeze.tar.gz` and `exposure_work.freeze.tar` into `./dataset`. Pass
+`--only sqlite-scan-reports` (or `mongodb-crawl` / `neo4j-layer-graph` /
+`layer-graph-dumps`) to fetch just one. The analysis driver can fetch
+automatically: `./reproduce.sh analysis --dataset ./dataset --fetch --stage all`.
+
+`exposure_work.freeze.tar` holds the **frozen 2026-05-18 layer-graph analysis
+dumps** (`edges.tsv.gz`, `toplayers.jsonl.gz`, `repo_pull.tsv.gz`, `tags.tsv.gz`).
+The reproduction pipeline uses these to recompute the exposure ranking and the
+per-CVE downstream propagation **exactly** as in the paper — see the Neo4j
+section below for why the live graph is not used for that.
 
 ---
 
@@ -128,6 +134,19 @@ layer nodes; the substrate for the exposure score and per-CVE propagation.
 
 Export: `neo4j-admin database dump`. Published as
 `neo4j_data.freeze.tar.gz` on the `dataset-v1` release.
+
+> **Reproducing Stage II — use the frozen dumps, not the live graph.** The layer
+> graph keeps growing after the paper freeze: images continue to attach to
+> layers, so `image-bearing nodes` rise from **4,476,440** (paper, 2026-05-18) to
+> ~6.3 M in the published `neo4j_data.freeze.tar.gz`, and `IS_BASE_OF` edges from
+> 54,382,383 to ~56.2 M. Because downstream propagation is a reachability closure
+> over image-bearing nodes, recomputing it from the *restored* Neo4j inflates the
+> table by ~50%. The paper's Stage-II numbers are therefore reproduced from the
+> frozen analysis dumps in **`exposure_work.freeze.tar`** (the 2026-05-18 export,
+> which `reproduce.sh` seeds into the working dir); on those the zlib downstream
+> total is exactly **1,129,391** as published. The Neo4j archive is provided for
+> graph exploration and yields the raw node/edge counts of a slightly later crawl
+> snapshot (a few % above the frozen figures above).
 
 ---
 
