@@ -169,12 +169,27 @@ log "graph statistics"
 in_runner sh -c "NEO4J_URI='$NEO4J_URI' OUT_PATH='$OUT/graph_stats.json' \
   python3 '$SCRIPTS/graph_stats.py'"
 
-if [ -n "$MONGO_URI" ]; then
-  log "exposure ranking"
+# The exposure ranking needs either the live crawl MongoDB (--with-mongo) OR the
+# frozen layer-graph dumps. compute_exposure_ranking.py skips the Mongo/Neo4j
+# streaming phase entirely when all four dumps (edges/toplayers/repo_pull/tags)
+# are already in WORKDIR, so with the frozen dumps present it recomputes the
+# ranking from them without touching Mongo -- which is how the released dataset
+# reproduces Stage II exactly (a live post-freeze graph would inflate it).
+DUMPS_READY=0
+if [ -s "$WORK/edges.tsv.gz" ] && [ -s "$WORK/toplayers.jsonl.gz" ] \
+   && [ -s "$WORK/repo_pull.tsv.gz" ] && [ -s "$WORK/tags.tsv.gz" ]; then
+  DUMPS_READY=1
+fi
+if [ -n "$MONGO_URI" ] || [ "$DUMPS_READY" = 1 ]; then
+  if [ "$DUMPS_READY" = 1 ]; then
+    log "exposure ranking (frozen dumps present; Mongo not queried)"
+  else
+    log "exposure ranking (live crawl via Mongo)"
+  fi
   in_runner sh -c "NEO4J_URI='$NEO4J_URI' MONGO_URI='$MONGO_URI' WORKDIR='$WORK' OUT_PATH='$RANKED' \
     python3 '$SCRIPTS/compute_exposure_ranking.py'"
 else
-  echo "skipping exposure ranking: pass --with-mongo URI (needs the crawl MongoDB)"
+  echo "skipping exposure ranking: pass --with-mongo URI (needs the crawl MongoDB) or provide the frozen dumps"
 fi
 
 if [ -s "$RANKED" ]; then
