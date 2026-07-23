@@ -45,7 +45,14 @@ ARTIFACTS = {
     "graph": "graph_stats.json",
     "propagation": "propagation_v3.json",
     "secrets": "secret_validation_report.json",
+    "dbstats": "analyze_db.stats.json",
 }
+
+
+def _median(xs):
+    s = sorted(xs)
+    n = len(s)
+    return s[n // 2] if n % 2 else (s[n // 2 - 1] + s[n // 2]) / 2.0
 
 
 # Live-crawl drift band. The released databases are a slightly LATER crawl/scan
@@ -196,6 +203,11 @@ RESOLVER = {
     # layer graph (Sec. 3.2 / tab:dataset)
     "graph.is_base_of_edges": ("graph", "is_base_of_edges", "int"),
     "graph.layer_nodes_millions": ("graph", "total_nodes", "mil1"),
+    # per-image scan cost (recomputed from the reports' recorded wall times)
+    "dataset.median_scan_time_s": ("dbstats", lambda a: _median(a["scan_time_per_image"]), "int"),
+    "scan.mean_time_s": ("dbstats", lambda a: sum(a["scan_time_per_image"]) / len(a["scan_time_per_image"]), "int"),
+    "scan.max_time_s": ("dbstats", lambda a: max(a["scan_time_per_image"]), "int"),
+    "perscanner.grype_time_s": ("dbstats", lambda a: _median(a["wall_by_scanner"]["grype"]), "prec1"),
     # tab:dataset (tables stage)
     "dataset.repositories_scanned": T("OCNTOTAL"),
     "dataset.distinct_images": T("DTDISTINCT"),

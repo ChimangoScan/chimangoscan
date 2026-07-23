@@ -968,5 +968,25 @@
  "repro.dahlmanns.private_key_pct": {
   "value": "40.2",
   "source": "sec:res-repro text (private-key pattern prevalence)"
+ },
+ "dataset.median_scan_time_s": {
+  "value": "117",
+  "source": "tab:dataset median scan time / image",
+  "tol": 0.05
+ },
+ "scan.mean_time_s": {
+  "value": "197",
+  "source": "sec:res-perscanner mean scan time",
+  "tol": 0.05
+ },
+ "scan.max_time_s": {
+  "value": "9433",
+  "source": "sec:res-perscanner max scan time",
+  "tol": 0.25
+ },
+ "perscanner.grype_time_s": {
+  "value": "35.1",
+  "source": "sec:res-perscanner Grype per-image",
+  "tol": 0.1
  }
 }
