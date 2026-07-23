@@ -207,7 +207,7 @@ RESOLVER = {
     "dataset.median_scan_time_s": ("dbstats", lambda a: _median(a["scan_time_per_image"]), "int"),
     "scan.mean_time_s": ("dbstats", lambda a: sum(a["scan_time_per_image"]) / len(a["scan_time_per_image"]), "int"),
     "scan.max_time_s": ("dbstats", lambda a: max(a["scan_time_per_image"]), "int"),
-    "perscanner.grype_time_s": ("dbstats", lambda a: _median(a["wall_by_scanner"]["grype"]), "prec1"),
+    "perscanner.grype_time_s": ("dbstats", lambda a: sum(a["wall_by_scanner"]["grype"]) / len(a["wall_by_scanner"]["grype"]), "prec1"),
     # tab:dataset (tables stage)
     "dataset.repositories_scanned": T("OCNTOTAL"),
     "dataset.distinct_images": T("DTDISTINCT"),
