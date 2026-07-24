@@ -853,6 +853,10 @@ def main():
     # ---- analyze_db.stats.json (for panels3.py) ----
     analyze_stats = {
         "n_reports": N,
+        # last_updated coverage over the SCANNED corpus (the paper's population),
+        # from the tag last_updated timestamps -- NOT repositories_data.last_updated,
+        # which is empty in the released dump. Reproduces the paper's Table 1 figure.
+        "last_updated_coverage_pct": round(100.0 * temporal_matched / N, 1) if N else 0.0,
         "n_findings_array_sum": n_findings_array_sum,
         "sev_global": dict(sev_global),
         "sev_by_scanner": {k: dict(v) for k, v in sev_by_scanner.items()},

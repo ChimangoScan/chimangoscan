@@ -128,8 +128,7 @@
  "crawl.last_updated_coverage": {
   "value": "95.7",
   "source": "tab:dataset row last_updated coverage (crawl)",
-  "tol": 0.05,
-  "known_mismatch": true
+  "tol": 0.05
  },
  "crawl.tags_resolved": {
   "value": "6,399,608",

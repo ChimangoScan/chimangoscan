@@ -195,7 +195,10 @@ RESOLVER = {
         a, _bucket(">=1B", "pulls")) / a["total_pulls"], "prec0"),
     "crawl.repos_below_1k_pct": ("crawl", lambda a: 100.0 * get(
         a, _bucket("<1k", "repos")) / a["repositories_with_pull_count"], "prec0"),
-    "crawl.last_updated_coverage": C("last_updated_coverage_pct", "prec1"),
+    # over the SCANNED corpus (tag last_updated), computed by recount_repo.py;
+    # repositories_data.last_updated is empty in the released dump, so crawl_stats
+    # cannot compute this -- the paper's figure is over the scanned images.
+    "crawl.last_updated_coverage": ("dbstats", "last_updated_coverage_pct", "prec1"),
     "crawl.tags_resolved": C("tags_total"),
     "crawl.image_digests": C("images_total"),
     "crawl.drdocker_delta": ("crawl",
