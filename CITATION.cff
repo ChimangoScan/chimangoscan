@@ -1,0 +1,46 @@
+cff-version: 1.2.0
+message: "If you use this artifact, please cite the paper it accompanies."
+title: "ChimangoScan"
+abstract: "Research artifact for the paper Vulnerabilities, Secrets and Misconfiguration in the Highest-Exposure Docker Hub Images: a pipeline that crawls the Docker Hub namespace, reconstructs the image layer graph, ranks images by downstream exposure, and scans the highest-exposure ones with six independent scanners."
+type: software
+authors:
+  - family-names: Kapelinski
+    given-names: Cristhian
+    orcid: "https://orcid.org/0009-0005-5750-022X"
+    affiliation: "AI Horizon Labs, Federal University of Pampa (UNIPAMPA)"
+  - family-names: Machado
+    given-names: Beatriz
+    orcid: "https://orcid.org/0009-0002-2750-0323"
+    affiliation: "AI Horizon Labs, Federal University of Pampa (UNIPAMPA)"
+  - family-names: Kreutz
+    given-names: Diego
+    orcid: "https://orcid.org/0000-0003-0830-0238"
+    affiliation: "AI Horizon Labs, Federal University of Pampa (UNIPAMPA)"
+repository-code: "https://github.com/ChimangoScan/chimangoscan"
+keywords:
+  - Docker Hub
+  - container security
+  - software supply chain
+  - vulnerability scanners
+  - empirical measurement
+license: MIT
+preferred-citation:
+  type: article
+  title: "Vulnerabilities, Secrets and Misconfiguration in the Highest-Exposure Docker Hub Images"
+  authors:
+    - family-names: Kapelinski
+      given-names: Cristhian
+      orcid: "https://orcid.org/0009-0005-5750-022X"
+      affiliation: "AI Horizon Labs, Federal University of Pampa (UNIPAMPA)"
+    - family-names: Machado
+      given-names: Beatriz
+      orcid: "https://orcid.org/0009-0002-2750-0323"
+      affiliation: "AI Horizon Labs, Federal University of Pampa (UNIPAMPA)"
+    - family-names: Kreutz
+      given-names: Diego
+      orcid: "https://orcid.org/0000-0003-0830-0238"
+      affiliation: "AI Horizon Labs, Federal University of Pampa (UNIPAMPA)"
+  year: 2026
+  journal: "arXiv preprint"
+  doi: "10.48550/arXiv.2608.02669"
+  url: "https://arxiv.org/abs/2608.02669"

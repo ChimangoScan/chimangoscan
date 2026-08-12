@@ -275,3 +275,23 @@ unimplemented stub upstream) and the distributed re-engineering of the Stage II
 graph builder are ours; the graph-builder and analyzer baseline are theirs and
 are credited throughout [`stages/DITector/`](stages/DITector/) (see its [`CHANGELOG.md`](stages/DITector/CHANGELOG.md)). The
 upstream carries no license and is included here with attribution.
+
+## How to cite
+
+Cite the paper, not the repository:
+
+> Kapelinski, C., Machado, B. and Kreutz, D. (2026). Vulnerabilities, Secrets and Misconfiguration in the Highest-Exposure Docker Hub Images. arXiv:2608.02669.
+
+```bibtex
+@article{kapelinski2026chimangoscan,
+  author  = {Kapelinski, Cristhian and Machado, Beatriz and Kreutz, Diego},
+  title   = {Vulnerabilities, Secrets and Misconfiguration in the Highest-Exposure Docker Hub Images},
+  journal = {arXiv preprint arXiv:2608.02669},
+  year    = {2026},
+  doi     = {10.48550/arXiv.2608.02669},
+  url     = {https://arxiv.org/abs/2608.02669},
+}
+```
+
+[`CITATION.cff`](CITATION.cff) carries the same metadata in machine-readable form, so GitHub's
+"Cite this repository" button and tools such as Zenodo pick it up automatically.
