@@ -171,7 +171,7 @@ def make_fig_a(grp):
         fracs.append(100.0 * g["with_secret"] / g["n"] if g["n"] else 0.0)
     bars = ax.bar(groups, fracs, color=["#9ecae1", "#fdae6b"],
                   edgecolor="#444444")
-    ax.set_ylabel("Imagens com >=1 secret (%)")
+    ax.set_ylabel("Images with >=1 secret (%)")
     ax.set_title("Secret leakage")
     ax.margins(y=0.20)
     for b, key in zip(bars, ["official", "community"]):

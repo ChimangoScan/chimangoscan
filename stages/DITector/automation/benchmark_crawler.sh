@@ -73,7 +73,7 @@ run_config() {
     local total_added=$((c1 - c0))
     local rate_avg=$(echo "scale=1; $total_added * 60 / $MEASURE_SECS" | bc 2>/dev/null || echo "?")
 
-    echo "    RESULTADO: +${total_added} repos em ${MEASURE_SECS}s = ${rate_avg} repos/min"
+    echo "    RESULT: +${total_added} repos in ${MEASURE_SECS}s = ${rate_avg} repos/min"
     echo "$label | workers=$workers | page_conc=$page_conc | repos/min=$rate_avg | total_added=$total_added" >> "$RESULTS_FILE"
 }
 
